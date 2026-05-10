@@ -16,8 +16,9 @@ const LoginPage: React.FC = () => {
 
   const onFinish = async (values: FieldType) => {
     try {
-      const result: { code: number; message: string; data: LoginVo } = await login(values);
-      loginAction(result.data, result.data.token);
+      const result: { code: number; message: string; data: LoginVo } =
+        await login(values);
+      await loginAction(result.data.token, result.data.id);
       message.success("登录成功");
       navigate("/userList", { replace: true });
     } catch (error: any) {
@@ -44,7 +45,11 @@ const LoginPage: React.FC = () => {
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" block className="login-form-button">
+            <Button
+              type="primary"
+              htmlType="submit"
+              block
+              className="login-form-button">
               登 录
             </Button>
           </Form.Item>

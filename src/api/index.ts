@@ -2,6 +2,7 @@ import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
 import { message } from "antd";
 import Cookies from "js-cookie";
 
+/** axios 实例配置 */
 const instance = axios.create({
   baseURL: "http://localhost:8080",
   timeout: 10000,
@@ -10,6 +11,7 @@ const instance = axios.create({
   },
 });
 
+/** 请求拦截器：自动注入 token */
 instance.interceptors.request.use(
   (config) => {
     const token = Cookies.get("token");
@@ -23,6 +25,7 @@ instance.interceptors.request.use(
   },
 );
 
+/** 响应拦截器：统一处理响应和错误 */
 instance.interceptors.response.use(
   (response: AxiosResponse) => {
     if (response.data.code === 200) {
@@ -38,6 +41,7 @@ instance.interceptors.response.use(
   },
 );
 
+/** GET 请求封装 */
 export function get<T>(
   url: string,
   params?: Record<string, unknown>,
@@ -46,6 +50,7 @@ export function get<T>(
   return instance.get(url, { params, ...config });
 }
 
+/** POST 请求封装 */
 export function post<T>(
   url: string,
   data?: Record<string, unknown>,
@@ -54,6 +59,7 @@ export function post<T>(
   return instance.post(url, data, config);
 }
 
+/** PUT 请求封装 */
 export function put<T>(
   url: string,
   data?: Record<string, unknown>,
@@ -62,6 +68,7 @@ export function put<T>(
   return instance.put(url, data, config);
 }
 
+/** DELETE 请求封装 */
 export function del<T>(
   url: string,
   params?: Record<string, unknown>,

@@ -1,12 +1,12 @@
 import { get, post, put, del } from "@/api/index";
 
-// ==================== 请求参数类型 ====================
-
+/** 登录请求参数 */
 export interface LoginReq {
   username: string;
   password: string;
 }
 
+/** 注册请求参数 */
 export interface RegisterReq {
   username: string;
   password: string;
@@ -14,6 +14,7 @@ export interface RegisterReq {
   email?: string;
 }
 
+/** 更新用户信息请求参数 */
 export interface UpdateUserReq {
   id: number;
   nickname?: string;
@@ -21,12 +22,14 @@ export interface UpdateUserReq {
   avatarUrl?: string;
 }
 
+/** 更新密码请求参数 */
 export interface UpdatePasswordReq {
   id: number;
   oldPassword: string;
   newPassword: string;
 }
 
+/** 用户列表请求参数 */
 export interface UserListReq {
   page: number;
   size: number;
@@ -39,14 +42,14 @@ export interface UserListReq {
   endTime?: string;
 }
 
-// ==================== 响应数据类型 ====================
-
+/** 通用响应包装 */
 export interface ResultVo<T> {
   code: number;
   message: string;
   data: T;
 }
 
+/** 分页数据响应 */
 export interface PageVo<T> {
   total: number;
   page: number;
@@ -54,6 +57,7 @@ export interface PageVo<T> {
   list: T[];
 }
 
+/** 登录响应数据 */
 export interface LoginVo {
   token: string;
   id: number;
@@ -66,6 +70,7 @@ export interface LoginVo {
   updatedAt: string;
 }
 
+/** 用户信息数据 */
 export interface UserVo {
   id: number;
   username: string;
@@ -77,8 +82,7 @@ export interface UserVo {
   updatedAt: string;
 }
 
-// ==================== API 接口函数 ====================
-
+/** 登录接口 */
 export function login(data: LoginReq) {
   return post<ResultVo<LoginVo>>(
     "/sys/user/login",
@@ -86,6 +90,12 @@ export function login(data: LoginReq) {
   );
 }
 
+/** 退出登录接口 */
+export function logout() {
+  return post<ResultVo<null>>("/sys/user/logout");
+}
+
+/** 根据ID获取用户信息 */
 export function getSysUserById(id: number) {
   return get<ResultVo<UserVo>>("/sys/user/getSysUserById", { id } as Record<
     string,
@@ -93,6 +103,7 @@ export function getSysUserById(id: number) {
   >);
 }
 
+/** 注册新用户 */
 export function register(data: RegisterReq) {
   return post<ResultVo<null>>(
     "/sys/user/register",
@@ -100,6 +111,7 @@ export function register(data: RegisterReq) {
   );
 }
 
+/** 更新用户信息 */
 export function updateUser(data: UpdateUserReq) {
   return put<ResultVo<null>>(
     "/sys/user/update",
@@ -107,6 +119,7 @@ export function updateUser(data: UpdateUserReq) {
   );
 }
 
+/** 冻结用户 */
 export function freezeUser(id: number) {
   return put<ResultVo<null>>("/sys/user/freeze", { id } as unknown as Record<
     string,
@@ -114,6 +127,7 @@ export function freezeUser(id: number) {
   >);
 }
 
+/** 激活用户 */
 export function activateUser(id: number) {
   return put<ResultVo<null>>("/sys/user/activate", { id } as unknown as Record<
     string,
@@ -121,6 +135,7 @@ export function activateUser(id: number) {
   >);
 }
 
+/** 删除用户 */
 export function deleteUser(id: number) {
   return del<ResultVo<null>>("/sys/user/delete", { id } as Record<
     string,
@@ -128,6 +143,7 @@ export function deleteUser(id: number) {
   >);
 }
 
+/** 更新密码 */
 export function updatePassword(data: UpdatePasswordReq) {
   return put<ResultVo<null>>(
     "/sys/user/updatePassword",
@@ -135,6 +151,7 @@ export function updatePassword(data: UpdatePasswordReq) {
   );
 }
 
+/** 获取用户列表（分页） */
 export function getUserList(params: UserListReq) {
   return get<ResultVo<PageVo<UserVo>>>(
     "/sys/user/getList",
