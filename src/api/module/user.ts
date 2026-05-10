@@ -107,6 +107,20 @@ export function updateUser(data: UpdateUserReq) {
   );
 }
 
+export function freezeUser(id: number) {
+  return put<ResultVo<null>>("/sys/user/freeze", { id } as unknown as Record<
+    string,
+    unknown
+  >);
+}
+
+export function activateUser(id: number) {
+  return put<ResultVo<null>>("/sys/user/activate", { id } as unknown as Record<
+    string,
+    unknown
+  >);
+}
+
 export function deleteUser(id: number) {
   return del<ResultVo<null>>("/sys/user/delete", { id } as Record<
     string,

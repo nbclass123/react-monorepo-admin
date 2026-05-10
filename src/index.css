@@ -101,7 +101,7 @@ body {
 }
 
 .content-area {
-  padding: 24px;
+  padding: 15px;
 }
 
 .search-bar {
@@ -154,7 +154,7 @@ body {
   background: transparent !important;
 }
 
-.ant-table-thead > tr > th {
+.ant-table-thead>tr>th {
   background: rgba(255, 255, 255, 0.3) !important;
   border-bottom: 1px solid var(--frost-border) !important;
 }

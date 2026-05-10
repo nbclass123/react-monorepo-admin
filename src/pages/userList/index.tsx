@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { Table, Button, Input, Space, Tag, Modal, message, Form } from "antd";
+import type { ColumnsType } from "antd/es/table";
 import {
   PlusOutlined,
   SearchOutlined,
@@ -11,23 +12,15 @@ import {
 import {
   getUserList,
   deleteUser,
-  type UserListReq,
+  freezeUser,
+  activateUser,
   type UserVo,
 } from "@/api/module/user";
+import { useList } from "@/hooks/useList";
 import UserModal from "@/components/UserModal/index";
 import "./index.css";
 
 const UserListPage: React.FC = () => {
-  const [loading, setLoading] = useState(false);
-  const [list, setList] = useState<UserVo[]>([]);
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
-  const [size, setSize] = useState(10);
-  const [searchParams, setSearchParams] = useState<{
-    username?: string;
-    nickname?: string;
-    email?: string;
-  }>({});
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit" | "view">(
     "create",
@@ -36,78 +29,7 @@ const UserListPage: React.FC = () => {
 
   const [form] = Form.useForm();
 
-  const fetchList = useCallback(async (params: UserListReq) => {
-    setLoading(true);
-    try {
-      const result = await getUserList(params);
-      setList(result.data.list);
-      setTotal(result.data.total);
-      setPage(result.data.page);
-      setSize(result.data.size);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchList({ page: 1, size: 10 });
-  }, [fetchList]);
-
-  const handleSearch = () => {
-    const values = form.getFieldsValue();
-    setSearchParams(values);
-    fetchList({ page: 1, size, ...values });
-  };
-
-  const handleReset = () => {
-    form.resetFields();
-    setSearchParams({});
-    fetchList({ page: 1, size: 10 });
-  };
-
-  const handleAdd = () => {
-    setModalMode("create");
-    setModalData(null);
-    setModalVisible(true);
-  };
-
-  const handleView = (record: UserVo) => {
-    setModalMode("view");
-    setModalData(record);
-    setModalVisible(true);
-  };
-
-  const handleEdit = (record: UserVo) => {
-    setModalMode("edit");
-    setModalData(record);
-    setModalVisible(true);
-  };
-
-  const handleDelete = (record: UserVo) => {
-    Modal.confirm({
-      title: "确认删除",
-      content: `确定要删除用户"${record.username}"吗？`,
-      okText: "确认",
-      cancelText: "取消",
-      okType: "danger",
-      onOk: async () => {
-        await deleteUser(record.id);
-        message.success("删除成功");
-        fetchList({ page, size, ...searchParams });
-      },
-    });
-  };
-
-  const handleModalClose = () => {
-    setModalVisible(false);
-  };
-
-  const handleModalSuccess = () => {
-    setModalVisible(false);
-    fetchList({ page, size, ...searchParams });
-  };
-
-  const columns = [
+  const columns: ColumnsType<UserVo> = [
     {
       title: "ID",
       dataIndex: "id",
@@ -154,6 +76,7 @@ const UserListPage: React.FC = () => {
     {
       title: "操作",
       key: "action",
+      fixed: "right",
       width: 200,
       render: (_: unknown, record: UserVo) => (
         <Space>
@@ -171,6 +94,12 @@ const UserListPage: React.FC = () => {
           </Button>
           <Button
             type="link"
+            icon={<DeleteOutlined />}
+            onClick={() => handleStatus(record)}>
+            {record.status === 1 ? "禁用" : "启用"}
+          </Button>
+          <Button
+            type="link"
             danger
             icon={<DeleteOutlined />}
             onClick={() => handleDelete(record)}>
@@ -180,6 +109,90 @@ const UserListPage: React.FC = () => {
       ),
     },
   ];
+
+  const {
+    list,
+    loading,
+    page,
+    size,
+    total,
+    refresh,
+    search,
+    reset,
+    handlePageChange,
+  } = useList<UserVo>({
+    fetchFn: getUserList,
+  });
+
+  const handleSearch = () => {
+    const values = form.getFieldsValue();
+    search(values);
+  };
+
+  const handleReset = () => {
+    form.resetFields();
+    reset();
+  };
+
+  const handleAdd = () => {
+    setModalMode("create");
+    setModalData(null);
+    setModalVisible(true);
+  };
+
+  const handleView = (record: UserVo) => {
+    setModalMode("view");
+    setModalData(record);
+    setModalVisible(true);
+  };
+
+  const handleEdit = (record: UserVo) => {
+    setModalMode("edit");
+    setModalData(record);
+    setModalVisible(true);
+  };
+
+  const handleDelete = (record: UserVo) => {
+    Modal.confirm({
+      title: "确认删除",
+      content: `确定要删除用户"${record.username}"吗？`,
+      okText: "确认",
+      cancelText: "取消",
+      okType: "danger",
+      onOk: async () => {
+        await deleteUser(record.id);
+        message.success("删除成功");
+        refresh();
+      },
+    });
+  };
+
+  const handleStatus = (record: UserVo) => {
+    Modal.confirm({
+      title: "确认操作",
+      content: `确定要${record.status === 1 ? "禁用" : "启用"}用户"${record.username}"吗？`,
+      okText: "确认",
+      cancelText: "取消",
+      onOk: async () => {
+        if (record.status === 1) {
+          await freezeUser(record.id);
+        } else {
+          await activateUser(record.id);
+        }
+        message.success(record.status === 1 ? "禁用成功" : "启用成功");
+        refresh();
+      },
+    });
+  };
+
+  const handleModalClose = () => {
+    setModalVisible(false);
+  };
+
+  const handleModalSuccess = () => {
+    setModalVisible(false);
+    refresh();
+  };
 
   return (
     <div className="content-area">
@@ -221,15 +234,15 @@ const UserListPage: React.FC = () => {
           columns={columns}
           rowKey="id"
           loading={loading}
+          scroll={{ x: "max-content" }}
           pagination={{
             current: page,
             pageSize: size,
             total,
             showSizeChanger: true,
             showTotal: (total: number) => `共 ${total} 条`,
-            onChange: (newPage: number, newSize: number) => {
-              fetchList({ page: newPage, size: newSize, ...searchParams });
-            },
+            pageSizeOptions: [10, 20, 50, 100],
+            onChange: handlePageChange,
           }}
         />
       </div>

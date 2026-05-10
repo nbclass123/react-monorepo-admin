@@ -3,6 +3,7 @@ import {
   useContext,
   useReducer,
   useEffect,
+  useState,
   type ReactNode,
 } from "react";
 import Cookies from "js-cookie";
@@ -64,12 +65,14 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const token = Cookies.get("token");
     if (token) {
       dispatch({ type: "RESTORE", payload: { token } });
     }
+    setReady(true);
   }, []);
 
   const loginAction = (userInfo: UserInfo, token: string) => {
@@ -90,7 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loginAction,
         logoutAction,
       }}>
-      {children}
+      {ready ? children : null}
     </AuthContext.Provider>
   );
 }
