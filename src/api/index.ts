@@ -1,5 +1,6 @@
 import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
 import { message } from "antd";
+import Cookies from "js-cookie";
 
 const instance = axios.create({
   baseURL: "http://localhost:8080",
@@ -11,7 +12,7 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const token = Cookies.get("token");
     if (token && config.headers) {
       config.headers.Authorization = token;
     }

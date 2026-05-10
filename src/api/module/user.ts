@@ -51,7 +51,7 @@ export interface PageVo<T> {
   total: number;
   page: number;
   size: number;
-  records: T[];
+  list: T[];
 }
 
 export interface LoginVo {
