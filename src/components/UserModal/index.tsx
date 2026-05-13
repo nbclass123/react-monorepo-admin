@@ -48,11 +48,12 @@ const UserModal = ({
       message.success(mode === "create" ? "新增成功" : "编辑成功");
       onSuccess();
       onClose();
-    } catch (error: any) {
-      if (error.errorFields) {
+    } catch (error: unknown) {
+      const err = error as { errorFields?: unknown; msg?: string; message?: string };
+      if (err.errorFields) {
         return;
       }
-      message.warning(error.msg || error.message);
+      message.warning(err.msg || err.message);
     }
   };
 

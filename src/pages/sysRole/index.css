@@ -1,7 +1,3 @@
-.content-area {
-  padding: var(--md-space-6);
-}
-
 .search-bar {
   background: var(--md-surface);
   box-shadow: var(--md-elevation-1);
@@ -31,10 +27,4 @@
   box-shadow: var(--md-elevation-1);
   border-radius: var(--md-radius-md);
   padding: var(--md-space-6);
-}
-
-.table-toolbar {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: var(--md-space-4);
 }

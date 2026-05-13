@@ -1,32 +1,167 @@
 .main-layout-inner {
   min-height: 100vh;
+  background: var(--md-bg);
 }
 
-.header-content {
+.vercel-sider {
+  background: var(--md-surface) !important;
+  border-right: 1px solid var(--md-border-subtle) !important;
+  box-shadow: var(--md-elevation-1);
+}
+
+.vercel-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  padding: 0 var(--md-space-4);
+  background: var(--md-surface);
+  border-bottom: 1px solid var(--md-border-subtle);
+}
+
+.vercel-brand-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--md-text-primary);
+  letter-spacing: -0.02em;
+}
+
+.vercel-brand-icon {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--md-primary);
+}
+
+.vercel-menu.ant-menu {
+  background: transparent !important;
+  border-inline-end: none !important;
+  padding: var(--md-space-2);
+}
+
+.vercel-menu .ant-menu-item {
+  border-radius: var(--md-radius-md);
+  margin: 2px 0;
+  padding-left: var(--md-space-5) !important;
+  height: 40px;
+  line-height: 40px;
+  transition: all var(--md-transition);
+}
+
+.vercel-menu .ant-menu-item:hover {
+  background: var(--md-primary-bg) !important;
+  color: var(--md-text-primary) !important;
+}
+
+.vercel-menu .ant-menu-item-selected {
+  background: var(--md-primary-bg) !important;
+  color: var(--md-primary) !important;
+  border-left: 3px solid var(--md-primary) !important;
+  padding-left: calc(var(--md-space-5) - 3px) !important;
+  border-radius: 0 var(--md-radius-md) var(--md-radius-md) 0;
+}
+
+.vercel-menu .ant-menu-item .anticon {
+  font-size: 16px;
+}
+
+.vercel-menu .ant-menu-item-selected .anticon {
+  color: var(--md-primary);
+}
+
+.vercel-header {
+  background: var(--md-surface) !important;
+  border-bottom: 1px solid var(--md-border-subtle) !important;
+  height: 56px;
+  line-height: 56px;
+  padding: 0 var(--md-space-6);
+  box-shadow: var(--md-elevation-1);
+}
+
+.vercel-header-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
   height: 100%;
+  gap: var(--md-space-4);
 }
 
-.header-left {
+.vercel-header-left {
   display: flex;
   align-items: center;
-  gap: 16px;
 }
 
-.header-right {
+.vercel-header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.vercel-header-right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--md-space-2);
 }
 
-.logo-area {
-  padding: 20px 16px;
-  text-align: center;
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--accent);
-  letter-spacing: 1px;
+.vercel-collapse-btn {
+  color: var(--md-text-secondary) !important;
+}
+
+.vercel-collapse-btn:hover {
+  color: var(--md-text-primary) !important;
+  background: var(--md-primary-bg) !important;
+}
+
+.vercel-search-btn {
+  color: var(--md-text-secondary) !important;
+  font-size: 14px;
+  width: 100%;
+  justify-content: flex-start;
+  border: 1px solid var(--md-border-subtle);
+  border-radius: var(--md-radius-md);
+  height: 36px;
+  padding: 0 var(--md-space-3);
+  background: var(--md-surface-variant) !important;
+}
+
+.vercel-search-btn:hover {
+  border-color: var(--md-border-color);
+  background: var(--md-primary-bg) !important;
+}
+
+.vercel-search-input {
+  width: 100%;
+}
+
+.vercel-theme-btn {
+  color: var(--md-text-secondary) !important;
+}
+
+.vercel-theme-btn:hover {
+  color: var(--md-text-primary) !important;
+  background: var(--md-primary-bg) !important;
+}
+
+.vercel-user-dropdown {
+  cursor: pointer;
+  padding: var(--md-space-1) var(--md-space-2);
+  border-radius: var(--md-radius-md);
+  transition: background var(--md-transition);
+}
+
+.vercel-user-dropdown:hover {
+  background: var(--md-primary-bg);
+}
+
+.vercel-username {
+  font-size: 14px;
+  color: var(--md-text-primary);
+  font-weight: 500;
+}
+
+.vercel-content {
+  padding: var(--md-space-6);
+  background: transparent !important;
+  min-height: calc(100vh - 56px);
 }

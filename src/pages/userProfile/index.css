@@ -1,0 +1,14 @@
+.content-area {
+  padding: var(--md-space-6);
+}
+
+.profile-card {
+  background: var(--md-surface);
+  border-radius: var(--md-radius-md);
+  box-shadow: var(--md-elevation-1);
+}
+
+.profile-avatar {
+  border-radius: var(--md-radius-full);
+  box-shadow: var(--md-elevation-2);
+}

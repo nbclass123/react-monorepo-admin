@@ -1,0 +1,6 @@
+.dashboard-grid {
+  display: grid;
+  gap: var(--md-space-4);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  margin-top: var(--md-space-4);
+}

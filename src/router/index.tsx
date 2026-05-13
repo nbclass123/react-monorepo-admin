@@ -1,8 +1,24 @@
-import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
+import { Suspense } from "react";
+import {
+  createBrowserRouter,
+  Outlet,
+  type RouteObject,
+} from "react-router-dom";
 import { AuthProvider, PrivateRoute } from "@/store/index";
 import MainLayout from "@/layouts/MainLayout/index";
-import LoginPage from "@/pages/login/index";
-import UserListPage from "@/pages/userList/index";
+import { appRoutes } from "./routeConfig";
+import type { AppRouteConfig } from "./types";
+
+function toRouteObjects(configs: AppRouteConfig[]): RouteObject[] {
+  return configs.map((config) => ({
+    path: config.path,
+    element: <Suspense fallback={null}>{config.element}</Suspense>,
+    children: config.children ? toRouteObjects(config.children) : undefined,
+  }));
+}
+
+const authRoutes = appRoutes.filter((r) => r.hideInMenu);
+const protectedRoutes = appRoutes.filter((r) => !r.hideInMenu);
 
 const router = createBrowserRouter([
   {
@@ -12,27 +28,14 @@ const router = createBrowserRouter([
       </AuthProvider>
     ),
     children: [
+      ...toRouteObjects(authRoutes),
       {
-        path: "/",
-        element: <Navigate to="/login" replace />,
-      },
-      {
-        path: "/login",
-        element: <LoginPage />,
-      },
-      {
-        path: "/userList",
         element: (
           <PrivateRoute>
             <MainLayout />
           </PrivateRoute>
         ),
-        children: [
-          {
-            index: true,
-            element: <UserListPage />,
-          },
-        ],
+        children: toRouteObjects(protectedRoutes),
       },
     ],
   },

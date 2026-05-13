@@ -1,0 +1,29 @@
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.empty-state__icon {
+  color: rgba(0, 0, 0, 0.15);
+  margin-bottom: 16px;
+}
+
+.empty-state__title {
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.65);
+  margin-bottom: 8px;
+}
+
+.empty-state__description {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.45);
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.empty-state__action {
+  margin-top: 4px;
+}

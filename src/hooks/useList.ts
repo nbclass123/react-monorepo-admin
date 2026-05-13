@@ -7,14 +7,14 @@ export interface UseListOptions<T> {
   fetchFn: (params: {
     page: number;
     size: number;
-    [key: string]: any;
+    [key: string]: unknown;
   }) => Promise<ResultVo<PageVo<T>>>;
   /** 初始页码，默认 1 */
   initialPage?: number;
   /** 初始每页条数，默认 10 */
   initialSize?: number;
   /** 初始搜索参数 */
-  initialSearchParams?: Record<string, any>;
+  initialSearchParams?: Record<string, unknown>;
 }
 
 /**
@@ -35,7 +35,7 @@ export function useList<T>(options: UseListOptions<T>) {
   const [size, setSize] = useState(initialSize);
   const [total, setTotal] = useState(0);
   const [searchParams, setSearchParams] =
-    useState<Record<string, any>>(initialSearchParams);
+    useState<Record<string, unknown>>(initialSearchParams);
   const initialSearchParamsRef = useRef(initialSearchParams);
   const isMountedRef = useRef(false);
 
@@ -44,7 +44,7 @@ export function useList<T>(options: UseListOptions<T>) {
     async (
       currentPage: number,
       currentSize: number,
-      currentSearchParams: Record<string, any>,
+      currentSearchParams: Record<string, unknown>,
     ) => {
       setLoading(true);
       try {
@@ -71,7 +71,7 @@ export function useList<T>(options: UseListOptions<T>) {
 
   /** 搜索，重置页码为 1 */
   const search = useCallback(
-    async (params: Record<string, any>) => {
+    async (params: Record<string, unknown>) => {
       setSearchParams(params);
       await fetchData(1, size, params);
     },

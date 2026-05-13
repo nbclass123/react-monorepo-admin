@@ -1,6 +1,4 @@
 import {
-  createContext,
-  useContext,
   useReducer,
   useEffect,
   useState,
@@ -8,76 +6,18 @@ import {
   useRef,
   type ReactNode,
 } from "react";
-import Cookies from "js-cookie";
 import { Navigate } from "react-router-dom";
+import Cookies from "js-cookie";
 import { getSysUserById } from "@/api/module/user";
+import {
+  AuthContext,
+  authReducer,
+  initialState,
+  type UserInfo,
+} from "./context";
+import { useAuth } from "./useAuth";
+import BootSplash from "@/components/BootSplash/index";
 
-/** 用户信息接口 */
-interface UserInfo {
-  id: number;
-  username: string;
-  nickname: string;
-  email: string;
-  avatarUrl: string;
-}
-
-/** 认证状态 */
-interface AuthState {
-  userInfo: UserInfo | null;
-  token: string;
-}
-
-/** 认证操作类型 */
-type AuthAction =
-  | { type: "LOGIN"; payload: { userInfo: UserInfo; token: string } }
-  | { type: "LOGOUT" }
-  | { type: "RESTORE"; payload: { token: string } }
-  | { type: "SET_USER_INFO"; payload: UserInfo };
-
-const initialState: AuthState = {
-  userInfo: null,
-  token: "",
-};
-
-/** 认证状态 reducer */
-function authReducer(state: AuthState, action: AuthAction): AuthState {
-  switch (action.type) {
-    case "LOGIN":
-      return {
-        userInfo: action.payload.userInfo,
-        token: action.payload.token,
-      };
-    case "LOGOUT":
-      return {
-        userInfo: null,
-        token: "",
-      };
-    case "RESTORE":
-      return {
-        userInfo: null,
-        token: action.payload.token,
-      };
-    case "SET_USER_INFO":
-      return {
-        ...state,
-        userInfo: action.payload,
-      };
-    default:
-      return state;
-  }
-}
-
-/** 认证上下文类型 */
-interface AuthContextType {
-  userInfo: UserInfo | null;
-  token: string;
-  loginAction: (token: string, userId: number) => Promise<void>;
-  logoutAction: () => Promise<void>;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-/** 根据用户ID获取用户信息 */
 const fetchUserInfoById = async (userId: string): Promise<UserInfo | null> => {
   try {
     const result = await getSysUserById(parseInt(userId, 10));
@@ -97,28 +37,23 @@ const fetchUserInfoById = async (userId: string): Promise<UserInfo | null> => {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
-  const [ready, setReady] = useState(false);
-  const isInitRef = useRef(false);
+  const tokenFromCookie = Cookies.get("token");
+  const userIdFromCookie = Cookies.get("userId");
+  const [ready, setReady] = useState(!(tokenFromCookie && userIdFromCookie));
+  const initRef = useRef({ token: tokenFromCookie, userId: userIdFromCookie });
   const loggingOutRef = useRef(false);
 
   useEffect(() => {
-    if (isInitRef.current) return;
-    isInitRef.current = true;
+    const { token, userId } = initRef.current;
+    if (!token || !userId) return;
 
-    const token = Cookies.get("token");
-    const userId = Cookies.get("userId");
-
-    if (token && userId) {
-      dispatch({ type: "RESTORE", payload: { token } });
-      fetchUserInfoById(userId).then((userInfo) => {
-        if (userInfo) {
-          dispatch({ type: "SET_USER_INFO", payload: userInfo });
-        }
-        setReady(true);
-      });
-    } else {
+    dispatch({ type: "RESTORE", payload: { token } });
+    fetchUserInfoById(userId).then((userInfo) => {
+      if (userInfo) {
+        dispatch({ type: "SET_USER_INFO", payload: userInfo });
+      }
       setReady(true);
-    }
+    });
   }, []);
 
   const loginAction = useCallback(async (token: string, userId: number) => {
@@ -149,16 +84,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logoutAction,
       }}>
       {ready ? children : null}
+      <BootSplash visible={!ready} />
     </AuthContext.Provider>
   );
-}
-
-export function useAuth(): AuthContextType {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
 }
 
 export function PrivateRoute({ children }: { children: ReactNode }) {
