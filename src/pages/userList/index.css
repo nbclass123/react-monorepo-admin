@@ -21,9 +21,27 @@
   margin-bottom: 0;
 }
 
+.search-form .ant-input-affix-wrapper,
+.search-form .ant-input {
+  height: 38px !important;
+  display: flex;
+  align-items: center;
+}
+
+.search-form .ant-input-affix-wrapper .ant-input {
+  height: auto !important;
+}
+
 .search-buttons {
   display: flex;
   gap: var(--md-space-2);
+}
+
+.search-buttons .ant-btn {
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .table-card {

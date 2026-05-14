@@ -58,6 +58,7 @@ export interface BlogPostVo {
   publishedAt: string;
   viewCount: number;
   likeCount: number;
+  tagIds?: number[];
   createdAt: string;
   updatedAt: string;
 }
@@ -66,10 +67,11 @@ export interface BlogPostReq {
   id?: number;
   title: string;
   content: string;
-  authorId: number;
+  authorId?: number;
   summary?: string;
   coverUrl?: string;
-  categoryId?: number;
+  categoryId: number;
+  tagIds?: number[];
   status?: number;
   isTop?: number;
   isCommentEnabled?: number;
@@ -218,11 +220,11 @@ export function deletePost(id: number) {
 }
 
 export function publishPost(id: number) {
-  return put<ResultVo<null>>("/blog/post/publish", { id } as unknown as Record<string, unknown>);
+  return put<ResultVo<null>>("/blog/post/publish", { id } as Record<string, unknown>);
 }
 
 export function offlinePost(id: number) {
-  return put<ResultVo<null>>("/blog/post/offline", { id } as unknown as Record<string, unknown>);
+  return put<ResultVo<null>>("/blog/post/offline", { id } as Record<string, unknown>);
 }
 
 /* ==================== 标签关联 ==================== */

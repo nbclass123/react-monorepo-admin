@@ -34,6 +34,21 @@ const LoginPage: React.FC = () => {
 
   return (
     <div className="login-page">
+      {/* 浮动圆形背景 */}
+      <div className="floating-shapes">
+        <div className="shape shape-1"></div>
+        <div className="shape shape-2"></div>
+        <div className="shape shape-3"></div>
+        <div className="shape shape-4"></div>
+      </div>
+
+      {/* 几何形状装饰 */}
+      <div className="geometric-shapes">
+        <div className="geom-shape geom-1"></div>
+        <div className="geom-shape geom-2"></div>
+        <div className="geom-shape geom-3"></div>
+      </div>
+
       <div className="login-card">
         <div className="login-brand">
           <div className="login-brand-icon">
