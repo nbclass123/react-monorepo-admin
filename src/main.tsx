@@ -5,6 +5,7 @@ import { RouterProvider } from "react-router-dom";
 import router from "@/router/index";
 import { ThemeProvider } from "@/theme";
 
+import "virtual:svg-icons-register";
 import "./index.css";
 
 createRoot(document.getElementById("root")!).render(

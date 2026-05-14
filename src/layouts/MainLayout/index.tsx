@@ -7,15 +7,15 @@ import {
   MenuUnfoldOutlined,
   MoonOutlined,
   SafetyCertificateOutlined,
-  SearchOutlined,
   SunOutlined,
   TeamOutlined,
   UserOutlined
 } from "@ant-design/icons";
-import { Avatar, Button, Dropdown, Input, Layout, Menu, Modal, Space } from "antd";
+import { Avatar, Button, Dropdown, Layout, Menu, Modal, Space } from "antd";
 import { useRef, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
+import SvgIcon from "@/components/SvgIcon";
 import { useAuth } from "@/store/useAuth";
 import { useTheme } from "@/theme/index";
 
@@ -25,7 +25,6 @@ const { Sider, Header, Content } = Layout;
 
 const MainLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const [searchExpanded, setSearchExpanded] = useState(false);
   const [openKeys, setOpenKeys] = useState<string[]>(["blog", "sysAuth"]);
   const navigate = useNavigate();
   const location = useLocation();
@@ -138,9 +137,9 @@ const MainLayout: React.FC = () => {
       <Sider collapsible collapsed={collapsed} trigger={null} width={240} className="vercel-sider">
         <div className="vercel-brand">
           {collapsed ? (
-            <span className="vercel-brand-icon">A</span>
+            <span className="vercel-brand-icon">呼</span>
           ) : (
-            <span className="vercel-brand-text">App</span>
+            <span className="vercel-brand-text">呼呼呼</span>
           )}
         </div>
         <Menu
@@ -164,25 +163,6 @@ const MainLayout: React.FC = () => {
                 className="vercel-collapse-btn"
               />
             </div>
-            <div className="vercel-header-center">
-              {searchExpanded ? (
-                <Input.Search
-                  placeholder="搜索..."
-                  className="vercel-search-input"
-                  onBlur={() => setSearchExpanded(false)}
-                  autoFocus
-                />
-              ) : (
-                <Button
-                  type="text"
-                  icon={<SearchOutlined />}
-                  className="vercel-search-btn"
-                  onClick={() => setSearchExpanded(true)}
-                >
-                  搜索...
-                </Button>
-              )}
-            </div>
             <div className="vercel-header-right">
               <Button
                 type="text"
@@ -192,10 +172,14 @@ const MainLayout: React.FC = () => {
               />
               <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
                 <Space className="vercel-user-dropdown">
-                  <Avatar size={32} src={userInfo?.avatarUrl} icon={<UserOutlined />} />
+                  {userInfo?.avatarUrl ? (
+                    <Avatar size={32} src={userInfo?.avatarUrl} icon={<UserOutlined />} />
+                  ) : (
+                    <SvgIcon name="xihonhshi" />
+                  )}
                   {!collapsed && (
                     <span className="vercel-username">
-                      {userInfo?.nickname || userInfo?.username || "用户"}
+                      {userInfo?.username || userInfo?.nickname || "用户"}
                     </span>
                   )}
                 </Space>

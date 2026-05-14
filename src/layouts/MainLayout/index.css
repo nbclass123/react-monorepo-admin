@@ -144,10 +144,17 @@
 }
 
 .vercel-user-dropdown {
+
   cursor: pointer;
   padding: var(--md-space-1) var(--md-space-2);
   border-radius: var(--md-radius-md);
   transition: background var(--md-transition);
+
+}
+
+.ant-space-item {
+  display: flex;
+  margin-right: 5px;
 }
 
 .vercel-user-dropdown:hover {
