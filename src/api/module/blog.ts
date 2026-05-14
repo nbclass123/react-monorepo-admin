@@ -1,5 +1,5 @@
-import { get, post, put, del } from "@/api/index";
-import type { ResultVo, PageVo } from "@/api/module/user";
+import { del, get, post, put } from "@/api/index";
+import type { PageVo, ResultVo } from "@/api/module/user";
 
 /* ==================== 通用 ==================== */
 
@@ -156,7 +156,10 @@ export interface BlogConfigReq {
 /* ==================== 分类 ==================== */
 
 export function getCategoryList(params: BlogListReq) {
-  return get<ResultVo<PageVo<BlogCategoryVo>>>("/blog/category/getList", params as unknown as Record<string, unknown>);
+  return get<ResultVo<PageVo<BlogCategoryVo>>>(
+    "/blog/category/getList",
+    params as unknown as Record<string, unknown>
+  );
 }
 
 export function getCategoryById(id: number) {
@@ -178,7 +181,10 @@ export function deleteCategory(id: number) {
 /* ==================== 标签 ==================== */
 
 export function getTagList(params: BlogListReq) {
-  return get<ResultVo<PageVo<BlogTagVo>>>("/blog/tag/getList", params as unknown as Record<string, unknown>);
+  return get<ResultVo<PageVo<BlogTagVo>>>(
+    "/blog/tag/getList",
+    params as unknown as Record<string, unknown>
+  );
 }
 
 export function getTagById(id: number) {
@@ -200,7 +206,10 @@ export function deleteTag(id: number) {
 /* ==================== 文章 ==================== */
 
 export function getPostList(params: BlogListReq) {
-  return get<ResultVo<PageVo<BlogPostVo>>>("/blog/post/getList", params as unknown as Record<string, unknown>);
+  return get<ResultVo<PageVo<BlogPostVo>>>(
+    "/blog/post/getList",
+    params as unknown as Record<string, unknown>
+  );
 }
 
 export function getPostById(id: number) {
@@ -230,7 +239,10 @@ export function offlinePost(id: number) {
 /* ==================== 标签关联 ==================== */
 
 export function getPostTagList(params: BlogListReq) {
-  return get<ResultVo<PageVo<BlogPostTagVo>>>("/blog/postTag/getList", params as unknown as Record<string, unknown>);
+  return get<ResultVo<PageVo<BlogPostTagVo>>>(
+    "/blog/postTag/getList",
+    params as unknown as Record<string, unknown>
+  );
 }
 
 export function getPostTagById(id: number) {
@@ -252,7 +264,10 @@ export function deletePostTag(id: number) {
 /* ==================== 评论 ==================== */
 
 export function getCommentList(params: BlogListReq) {
-  return get<ResultVo<PageVo<BlogCommentVo>>>("/blog/comment/getList", params as unknown as Record<string, unknown>);
+  return get<ResultVo<PageVo<BlogCommentVo>>>(
+    "/blog/comment/getList",
+    params as unknown as Record<string, unknown>
+  );
 }
 
 export function getCommentById(id: number) {
@@ -272,13 +287,19 @@ export function deleteComment(id: number) {
 }
 
 export function reviewComment(id: number, status: number) {
-  return put<ResultVo<null>>("/blog/comment/review", { id, status } as unknown as Record<string, unknown>);
+  return put<ResultVo<null>>("/blog/comment/review", { id, status } as unknown as Record<
+    string,
+    unknown
+  >);
 }
 
 /* ==================== 访问统计 ==================== */
 
 export function getPostViewList(params: BlogListReq) {
-  return get<ResultVo<PageVo<BlogPostViewVo>>>("/blog/postView/getList", params as unknown as Record<string, unknown>);
+  return get<ResultVo<PageVo<BlogPostViewVo>>>(
+    "/blog/postView/getList",
+    params as unknown as Record<string, unknown>
+  );
 }
 
 export function getPostViewById(id: number) {
@@ -300,7 +321,10 @@ export function deletePostView(id: number) {
 /* ==================== 系统配置 ==================== */
 
 export function getConfigList(params: BlogListReq) {
-  return get<ResultVo<PageVo<BlogConfigVo>>>("/blog/config/getList", params as unknown as Record<string, unknown>);
+  return get<ResultVo<PageVo<BlogConfigVo>>>(
+    "/blog/config/getList",
+    params as unknown as Record<string, unknown>
+  );
 }
 
 export function getConfigById(id: number) {

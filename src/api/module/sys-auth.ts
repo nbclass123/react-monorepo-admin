@@ -1,5 +1,5 @@
-import type { ResultVo, PageVo } from "@/api/module/user";
-import { get, post, put, del } from "@/api/index";
+import { del, get, post, put } from "@/api/index";
+import type { PageVo, ResultVo } from "@/api/module/user";
 
 /* ==================== 请求参数 ==================== */
 
@@ -89,7 +89,10 @@ export interface SysRolePermissionReq {
 /* ==================== 角色 API ==================== */
 
 export function getRoleList(params: CommonListReq) {
-  return get<ResultVo<PageVo<SysRoleVo>>>("/sys/role/getList", params as unknown as Record<string, unknown>);
+  return get<ResultVo<PageVo<SysRoleVo>>>(
+    "/sys/role/getList",
+    params as unknown as Record<string, unknown>
+  );
 }
 
 export function getRoleById(id: number) {
@@ -111,11 +114,17 @@ export function deleteRole(id: number) {
 /* ==================== 权限 API ==================== */
 
 export function getPermissionList(params: CommonListReq) {
-  return get<ResultVo<PageVo<SysPermissionVo>>>("/sys/permission/getList", params as unknown as Record<string, unknown>);
+  return get<ResultVo<PageVo<SysPermissionVo>>>(
+    "/sys/permission/getList",
+    params as unknown as Record<string, unknown>
+  );
 }
 
 export function getPermissionById(id: number) {
-  return get<ResultVo<SysPermissionVo>>("/sys/permission/getById", { id } as Record<string, unknown>);
+  return get<ResultVo<SysPermissionVo>>("/sys/permission/getById", { id } as Record<
+    string,
+    unknown
+  >);
 }
 
 export function createPermission(data: SysPermissionReq) {
@@ -133,7 +142,10 @@ export function deletePermission(id: number) {
 /* ==================== 用户角色关联 ==================== */
 
 export function getUserRoleList(params: CommonListReq) {
-  return get<ResultVo<PageVo<SysUserRoleVo>>>("/sys/userRole/getList", params as unknown as Record<string, unknown>);
+  return get<ResultVo<PageVo<SysUserRoleVo>>>(
+    "/sys/userRole/getList",
+    params as unknown as Record<string, unknown>
+  );
 }
 
 export function getUserRoleById(id: number) {
@@ -155,19 +167,31 @@ export function deleteUserRole(id: number) {
 /* ==================== 角色权限关联 ==================== */
 
 export function getRolePermissionList(params: CommonListReq) {
-  return get<ResultVo<PageVo<SysRolePermissionVo>>>("/sys/rolePermission/getList", params as unknown as Record<string, unknown>);
+  return get<ResultVo<PageVo<SysRolePermissionVo>>>(
+    "/sys/rolePermission/getList",
+    params as unknown as Record<string, unknown>
+  );
 }
 
 export function getRolePermissionById(id: number) {
-  return get<ResultVo<SysRolePermissionVo>>("/sys/rolePermission/getById", { id } as Record<string, unknown>);
+  return get<ResultVo<SysRolePermissionVo>>("/sys/rolePermission/getById", { id } as Record<
+    string,
+    unknown
+  >);
 }
 
 export function createRolePermission(data: SysRolePermissionReq) {
-  return post<ResultVo<null>>("/sys/rolePermission/create", data as unknown as Record<string, unknown>);
+  return post<ResultVo<null>>(
+    "/sys/rolePermission/create",
+    data as unknown as Record<string, unknown>
+  );
 }
 
 export function updateRolePermission(data: SysRolePermissionReq & { id: number }) {
-  return put<ResultVo<null>>("/sys/rolePermission/update", data as unknown as Record<string, unknown>);
+  return put<ResultVo<null>>(
+    "/sys/rolePermission/update",
+    data as unknown as Record<string, unknown>
+  );
 }
 
 export function deleteRolePermission(id: number) {

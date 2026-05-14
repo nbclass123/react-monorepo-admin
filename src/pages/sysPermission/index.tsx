@@ -1,60 +1,41 @@
-import { useState } from "react";
 import {
-  Table,
-  Button,
-  Input,
-  Space,
-  Tag,
-  Modal,
-  message,
-  Form,
-  Select,
-} from "antd";
-import {
-  PlusOutlined,
-  SearchOutlined,
-  ReloadOutlined,
-  EyeOutlined,
-  EditOutlined,
   DeleteOutlined,
+  EditOutlined,
+  EyeOutlined,
+  PlusOutlined,
+  ReloadOutlined,
+  SearchOutlined
 } from "@ant-design/icons";
-import { useList } from "@/hooks/useList";
+import { Button, Form, Input, Modal, Select, Space, Table, Tag, message } from "antd";
+import { useState } from "react";
+
 import {
-  getPermissionList,
-  createPermission,
-  updatePermission,
-  deletePermission,
-  type SysPermissionVo,
   type SysPermissionReq,
+  type SysPermissionVo,
+  createPermission,
+  deletePermission,
+  getPermissionList,
+  updatePermission
 } from "@/api/module/sys-auth";
+import { useList } from "@/hooks/useList";
+
 import "./index.css";
 
 const httpMethodColors: Record<string, string> = {
   GET: "green",
   POST: "blue",
   PUT: "orange",
-  DELETE: "red",
+  DELETE: "red"
 };
 
 const SysPermissionPage = () => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalMode, setModalMode] = useState<"create" | "edit" | "view">(
-    "create",
-  );
+  const [modalMode, setModalMode] = useState<"create" | "edit" | "view">("create");
   const [modalData, setModalData] = useState<SysPermissionVo | null>(null);
   const [form] = Form.useForm();
 
-  const {
-    list,
-    loading,
-    page,
-    size,
-    total,
-    refresh,
-    search,
-    reset,
-    handlePageChange,
-  } = useList<SysPermissionVo>({ fetchFn: getPermissionList });
+  const { list, loading, page, size, total, refresh, search, reset, handlePageChange } =
+    useList<SysPermissionVo>({ fetchFn: getPermissionList });
 
   const handleSearch = () => search(form.getFieldsValue());
   const handleReset = () => {
@@ -62,10 +43,7 @@ const SysPermissionPage = () => {
     reset();
   };
 
-  const openModal = (
-    mode: "create" | "edit" | "view",
-    record?: SysPermissionVo,
-  ) => {
+  const openModal = (mode: "create" | "edit" | "view", record?: SysPermissionVo) => {
     setModalMode(mode);
     setModalData(record || null);
     setModalVisible(true);
@@ -82,14 +60,13 @@ const SysPermissionPage = () => {
         await deletePermission(record.id);
         message.success("删除成功");
         refresh();
-      },
+      }
     });
   };
 
   const handleModalOk = async () => {
     const values = await form.validateFields();
-    if (modalMode === "create")
-      await createPermission(values as SysPermissionReq);
+    if (modalMode === "create") await createPermission(values as SysPermissionReq);
     else await updatePermission({ ...values, id: modalData!.id });
     message.success(modalMode === "create" ? "创建成功" : "更新成功");
     setModalVisible(false);
@@ -108,19 +85,13 @@ const SysPermissionPage = () => {
           </Form.Item>
           <Form.Item>
             <Space className="search-buttons">
-              <Button
-                type="primary"
-                icon={<SearchOutlined />}
-                onClick={handleSearch}>
+              <Button type="primary" icon={<SearchOutlined />} onClick={handleSearch}>
                 搜索
               </Button>
               <Button icon={<ReloadOutlined />} onClick={handleReset}>
                 重置
               </Button>
-              <Button
-                type="primary"
-                icon={<PlusOutlined />}
-                onClick={() => openModal("create")}>
+              <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal("create")}>
                 新增
               </Button>
             </Space>
@@ -142,31 +113,27 @@ const SysPermissionPage = () => {
               title: "类型",
               dataIndex: "permissionType",
               width: 70,
-              render: (v: number) => <Tag>{v === 1 ? "后台" : "前台"}</Tag>,
+              render: (v: number) => <Tag>{v === 1 ? "后台" : "前台"}</Tag>
             },
             {
               title: "接口路径",
               dataIndex: "apiPath",
               width: 180,
-              ellipsis: true,
+              ellipsis: true
             },
             {
               title: "请求方法",
               dataIndex: "httpMethod",
               width: 90,
-              render: (v: string) => (
-                <Tag color={httpMethodColors[v] || "default"}>{v}</Tag>
-              ),
+              render: (v: string) => <Tag color={httpMethodColors[v] || "default"}>{v}</Tag>
             },
             {
               title: "状态",
               dataIndex: "status",
               width: 70,
               render: (s: number) => (
-                <Tag color={s === 1 ? "green" : "red"}>
-                  {s === 1 ? "启用" : "禁用"}
-                </Tag>
-              ),
+                <Tag color={s === 1 ? "green" : "red"}>{s === 1 ? "启用" : "禁用"}</Tag>
+              )
             },
             {
               title: "操作",
@@ -175,28 +142,23 @@ const SysPermissionPage = () => {
               width: 300,
               render: (_: unknown, r: SysPermissionVo) => (
                 <Space>
-                  <Button
-                    type="link"
-                    icon={<EyeOutlined />}
-                    onClick={() => openModal("view", r)}>
+                  <Button type="link" icon={<EyeOutlined />} onClick={() => openModal("view", r)}>
                     查看
                   </Button>
-                  <Button
-                    type="link"
-                    icon={<EditOutlined />}
-                    onClick={() => openModal("edit", r)}>
+                  <Button type="link" icon={<EditOutlined />} onClick={() => openModal("edit", r)}>
                     编辑
                   </Button>
                   <Button
                     type="link"
                     danger
                     icon={<DeleteOutlined />}
-                    onClick={() => handleDelete(r)}>
+                    onClick={() => handleDelete(r)}
+                  >
                     删除
                   </Button>
                 </Space>
-              ),
-            },
+              )
+            }
           ]}
           pagination={{
             current: page,
@@ -204,46 +166,32 @@ const SysPermissionPage = () => {
             total,
             showSizeChanger: true,
             showTotal: (t: number) => `共 ${t} 条`,
-            onChange: handlePageChange,
+            onChange: handlePageChange
           }}
         />
       </div>
       <Modal
-        title={
-          modalMode === "create"
-            ? "新增权限"
-            : modalMode === "edit"
-              ? "编辑权限"
-              : "查看权限"
-        }
+        title={modalMode === "create" ? "新增权限" : modalMode === "edit" ? "编辑权限" : "查看权限"}
         open={modalVisible}
         onOk={modalMode !== "view" ? handleModalOk : undefined}
         onCancel={() => setModalVisible(false)}
-        destroyOnClose>
+        destroyOnClose
+      >
         <Form form={form} layout="vertical" disabled={modalMode === "view"}>
-          <Form.Item
-            name="permissionCode"
-            label="权限编码"
-            rules={[{ required: true }]}>
+          <Form.Item name="permissionCode" label="权限编码" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Form.Item
-            name="permissionName"
-            label="权限名称"
-            rules={[{ required: true }]}>
+          <Form.Item name="permissionName" label="权限名称" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
           <Form.Item name="permissionGroup" label="权限分组">
             <Input />
           </Form.Item>
-          <Form.Item
-            name="permissionType"
-            label="权限类型"
-            rules={[{ required: true }]}>
+          <Form.Item name="permissionType" label="权限类型" rules={[{ required: true }]}>
             <Select
               options={[
                 { label: "后台接口权限", value: 1 },
-                { label: "前台操作权限", value: 2 },
+                { label: "前台操作权限", value: 2 }
               ]}
             />
           </Form.Item>
@@ -256,7 +204,7 @@ const SysPermissionPage = () => {
                 { label: "GET", value: "GET" },
                 { label: "POST", value: "POST" },
                 { label: "PUT", value: "PUT" },
-                { label: "DELETE", value: "DELETE" },
+                { label: "DELETE", value: "DELETE" }
               ]}
             />
           </Form.Item>
@@ -264,7 +212,7 @@ const SysPermissionPage = () => {
             <Select
               options={[
                 { label: "启用", value: 1 },
-                { label: "禁用", value: 0 },
+                { label: "禁用", value: 0 }
               ]}
             />
           </Form.Item>

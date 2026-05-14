@@ -1,19 +1,19 @@
-import { useReducer, useEffect, useCallback, type ReactNode } from "react";
 import { ConfigProvider, theme } from "antd";
 import zhCN from "antd/locale/zh_CN";
+import { type ReactNode, useCallback, useEffect, useReducer } from "react";
+
 import { useLocalStorage } from "@/hooks/useLocalStorage";
-import {
-  themeReducer,
-  defaultThemeState,
-  type ThemeState,
-  type PresetColor,
-} from "./types";
+
+import { type PresetColor, type ThemeState, defaultThemeState, themeReducer } from "./types";
 import { ThemeContext, type ThemeContextType } from "./useTheme";
 
 const { darkAlgorithm, defaultAlgorithm } = theme;
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [persistedTheme, setPersistedTheme] = useLocalStorage<ThemeState>("app-theme", defaultThemeState);
+  const [persistedTheme, setPersistedTheme] = useLocalStorage<ThemeState>(
+    "app-theme",
+    defaultThemeState
+  );
   const [state, dispatch] = useReducer(themeReducer, persistedTheme);
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     preset: state.preset,
     toggleMode,
     setPreset,
-    setPrimaryColor,
+    setPrimaryColor
   };
 
   return (
@@ -52,8 +52,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         theme={{
           algorithm: state.mode === "dark" ? darkAlgorithm : defaultAlgorithm,
           token: {
-            colorPrimary: state.primaryColor,
-          },
+            colorPrimary: state.primaryColor
+          }
         }}
       >
         {children}

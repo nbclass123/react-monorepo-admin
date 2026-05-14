@@ -1,5 +1,5 @@
-import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
 import { message } from "antd";
+import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 
 /** axios 实例配置 */
@@ -7,8 +7,8 @@ const instance = axios.create({
   baseURL: "http://localhost:8080",
   timeout: 10000,
   headers: {
-    "Content-Type": "application/x-www-form-urlencoded",
-  },
+    "Content-Type": "application/x-www-form-urlencoded"
+  }
 });
 
 /** 请求拦截器：自动注入 token */
@@ -22,7 +22,7 @@ instance.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  },
+  }
 );
 
 /** 响应拦截器：统一处理响应和错误 */
@@ -38,14 +38,14 @@ instance.interceptors.response.use(
   (error) => {
     console.error("Request failed:", error);
     return Promise.reject(error);
-  },
+  }
 );
 
 /** GET 请求封装 */
 export function get<T>(
   url: string,
   params?: Record<string, unknown>,
-  config?: AxiosRequestConfig,
+  config?: AxiosRequestConfig
 ): Promise<T> {
   return instance.get(url, { params, ...config });
 }
@@ -54,7 +54,7 @@ export function get<T>(
 export function post<T>(
   url: string,
   data?: Record<string, unknown>,
-  config?: AxiosRequestConfig,
+  config?: AxiosRequestConfig
 ): Promise<T> {
   return instance.post(url, data, config);
 }
@@ -63,7 +63,7 @@ export function post<T>(
 export function put<T>(
   url: string,
   data?: Record<string, unknown>,
-  config?: AxiosRequestConfig,
+  config?: AxiosRequestConfig
 ): Promise<T> {
   return instance.put(url, data, config);
 }
@@ -72,7 +72,7 @@ export function put<T>(
 export function del<T>(
   url: string,
   params?: Record<string, unknown>,
-  config?: AxiosRequestConfig,
+  config?: AxiosRequestConfig
 ): Promise<T> {
   return instance.delete(url, { params, ...config });
 }

@@ -1,22 +1,24 @@
-import { useState, useRef } from "react";
-import { Layout, Menu, Button, Dropdown, Avatar, Input, Modal, Space } from "antd";
 import {
+  BookOutlined,
+  DashboardOutlined,
+  IdcardOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  MoonOutlined,
+  SafetyCertificateOutlined,
   SearchOutlined,
   SunOutlined,
-  MoonOutlined,
-  UserOutlined,
-  IdcardOutlined,
   TeamOutlined,
-  BookOutlined,
-  SafetyCertificateOutlined,
-  DashboardOutlined,
+  UserOutlined
 } from "@ant-design/icons";
-import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { Avatar, Button, Dropdown, Input, Layout, Menu, Modal, Space } from "antd";
+import { useRef, useState } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+
 import { useAuth } from "@/store/useAuth";
 import { useTheme } from "@/theme/index";
+
 import "./index.css";
 
 const { Sider, Header, Content } = Layout;
@@ -35,12 +37,12 @@ const MainLayout: React.FC = () => {
     {
       key: "/dashboard",
       icon: <DashboardOutlined />,
-      label: "仪表盘",
+      label: "仪表盘"
     },
     {
       key: "/userList",
       icon: <TeamOutlined />,
-      label: "用户管理",
+      label: "用户管理"
     },
     {
       key: "blog",
@@ -49,8 +51,8 @@ const MainLayout: React.FC = () => {
       children: [
         { key: "/blog/category", label: "文章分类" },
         { key: "/blog/tag", label: "文章标签" },
-        { key: "/blog/post", label: "文章管理" },
-      ],
+        { key: "/blog/post", label: "文章管理" }
+      ]
     },
     {
       key: "sysAuth",
@@ -58,9 +60,9 @@ const MainLayout: React.FC = () => {
       label: "权限管理",
       children: [
         { key: "/sys/role", label: "角色管理" },
-        { key: "/sys/permission", label: "权限管理" },
-      ],
-    },
+        { key: "/sys/permission", label: "权限管理" }
+      ]
+    }
   ];
 
   const handleMenuClick = ({ key }: { key: string }) => {
@@ -93,7 +95,7 @@ const MainLayout: React.FC = () => {
         await logoutAction();
         navigate("/login", { replace: true });
         loggingOutRef.current = false;
-      },
+      }
     });
   };
 
@@ -112,34 +114,28 @@ const MainLayout: React.FC = () => {
           </div>
         </div>
       ),
-      disabled: true,
+      disabled: true
     },
     {
-      type: "divider" as const,
+      type: "divider" as const
     },
     {
       key: "profile",
       icon: <IdcardOutlined />,
       label: "个人中心",
-      onClick: () => navigate("/userProfile"),
+      onClick: () => navigate("/userProfile")
     },
     {
       key: "logout",
       icon: <LogoutOutlined />,
       label: "退出登录",
-      onClick: handleLogout,
-    },
+      onClick: handleLogout
+    }
   ];
 
   return (
     <Layout className="main-layout">
-      <Sider
-        collapsible
-        collapsed={collapsed}
-        trigger={null}
-        width={240}
-        className="vercel-sider"
-      >
+      <Sider collapsible collapsed={collapsed} trigger={null} width={240} className="vercel-sider">
         <div className="vercel-brand">
           {collapsed ? (
             <span className="vercel-brand-icon">A</span>
@@ -196,11 +192,7 @@ const MainLayout: React.FC = () => {
               />
               <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
                 <Space className="vercel-user-dropdown">
-                  <Avatar
-                    size={32}
-                    src={userInfo?.avatarUrl}
-                    icon={<UserOutlined />}
-                  />
+                  <Avatar size={32} src={userInfo?.avatarUrl} icon={<UserOutlined />} />
                   {!collapsed && (
                     <span className="vercel-username">
                       {userInfo?.nickname || userInfo?.username || "用户"}

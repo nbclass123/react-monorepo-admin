@@ -1,11 +1,6 @@
-export {
-  ThemeProvider,
-} from "./ThemeProvider";
+export { ThemeProvider } from "./ThemeProvider";
 
-export {
-  useTheme,
-  type ThemeContextType,
-} from "./useTheme";
+export { useTheme, type ThemeContextType } from "./useTheme";
 
 export {
   type AppThemeMode,
@@ -14,5 +9,5 @@ export {
   type ThemeAction,
   presetColorMap,
   defaultThemeState,
-  themeReducer,
+  themeReducer
 } from "./types";

@@ -1,26 +1,23 @@
-import { useState, useEffect } from "react";
-import { Form, Input, Button, message } from "antd";
 import {
-  EditOutlined,
-  SaveOutlined,
-  CloseOutlined,
-  UserOutlined,
-  MailOutlined,
-  LockOutlined,
   CalendarOutlined,
-  TeamOutlined,
+  CloseOutlined,
+  CommentOutlined,
+  EditOutlined,
   FileTextOutlined,
   HeartOutlined,
-  CommentOutlined,
+  LockOutlined,
+  MailOutlined,
+  SaveOutlined,
   SettingOutlined,
+  TeamOutlined,
+  UserOutlined
 } from "@ant-design/icons";
+import { Button, Form, Input, message } from "antd";
+import { useCallback, useEffect, useState } from "react";
+
+import { type UserVo, getSysUserById, updatePassword, updateUser } from "@/api/module/user";
 import { useAuth } from "@/store/useAuth";
-import {
-  getSysUserById,
-  updateUser,
-  updatePassword,
-  type UserVo,
-} from "@/api/module/user";
+
 import "./index.css";
 
 const UserProfilePage: React.FC = () => {
@@ -32,7 +29,7 @@ const UserProfilePage: React.FC = () => {
   const [form] = Form.useForm();
   const [passwordForm] = Form.useForm();
 
-  const fetchUserInfo = async () => {
+  const fetchUserInfo = useCallback(async () => {
     if (!userInfo?.id) return;
     try {
       const result = await getSysUserById(userInfo.id);
@@ -43,18 +40,18 @@ const UserProfilePage: React.FC = () => {
       const err = error as { message?: string };
       message.error(err.message || "获取用户信息失败");
     }
-  };
+  }, [userInfo]);
 
   useEffect(() => {
     fetchUserInfo();
-  }, [userInfo?.id]);
+  }, [fetchUserInfo]);
 
   const handleEdit = () => {
     if (userData) {
       form.setFieldsValue({
         nickname: userData.nickname,
         email: userData.email,
-        avatarUrl: userData.avatarUrl,
+        avatarUrl: userData.avatarUrl
       });
     }
     setEditing(true);
@@ -73,7 +70,7 @@ const UserProfilePage: React.FC = () => {
         id: userData.id,
         nickname: values.nickname,
         email: values.email,
-        avatarUrl: values.avatarUrl,
+        avatarUrl: values.avatarUrl
       });
       message.success("保存成功");
       setEditing(false);
@@ -94,7 +91,7 @@ const UserProfilePage: React.FC = () => {
       await updatePassword({
         id: userData.id,
         oldPassword: values.oldPassword,
-        newPassword: values.newPassword,
+        newPassword: values.newPassword
       });
       message.success("密码修改成功");
       passwordForm.resetFields();
@@ -116,14 +113,38 @@ const UserProfilePage: React.FC = () => {
     { icon: <FileTextOutlined />, value: "128", label: "文章数", color: "#6366F1" },
     { icon: <CommentOutlined />, value: "2,456", label: "评论数", color: "#EC4899" },
     { icon: <HeartOutlined />, value: "8,920", label: "获赞数", color: "#EF4444" },
-    { icon: <TeamOutlined />, value: "1,234", label: "关注者", color: "#10B981" },
+    { icon: <TeamOutlined />, value: "1,234", label: "关注者", color: "#10B981" }
   ];
 
   const activitiesData = [
-    { icon: <FileTextOutlined style={{ color: "#6366F1" }} />, title: "发布了新文章", desc: "深入理解 React Hooks 原理", time: "2小时前", bg: "#EEF2FF" },
-    { icon: <HeartOutlined style={{ color: "#EF4444" }} />, title: "收到了赞", desc: "你的文章被点赞 +10", time: "5小时前", bg: "#FEF2F2" },
-    { icon: <CommentOutlined style={{ color: "#10B981" }} />, title: "新评论", desc: "用户对你的文章发表了评论", time: "昨天", bg: "#ECFDF5" },
-    { icon: <SettingOutlined style={{ color: "#F59E0B" }} />, title: "更新了资料", desc: "修改了昵称和邮箱", time: "3天前", bg: "#FFFBEB" },
+    {
+      icon: <FileTextOutlined style={{ color: "#6366F1" }} />,
+      title: "发布了新文章",
+      desc: "深入理解 React Hooks 原理",
+      time: "2小时前",
+      bg: "#EEF2FF"
+    },
+    {
+      icon: <HeartOutlined style={{ color: "#EF4444" }} />,
+      title: "收到了赞",
+      desc: "你的文章被点赞 +10",
+      time: "5小时前",
+      bg: "#FEF2F2"
+    },
+    {
+      icon: <CommentOutlined style={{ color: "#10B981" }} />,
+      title: "新评论",
+      desc: "用户对你的文章发表了评论",
+      time: "昨天",
+      bg: "#ECFDF5"
+    },
+    {
+      icon: <SettingOutlined style={{ color: "#F59E0B" }} />,
+      title: "更新了资料",
+      desc: "修改了昵称和邮箱",
+      time: "3天前",
+      bg: "#FFFBEB"
+    }
   ];
 
   return (
@@ -132,22 +153,14 @@ const UserProfilePage: React.FC = () => {
         <div className="profile-header-content">
           <div className="profile-avatar-wrapper">
             {userData?.avatarUrl ? (
-              <img
-                src={userData.avatarUrl}
-                alt="avatar"
-                className="profile-avatar"
-              />
+              <img src={userData.avatarUrl} alt="avatar" className="profile-avatar" />
             ) : (
-              <div className="profile-avatar-fallback">
-                {getUserInitial()}
-              </div>
+              <div className="profile-avatar-fallback">{getUserInitial()}</div>
             )}
             <span className="profile-status-badge">在线</span>
           </div>
           <div className="profile-info">
-            <h1 className="profile-name">
-              {userData?.nickname || userData?.username}
-            </h1>
+            <h1 className="profile-name">{userData?.nickname || userData?.username}</h1>
             <p className="profile-username">@{userData?.username}</p>
             <div className="profile-tags">
               <span className="profile-tag">管理员</span>
@@ -163,7 +176,8 @@ const UserProfilePage: React.FC = () => {
           <div className="profile-stat-card" key={index}>
             <div
               className="profile-stat-icon"
-              style={{ background: `${stat.color}15`, color: stat.color }}>
+              style={{ background: `${stat.color}15`, color: stat.color }}
+            >
               {stat.icon}
             </div>
             <div className="profile-stat-value">{stat.value}</div>
@@ -180,11 +194,7 @@ const UserProfilePage: React.FC = () => {
               基本资料
             </div>
             {!editing && (
-              <Button
-                type="primary"
-                icon={<EditOutlined />}
-                onClick={handleEdit}
-                size="small">
+              <Button type="primary" icon={<EditOutlined />} onClick={handleEdit} size="small">
                 编辑
               </Button>
             )}
@@ -198,7 +208,8 @@ const UserProfilePage: React.FC = () => {
                 <Form.Item
                   name="nickname"
                   label="昵称"
-                  rules={[{ required: true, message: "请输入昵称" }]}>
+                  rules={[{ required: true, message: "请输入昵称" }]}
+                >
                   <Input placeholder="请输入昵称" />
                 </Form.Item>
                 <Form.Item
@@ -206,8 +217,9 @@ const UserProfilePage: React.FC = () => {
                   label="邮箱"
                   rules={[
                     { required: true, message: "请输入邮箱" },
-                    { type: "email", message: "请输入有效的邮箱地址" },
-                  ]}>
+                    { type: "email", message: "请输入有效的邮箱地址" }
+                  ]}
+                >
                   <Input placeholder="请输入邮箱" />
                 </Form.Item>
                 <Form.Item name="avatarUrl" label="头像 URL">
@@ -218,7 +230,8 @@ const UserProfilePage: React.FC = () => {
                     type="primary"
                     icon={<SaveOutlined />}
                     loading={saving}
-                    onClick={handleSave}>
+                    onClick={handleSave}
+                  >
                     保存
                   </Button>
                   <Button icon={<CloseOutlined />} onClick={handleCancel}>
@@ -276,7 +289,8 @@ const UserProfilePage: React.FC = () => {
                 <Form.Item
                   name="oldPassword"
                   label="旧密码"
-                  rules={[{ required: true, message: "请输入旧密码" }]}>
+                  rules={[{ required: true, message: "请输入旧密码" }]}
+                >
                   <Input.Password placeholder="请输入旧密码" />
                 </Form.Item>
                 <Form.Item
@@ -284,8 +298,9 @@ const UserProfilePage: React.FC = () => {
                   label="新密码"
                   rules={[
                     { required: true, message: "请输入新密码" },
-                    { min: 6, message: "密码长度不能少于6位" },
-                  ]}>
+                    { min: 6, message: "密码长度不能少于6位" }
+                  ]}
+                >
                   <Input.Password placeholder="请输入新密码" />
                 </Form.Item>
                 <Form.Item
@@ -300,16 +315,18 @@ const UserProfilePage: React.FC = () => {
                           return Promise.resolve();
                         }
                         return Promise.reject(new Error("两次输入的密码不一致"));
-                      },
-                    }),
-                  ]}>
+                      }
+                    })
+                  ]}
+                >
                   <Input.Password placeholder="请确认新密码" />
                 </Form.Item>
                 <Button
                   type="primary"
                   block
                   loading={passwordChanging}
-                  onClick={handleChangePassword}>
+                  onClick={handleChangePassword}
+                >
                   修改密码
                 </Button>
               </Form>
@@ -327,9 +344,7 @@ const UserProfilePage: React.FC = () => {
               <div className="activity-list">
                 {activitiesData.map((activity, index) => (
                   <div className="activity-item" key={index}>
-                    <div
-                      className="activity-icon"
-                      style={{ background: activity.bg }}>
+                    <div className="activity-icon" style={{ background: activity.bg }}>
                       {activity.icon}
                     </div>
                     <div className="activity-content">

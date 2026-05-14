@@ -1,54 +1,34 @@
-import { useState } from "react";
 import {
-  Table,
-  Button,
-  Input,
-  Space,
-  Tag,
-  Modal,
-  message,
-  Form,
-  Select,
-  InputNumber,
-} from "antd";
-import {
-  PlusOutlined,
-  SearchOutlined,
-  ReloadOutlined,
-  EyeOutlined,
-  EditOutlined,
   DeleteOutlined,
+  EditOutlined,
+  EyeOutlined,
+  PlusOutlined,
+  ReloadOutlined,
+  SearchOutlined
 } from "@ant-design/icons";
-import { useList } from "@/hooks/useList";
+import { Button, Form, Input, InputNumber, Modal, Select, Space, Table, Tag, message } from "antd";
+import { useState } from "react";
+
 import {
-  getRoleList,
-  createRole,
-  updateRole,
-  deleteRole,
-  type SysRoleVo,
   type SysRoleReq,
+  type SysRoleVo,
+  createRole,
+  deleteRole,
+  getRoleList,
+  updateRole
 } from "@/api/module/sys-auth";
+import { useList } from "@/hooks/useList";
+
 import "./index.css";
 
 const SysRolePage = () => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalMode, setModalMode] = useState<"create" | "edit" | "view">(
-    "create",
-  );
+  const [modalMode, setModalMode] = useState<"create" | "edit" | "view">("create");
   const [modalData, setModalData] = useState<SysRoleVo | null>(null);
   const [form] = Form.useForm();
 
-  const {
-    list,
-    loading,
-    page,
-    size,
-    total,
-    refresh,
-    search,
-    reset,
-    handlePageChange,
-  } = useList<SysRoleVo>({ fetchFn: getRoleList });
+  const { list, loading, page, size, total, refresh, search, reset, handlePageChange } =
+    useList<SysRoleVo>({ fetchFn: getRoleList });
 
   const handleSearch = () => search(form.getFieldsValue());
   const handleReset = () => {
@@ -73,7 +53,7 @@ const SysRolePage = () => {
         await deleteRole(record.id);
         message.success("删除成功");
         refresh();
-      },
+      }
     });
   };
 
@@ -98,19 +78,13 @@ const SysRolePage = () => {
           </Form.Item>
           <Form.Item>
             <Space className="search-buttons">
-              <Button
-                type="primary"
-                icon={<SearchOutlined />}
-                onClick={handleSearch}>
+              <Button type="primary" icon={<SearchOutlined />} onClick={handleSearch}>
                 搜索
               </Button>
               <Button icon={<ReloadOutlined />} onClick={handleReset}>
                 重置
               </Button>
-              <Button
-                type="primary"
-                icon={<PlusOutlined />}
-                onClick={() => openModal("create")}>
+              <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal("create")}>
                 新增
               </Button>
             </Space>
@@ -132,27 +106,22 @@ const SysRolePage = () => {
               title: "系统内置",
               dataIndex: "isSystem",
               width: 80,
-              render: (v: number) => (
-                <Tag color={v ? "blue" : "default"}>{v ? "是" : "否"}</Tag>
-              ),
+              render: (v: number) => <Tag color={v ? "blue" : "default"}>{v ? "是" : "否"}</Tag>
             },
             {
               title: "状态",
               dataIndex: "status",
               width: 70,
               render: (s: number) => (
-                <Tag color={s === 1 ? "green" : "red"}>
-                  {s === 1 ? "启用" : "禁用"}
-                </Tag>
-              ),
+                <Tag color={s === 1 ? "green" : "red"}>{s === 1 ? "启用" : "禁用"}</Tag>
+              )
             },
             { title: "备注", dataIndex: "remark", width: 150, ellipsis: true },
             {
               title: "创建时间",
               dataIndex: "createdAt",
               width: 170,
-              render: (v: string) =>
-                v ? new Date(v).toLocaleString("zh-CN") : "-",
+              render: (v: string) => (v ? new Date(v).toLocaleString("zh-CN") : "-")
             },
             {
               title: "操作",
@@ -161,28 +130,23 @@ const SysRolePage = () => {
               width: 250,
               render: (_: unknown, r: SysRoleVo) => (
                 <Space>
-                  <Button
-                    type="link"
-                    icon={<EyeOutlined />}
-                    onClick={() => openModal("view", r)}>
+                  <Button type="link" icon={<EyeOutlined />} onClick={() => openModal("view", r)}>
                     查看
                   </Button>
-                  <Button
-                    type="link"
-                    icon={<EditOutlined />}
-                    onClick={() => openModal("edit", r)}>
+                  <Button type="link" icon={<EditOutlined />} onClick={() => openModal("edit", r)}>
                     编辑
                   </Button>
                   <Button
                     type="link"
                     danger
                     icon={<DeleteOutlined />}
-                    onClick={() => handleDelete(r)}>
+                    onClick={() => handleDelete(r)}
+                  >
                     删除
                   </Button>
                 </Space>
-              ),
-            },
+              )
+            }
           ]}
           pagination={{
             current: page,
@@ -190,40 +154,29 @@ const SysRolePage = () => {
             total,
             showSizeChanger: true,
             showTotal: (t: number) => `共 ${t} 条`,
-            onChange: handlePageChange,
+            onChange: handlePageChange
           }}
         />
       </div>
       <Modal
-        title={
-          modalMode === "create"
-            ? "新增角色"
-            : modalMode === "edit"
-              ? "编辑角色"
-              : "查看角色"
-        }
+        title={modalMode === "create" ? "新增角色" : modalMode === "edit" ? "编辑角色" : "查看角色"}
         open={modalVisible}
         onOk={modalMode !== "view" ? handleModalOk : undefined}
         onCancel={() => setModalVisible(false)}
-        destroyOnClose>
+        destroyOnClose
+      >
         <Form form={form} layout="vertical" disabled={modalMode === "view"}>
-          <Form.Item
-            name="roleCode"
-            label="角色编码"
-            rules={[{ required: true }]}>
+          <Form.Item name="roleCode" label="角色编码" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Form.Item
-            name="roleName"
-            label="角色名称"
-            rules={[{ required: true }]}>
+          <Form.Item name="roleName" label="角色名称" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
           <Form.Item name="status" label="状态" rules={[{ required: true }]}>
             <Select
               options={[
                 { label: "启用", value: 1 },
-                { label: "禁用", value: 0 },
+                { label: "禁用", value: 0 }
               ]}
             />
           </Form.Item>
@@ -234,7 +187,7 @@ const SysRolePage = () => {
             <Select
               options={[
                 { label: "否", value: 0 },
-                { label: "是", value: 1 },
+                { label: "是", value: 1 }
               ]}
             />
           </Form.Item>

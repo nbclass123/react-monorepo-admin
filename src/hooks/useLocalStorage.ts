@@ -1,11 +1,19 @@
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
+
 import { safeLocalStorage } from "@/utils";
 
 const storage = safeLocalStorage();
 
+/**
+ * 持久化本地存储 Hook
+ * 将状态同步保存到 localStorage
+ * @param key - localStorage 的键名
+ * @param initialValue - 初始值
+ * @returns [存储的值, 设置值的函数]
+ */
 export function useLocalStorage<T>(
   key: string,
-  initialValue: T,
+  initialValue: T
 ): [T, (value: T | ((prev: T) => T)) => void] {
   const [storedValue, setStoredValue] = useState<T>(() => {
     const item = storage.getItem(key);
@@ -17,6 +25,10 @@ export function useLocalStorage<T>(
     }
   });
 
+  /**
+   * 设置存储值
+   * @param value - 新值或更新函数
+   */
   const setValue = useCallback(
     (value: T | ((prev: T) => T)) => {
       setStoredValue((prev) => {
@@ -29,7 +41,7 @@ export function useLocalStorage<T>(
         return nextValue;
       });
     },
-    [key],
+    [key]
   );
 
   return [storedValue, setValue];

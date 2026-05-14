@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
 import * as echarts from "echarts";
+import { useEffect, useRef } from "react";
 
 interface LineChartProps {
   data?: { month: string; value: number }[];
@@ -18,7 +18,7 @@ export default function LineChart({ data, multiData, height = 300 }: LineChartPr
       chartInstance.current = echarts.init(chartRef.current);
     }
 
-    const seriesData: any[] = multiData 
+    const seriesData: any[] = multiData
       ? multiData.map((item) => ({
           name: item.name,
           type: "line" as const,
@@ -32,21 +32,21 @@ export default function LineChart({ data, multiData, height = 300 }: LineChartPr
             width: 4,
             shadowColor: `${item.color}40`,
             shadowBlur: 15,
-            shadowOffsetY: 8,
+            shadowOffsetY: 8
           },
           areaStyle: {
             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
               { offset: 0, color: `${item.color}50` },
               { offset: 0.5, color: `${item.color}25` },
-              { offset: 1, color: `${item.color}05` },
-            ]),
+              { offset: 1, color: `${item.color}05` }
+            ])
           },
           itemStyle: {
             color: item.color,
             borderColor: "#ffffff",
             borderWidth: 3,
             shadowColor: `${item.color}70`,
-            shadowBlur: 8,
+            shadowBlur: 8
           },
           emphasis: {
             itemStyle: {
@@ -54,67 +54,67 @@ export default function LineChart({ data, multiData, height = 300 }: LineChartPr
               borderColor: "#ffffff",
               borderWidth: 4,
               shadowColor: `${item.color}90`,
-              shadowBlur: 12,
+              shadowBlur: 12
             },
-            scale: true,
+            scale: true
           },
           animationDuration: 2000,
-          animationEasing: "cubicOut",
+          animationEasing: "cubicOut"
         }))
-      : [{
-          name: "访问量",
-          type: "line" as const,
-          smooth: true,
-          symbol: "circle",
-          symbolSize: 8,
-          showSymbol: true,
-          data: data?.map((item) => item.value) || [],
-          lineStyle: {
-            color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
-              { offset: 0, color: "#6366F1" },
-              { offset: 0.5, color: "#8B5CF6" },
-              { offset: 1, color: "#A78BFA" },
-            ]),
-            width: 4,
-            shadowColor: "rgba(99, 102, 241, 0.3)",
-            shadowBlur: 15,
-            shadowOffsetY: 8,
-          },
-          areaStyle: {
-            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: "rgba(99, 102, 241, 0.35)" },
-              { offset: 0.5, color: "rgba(139, 92, 246, 0.2)" },
-              { offset: 1, color: "rgba(99, 102, 241, 0.02)" },
-            ]),
-          },
-          itemStyle: {
-            color: "#6366F1",
-            borderColor: "#ffffff",
-            borderWidth: 3,
-            shadowColor: "rgba(99, 102, 241, 0.6)",
-            shadowBlur: 8,
-          },
-          emphasis: {
-            itemStyle: {
-              color: "#8B5CF6",
-              borderColor: "#ffffff",
-              borderWidth: 4,
-              shadowColor: "rgba(139, 92, 246, 0.8)",
-              shadowBlur: 12,
+      : [
+          {
+            name: "访问量",
+            type: "line" as const,
+            smooth: true,
+            symbol: "circle",
+            symbolSize: 8,
+            showSymbol: true,
+            data: data?.map((item) => item.value) || [],
+            lineStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                { offset: 0, color: "#6366F1" },
+                { offset: 0.5, color: "#8B5CF6" },
+                { offset: 1, color: "#A78BFA" }
+              ]),
+              width: 4,
+              shadowColor: "rgba(99, 102, 241, 0.3)",
+              shadowBlur: 15,
+              shadowOffsetY: 8
             },
-            scale: true,
-          },
-          animationDuration: 2000,
-          animationEasing: "cubicOut",
-        }];
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: "rgba(99, 102, 241, 0.35)" },
+                { offset: 0.5, color: "rgba(139, 92, 246, 0.2)" },
+                { offset: 1, color: "rgba(99, 102, 241, 0.02)" }
+              ])
+            },
+            itemStyle: {
+              color: "#6366F1",
+              borderColor: "#ffffff",
+              borderWidth: 3,
+              shadowColor: "rgba(99, 102, 241, 0.6)",
+              shadowBlur: 8
+            },
+            emphasis: {
+              itemStyle: {
+                color: "#8B5CF6",
+                borderColor: "#ffffff",
+                borderWidth: 4,
+                shadowColor: "rgba(139, 92, 246, 0.8)",
+                shadowBlur: 12
+              },
+              scale: true
+            },
+            animationDuration: 2000,
+            animationEasing: "cubicOut"
+          }
+        ];
 
-    const months = multiData 
+    const months = multiData
       ? multiData[0]?.data.map((item) => item.month) || []
       : data?.map((item) => item.month) || [];
 
-    const legendData = multiData 
-      ? multiData.map((item) => item.name)
-      : ["访问量"];
+    const legendData = multiData ? multiData.map((item) => item.name) : ["访问量"];
 
     const option: echarts.EChartsOption = {
       tooltip: {
@@ -124,32 +124,32 @@ export default function LineChart({ data, multiData, height = 300 }: LineChartPr
         borderWidth: 1,
         borderRadius: 8,
         textStyle: {
-          color: "var(--md-text-primary)",
+          color: "var(--md-text-primary)"
         },
         padding: [10, 15],
         axisPointer: {
           type: "cross",
           crossStyle: {
-            color: "var(--md-primary-light)",
-          },
-        },
+            color: "var(--md-primary-light)"
+          }
+        }
       },
       legend: {
         data: legendData,
         textStyle: {
           color: "var(--md-text-secondary)",
-          fontWeight: 600,
+          fontWeight: 600
         },
         icon: "roundRect",
         itemWidth: 10,
-        itemHeight: 4,
+        itemHeight: 4
       },
       grid: {
         left: "3%",
         right: "4%",
         bottom: "3%",
         top: "15%",
-        containLabel: true,
+        containLabel: true
       },
       xAxis: {
         type: "category",
@@ -158,38 +158,38 @@ export default function LineChart({ data, multiData, height = 300 }: LineChartPr
         axisLine: {
           lineStyle: {
             color: "var(--md-border-color)",
-            width: 2,
-          },
+            width: 2
+          }
         },
         axisLabel: {
           color: "var(--md-text-secondary)",
-          fontWeight: 500,
+          fontWeight: 500
         },
         axisTick: {
-          show: false,
-        },
+          show: false
+        }
       },
       yAxis: {
         type: "value",
         axisLine: {
-          show: false,
+          show: false
         },
         axisTick: {
-          show: false,
+          show: false
         },
         splitLine: {
           lineStyle: {
             color: "var(--md-border-subtle)",
-            type: "dashed",
-          },
+            type: "dashed"
+          }
         },
         axisLabel: {
-          color: "var(--md-text-secondary)",
-        },
+          color: "var(--md-text-secondary)"
+        }
       },
       series: seriesData,
       animation: true,
-      animationDurationUpdate: 1500,
+      animationDurationUpdate: 1500
     };
 
     chartInstance.current.setOption(option);

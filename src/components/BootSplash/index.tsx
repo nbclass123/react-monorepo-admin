@@ -1,4 +1,5 @@
-import { useState, useCallback, type ReactNode } from "react";
+import { type ReactNode, useCallback, useState } from "react";
+
 import "./index.css";
 
 interface BootSplashProps {
@@ -14,7 +15,7 @@ const BootSplash = ({ visible = true }: BootSplashProps): ReactNode => {
         setRender(false);
       }
     },
-    [visible],
+    [visible]
   );
 
   if (!render) return null;
@@ -24,13 +25,7 @@ const BootSplash = ({ visible = true }: BootSplashProps): ReactNode => {
   return (
     <div className={className} onTransitionEnd={handleTransitionEnd}>
       <div className="boot-splash__logo">
-        <svg
-          className="boot-splash__icon"
-          width="64"
-          height="64"
-          viewBox="0 0 64 64"
-          fill="none"
-        >
+        <svg className="boot-splash__icon" width="64" height="64" viewBox="0 0 64 64" fill="none">
           <rect x="8" y="8" width="48" height="48" rx="12" stroke="currentColor" strokeWidth="3" />
           <circle cx="32" cy="32" r="14" stroke="currentColor" strokeWidth="3" />
           <circle cx="32" cy="32" r="5" fill="currentColor" />

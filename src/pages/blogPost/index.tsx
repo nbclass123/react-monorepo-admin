@@ -1,54 +1,43 @@
-import { useState, useEffect } from "react";
 import {
-  Table,
-  Button,
-  Input,
-  Space,
-  Tag,
-  Modal,
-  message,
-  Form,
-  Select,
-  Drawer,
-} from "antd";
-import {
-  PlusOutlined,
-  SearchOutlined,
-  ReloadOutlined,
-  EyeOutlined,
-  EditOutlined,
   DeleteOutlined,
+  EditOutlined,
+  EyeOutlined,
+  PlusOutlined,
+  ReloadOutlined,
+  SearchOutlined,
   SendOutlined,
-  StopOutlined,
+  StopOutlined
 } from "@ant-design/icons";
-import { useList } from "@/hooks/useList";
+import { Button, Drawer, Form, Input, Modal, Select, Space, Table, Tag, message } from "antd";
+import { useEffect, useState } from "react";
+
 import {
-  getPostList,
-  createPost,
-  updatePost,
-  deletePost,
-  publishPost,
-  offlinePost,
-  getCategoryList,
-  getTagList,
-  type BlogPostVo,
-  type BlogPostReq,
   type BlogCategoryVo,
+  type BlogPostReq,
+  type BlogPostVo,
   type BlogTagVo,
+  createPost,
+  deletePost,
+  getCategoryList,
+  getPostList,
+  getTagList,
+  offlinePost,
+  publishPost,
+  updatePost
 } from "@/api/module/blog";
+import { useList } from "@/hooks/useList";
+
 import "./index.css";
 
 const statusMap: Record<number, { color: string; label: string }> = {
   0: { color: "default", label: "草稿" },
   1: { color: "green", label: "已发布" },
-  2: { color: "orange", label: "已下线" },
+  2: { color: "orange", label: "已下线" }
 };
 
 const BlogPostPage = () => {
   const [drawerVisible, setDrawerVisible] = useState(false);
-  const [drawerMode, setDrawerMode] = useState<"create" | "edit" | "view">(
-    "create",
-  );
+  const [drawerMode, setDrawerMode] = useState<"create" | "edit" | "view">("create");
   const [drawerData, setDrawerData] = useState<BlogPostVo | null>(null);
   const [form] = Form.useForm();
 
@@ -57,17 +46,8 @@ const BlogPostPage = () => {
   const [loadingCategories, setLoadingCategories] = useState(false);
   const [loadingTags, setLoadingTags] = useState(false);
 
-  const {
-    list,
-    loading,
-    page,
-    size,
-    total,
-    refresh,
-    search,
-    reset,
-    handlePageChange,
-  } = useList<BlogPostVo>({ fetchFn: getPostList as any });
+  const { list, loading, page, size, total, refresh, search, reset, handlePageChange } =
+    useList<BlogPostVo>({ fetchFn: getPostList as any });
 
   const fetchCategories = async () => {
     setLoadingCategories(true);
@@ -108,10 +88,7 @@ const BlogPostPage = () => {
     reset();
   };
 
-  const openDrawer = (
-    mode: "create" | "edit" | "view",
-    record?: BlogPostVo,
-  ) => {
+  const openDrawer = (mode: "create" | "edit" | "view", record?: BlogPostVo) => {
     setDrawerMode(mode);
     setDrawerData(record || null);
     setDrawerVisible(true);
@@ -119,7 +96,7 @@ const BlogPostPage = () => {
     if (record) {
       const formData = {
         ...record,
-        tagIds: (record as any).tagIds || [],
+        tagIds: record.tagIds || []
       };
       form.setFieldsValue(formData);
     } else {
@@ -136,7 +113,7 @@ const BlogPostPage = () => {
         await deletePost(record.id);
         message.success("删除成功");
         refresh();
-      },
+      }
     });
   };
 
@@ -155,7 +132,7 @@ const BlogPostPage = () => {
   const handleDrawerOk = async () => {
     const values = await form.validateFields();
     const submitData: BlogPostReq = {
-      ...values,
+      ...values
     };
 
     if (drawerMode === "create") {
@@ -191,25 +168,19 @@ const BlogPostPage = () => {
               options={[
                 { label: "草稿", value: 0 },
                 { label: "已发布", value: 1 },
-                { label: "已下线", value: 2 },
+                { label: "已下线", value: 2 }
               ]}
             />
           </Form.Item>
           <Form.Item>
             <Space className="search-buttons">
-              <Button
-                type="primary"
-                icon={<SearchOutlined />}
-                onClick={handleSearch}>
+              <Button type="primary" icon={<SearchOutlined />} onClick={handleSearch}>
                 搜索
               </Button>
               <Button icon={<ReloadOutlined />} onClick={handleReset}>
                 重置
               </Button>
-              <Button
-                type="primary"
-                icon={<PlusOutlined />}
-                onClick={() => openDrawer("create")}>
+              <Button type="primary" icon={<PlusOutlined />} onClick={() => openDrawer("create")}>
                 新增
               </Button>
             </Space>
@@ -231,16 +202,13 @@ const BlogPostPage = () => {
               title: "置顶",
               dataIndex: "isTop",
               width: 70,
-              render: (v: number) => (
-                <Tag color={v ? "blue" : "default"}>{v ? "是" : "否"}</Tag>
-              ),
+              render: (v: number) => <Tag color={v ? "blue" : "default"}>{v ? "是" : "否"}</Tag>
             },
             {
               title: "发布时间",
               dataIndex: "publishedAt",
               width: 170,
-              render: (v: string) =>
-                v ? new Date(v).toLocaleString("zh-CN") : "-",
+              render: (v: string) => (v ? new Date(v).toLocaleString("zh-CN") : "-")
             },
             { title: "浏览", dataIndex: "viewCount", width: 80 },
             {
@@ -250,31 +218,19 @@ const BlogPostPage = () => {
               width: 300,
               render: (_: unknown, r: BlogPostVo) => (
                 <Space>
-                  <Button
-                    type="link"
-                    icon={<EyeOutlined />}
-                    onClick={() => openDrawer("view", r)}>
+                  <Button type="link" icon={<EyeOutlined />} onClick={() => openDrawer("view", r)}>
                     查看
                   </Button>
-                  <Button
-                    type="link"
-                    icon={<EditOutlined />}
-                    onClick={() => openDrawer("edit", r)}>
+                  <Button type="link" icon={<EditOutlined />} onClick={() => openDrawer("edit", r)}>
                     编辑
                   </Button>
                   {r.status !== 1 && (
-                    <Button
-                      type="link"
-                      icon={<SendOutlined />}
-                      onClick={() => handlePublish(r.id)}>
+                    <Button type="link" icon={<SendOutlined />} onClick={() => handlePublish(r.id)}>
                       发布
                     </Button>
                   )}
                   {r.status === 1 && (
-                    <Button
-                      type="link"
-                      icon={<StopOutlined />}
-                      onClick={() => handleOffline(r.id)}>
+                    <Button type="link" icon={<StopOutlined />} onClick={() => handleOffline(r.id)}>
                       下线
                     </Button>
                   )}
@@ -282,12 +238,13 @@ const BlogPostPage = () => {
                     type="link"
                     danger
                     icon={<DeleteOutlined />}
-                    onClick={() => handleDelete(r)}>
+                    onClick={() => handleDelete(r)}
+                  >
                     删除
                   </Button>
                 </Space>
-              ),
-            },
+              )
+            }
           ]}
           pagination={{
             current: page,
@@ -295,7 +252,7 @@ const BlogPostPage = () => {
             total,
             showSizeChanger: true,
             showTotal: (t: number) => `共 ${t} 条`,
-            onChange: handlePageChange,
+            onChange: handlePageChange
           }}
         />
       </div>
@@ -309,39 +266,42 @@ const BlogPostPage = () => {
           onClose={() => setDrawerVisible(false)}
           destroyOnClose
           footer={
-            <div
-              style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
               <Button onClick={() => setDrawerVisible(false)}>取消</Button>
               <Button type="primary" onClick={handleDrawerOk}>
                 确定
               </Button>
             </div>
-          }>
+          }
+        >
           <Form form={form} layout="vertical" preserve={false}>
             <Form.Item
               name="title"
               label="标题"
-              rules={[{ required: true, message: "请输入标题" }]}>
+              rules={[{ required: true, message: "请输入标题" }]}
+            >
               <Input placeholder="请输入文章标题" />
             </Form.Item>
 
             <Form.Item
               name="summary"
               label="摘要"
-              rules={[{ required: true, message: "请输入摘要" }]}>
+              rules={[{ required: true, message: "请输入摘要" }]}
+            >
               <Input.TextArea rows={3} placeholder="请输入文章摘要" />
             </Form.Item>
 
             <Form.Item
               name="categoryId"
               label="分类"
-              rules={[{ required: true, message: "请选择分类" }]}>
+              rules={[{ required: true, message: "请选择分类" }]}
+            >
               <Select
                 placeholder="请选择分类"
                 loading={loadingCategories}
                 options={categories.map((c) => ({
                   label: c.categoryName,
-                  value: c.id,
+                  value: c.id
                 }))}
               />
             </Form.Item>
@@ -349,14 +309,15 @@ const BlogPostPage = () => {
             <Form.Item
               name="tagIds"
               label="标签"
-              rules={[{ required: true, message: "请选择标签" }]}>
+              rules={[{ required: true, message: "请选择标签" }]}
+            >
               <Select
                 mode="multiple"
                 placeholder="请选择标签（可多选）"
                 loading={loadingTags}
                 options={tags.map((t) => ({
                   label: t.tagName,
-                  value: t.id,
+                  value: t.id
                 }))}
               />
             </Form.Item>
@@ -364,7 +325,8 @@ const BlogPostPage = () => {
             <Form.Item
               name="content"
               label="内容"
-              rules={[{ required: true, message: "请输入内容" }]}>
+              rules={[{ required: true, message: "请输入内容" }]}
+            >
               <Input.TextArea rows={8} placeholder="请输入文章内容" />
             </Form.Item>
 
@@ -376,19 +338,16 @@ const BlogPostPage = () => {
               <Select
                 options={[
                   { label: "否", value: 0 },
-                  { label: "是", value: 1 },
+                  { label: "是", value: 1 }
                 ]}
               />
             </Form.Item>
 
-            <Form.Item
-              name="isCommentEnabled"
-              label="允许评论"
-              initialValue={1}>
+            <Form.Item name="isCommentEnabled" label="允许评论" initialValue={1}>
               <Select
                 options={[
                   { label: "关闭", value: 0 },
-                  { label: "开启", value: 1 },
+                  { label: "开启", value: 1 }
                 ]}
               />
             </Form.Item>
@@ -398,7 +357,7 @@ const BlogPostPage = () => {
                 options={[
                   { label: "草稿", value: 0 },
                   { label: "已发布", value: 1 },
-                  { label: "已下线", value: 2 },
+                  { label: "已下线", value: 2 }
                 ]}
               />
             </Form.Item>
@@ -415,7 +374,8 @@ const BlogPostPage = () => {
             </Button>
           }
           destroyOnClose
-          width={640}>
+          width={640}
+        >
           <Form form={form} layout="vertical" disabled>
             <Form.Item name="title" label="标题">
               <Input />
@@ -429,7 +389,7 @@ const BlogPostPage = () => {
               <Select
                 options={categories.map((c) => ({
                   label: c.categoryName,
-                  value: c.id,
+                  value: c.id
                 }))}
               />
             </Form.Item>
@@ -450,7 +410,7 @@ const BlogPostPage = () => {
               <Select
                 options={[
                   { label: "否", value: 0 },
-                  { label: "是", value: 1 },
+                  { label: "是", value: 1 }
                 ]}
               />
             </Form.Item>
@@ -459,7 +419,7 @@ const BlogPostPage = () => {
               <Select
                 options={[
                   { label: "关闭", value: 0 },
-                  { label: "开启", value: 1 },
+                  { label: "开启", value: 1 }
                 ]}
               />
             </Form.Item>
@@ -469,7 +429,7 @@ const BlogPostPage = () => {
                 options={[
                   { label: "草稿", value: 0 },
                   { label: "已发布", value: 1 },
-                  { label: "已下线", value: 2 },
+                  { label: "已下线", value: 2 }
                 ]}
               />
             </Form.Item>

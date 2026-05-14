@@ -1,22 +1,12 @@
-import {
-  useReducer,
-  useEffect,
-  useState,
-  useCallback,
-  useRef,
-  type ReactNode,
-} from "react";
-import { Navigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import { type ReactNode, useCallback, useEffect, useReducer, useRef, useState } from "react";
+import { Navigate } from "react-router-dom";
+
 import { getSysUserById } from "@/api/module/user";
-import {
-  AuthContext,
-  authReducer,
-  initialState,
-  type UserInfo,
-} from "./context";
-import { useAuth } from "./useAuth";
 import BootSplash from "@/components/BootSplash/index";
+
+import { AuthContext, type UserInfo, authReducer, initialState } from "./context";
+import { useAuth } from "./useAuth";
 
 const fetchUserInfoById = async (userId: string): Promise<UserInfo | null> => {
   try {
@@ -27,7 +17,7 @@ const fetchUserInfoById = async (userId: string): Promise<UserInfo | null> => {
       username: data.username,
       nickname: data.nickname,
       email: data.email,
-      avatarUrl: data.avatarUrl,
+      avatarUrl: data.avatarUrl
     };
   } catch (error) {
     console.error("Failed to fetch user info:", error);
@@ -62,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const userInfo = await fetchUserInfoById(String(userId));
     dispatch({
       type: "LOGIN",
-      payload: { userInfo: userInfo!, token },
+      payload: { userInfo: userInfo!, token }
     });
   }, []);
 
@@ -81,8 +71,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         userInfo: state.userInfo,
         token: state.token,
         loginAction,
-        logoutAction,
-      }}>
+        logoutAction
+      }}
+    >
       {ready ? children : null}
       <BootSplash visible={!ready} />
     </AuthContext.Provider>

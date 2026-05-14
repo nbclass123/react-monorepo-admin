@@ -21,7 +21,7 @@ export type AuthAction =
 
 export const initialState: AuthState = {
   userInfo: null,
-  token: "",
+  token: ""
 };
 
 export function authReducer(state: AuthState, action: AuthAction): AuthState {
@@ -29,22 +29,22 @@ export function authReducer(state: AuthState, action: AuthAction): AuthState {
     case "LOGIN":
       return {
         userInfo: action.payload.userInfo,
-        token: action.payload.token,
+        token: action.payload.token
       };
     case "LOGOUT":
       return {
         userInfo: null,
-        token: "",
+        token: ""
       };
     case "RESTORE":
       return {
         userInfo: null,
-        token: action.payload.token,
+        token: action.payload.token
       };
     case "SET_USER_INFO":
       return {
         ...state,
-        userInfo: action.payload,
+        userInfo: action.payload
       };
     default:
       return state;

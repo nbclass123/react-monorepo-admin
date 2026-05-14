@@ -1,11 +1,12 @@
-import { useEffect, type ReactNode } from "react";
-import { Modal, Form, Input, message } from "antd";
+import { Form, Input, Modal, message } from "antd";
+import { type ReactNode, useEffect } from "react";
+
 import {
-  register,
-  updateUser,
   type RegisterReq,
   type UpdateUserReq,
   type UserVo,
+  register,
+  updateUser
 } from "@/api/module/user";
 
 interface UserModalProps {
@@ -16,13 +17,7 @@ interface UserModalProps {
   onSuccess: () => void;
 }
 
-const UserModal = ({
-  visible,
-  mode,
-  data,
-  onClose,
-  onSuccess,
-}: UserModalProps): ReactNode => {
+const UserModal = ({ visible, mode, data, onClose, onSuccess }: UserModalProps): ReactNode => {
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -31,7 +26,7 @@ const UserModal = ({
       if (data && (mode === "edit" || mode === "view")) {
         form.setFieldsValue({
           ...data,
-          status: data.status === 1 ? "正常" : "禁用",
+          status: data.status === 1 ? "正常" : "禁用"
         });
       }
     }
@@ -62,7 +57,7 @@ const UserModal = ({
   const titleMap = {
     create: "新增用户",
     edit: "编辑用户",
-    view: "查看用户",
+    view: "查看用户"
   };
 
   return (
@@ -74,20 +69,23 @@ const UserModal = ({
       okText={isView ? undefined : "确定"}
       cancelText="取消"
       footer={isView ? (_, { CancelBtn }) => <CancelBtn /> : undefined}
-      destroyOnHidden>
+      destroyOnHidden
+    >
       <Form form={form} layout="vertical" onFinish={handleSubmit}>
         {mode === "create" && (
           <>
             <Form.Item
               name="username"
               label="用户名"
-              rules={[{ required: true, message: "请输入用户名" }]}>
+              rules={[{ required: true, message: "请输入用户名" }]}
+            >
               <Input placeholder="请输入用户名" />
             </Form.Item>
             <Form.Item
               name="password"
               label="密码"
-              rules={[{ required: true, message: "请输入密码" }]}>
+              rules={[{ required: true, message: "请输入密码" }]}
+            >
               <Input.Password placeholder="请输入密码" />
             </Form.Item>
           </>
@@ -111,7 +109,8 @@ const UserModal = ({
         <Form.Item
           name="email"
           label="邮箱"
-          rules={[{ type: "email", message: "请输入正确的邮箱格式" }]}>
+          rules={[{ type: "email", message: "请输入正确的邮箱格式" }]}
+        >
           <Input disabled={isView} placeholder="请输入邮箱" />
         </Form.Item>
 

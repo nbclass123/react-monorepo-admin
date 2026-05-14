@@ -1,19 +1,12 @@
-import { useEffect, useRef } from "react";
 import * as echarts from "echarts";
+import { useEffect, useRef } from "react";
 
 interface PieChartProps {
   data: { name: string; value: number }[];
   height?: number;
 }
 
-const colors = [
-  "#6366F1",
-  "#EC4899",
-  "#10B981",
-  "#F59E0B",
-  "#3B82F6",
-  "#8B5CF6",
-];
+const colors = ["#6366F1", "#EC4899", "#10B981", "#F59E0B", "#3B82F6", "#8B5CF6"];
 
 export default function PieChart({ data, height = 280 }: PieChartProps) {
   const chartRef = useRef<HTMLDivElement>(null);
@@ -33,17 +26,17 @@ export default function PieChart({ data, height = 280 }: PieChartProps) {
         borderColor: "var(--md-border-color)",
         borderWidth: 1,
         textStyle: {
-          color: "var(--md-text-primary)",
+          color: "var(--md-text-primary)"
         },
-        formatter: "{b}: {c} ({d}%)",
+        formatter: "{b}: {c} ({d}%)"
       },
       legend: {
         orient: "vertical",
         right: "5%",
         top: "center",
         textStyle: {
-          color: "var(--md-text-secondary)",
-        },
+          color: "var(--md-text-secondary)"
+        }
       },
       series: [
         {
@@ -55,31 +48,31 @@ export default function PieChart({ data, height = 280 }: PieChartProps) {
           itemStyle: {
             borderRadius: 8,
             borderColor: "var(--md-surface)",
-            borderWidth: 2,
+            borderWidth: 2
           },
           label: {
             show: false,
-            position: "center",
+            position: "center"
           },
           emphasis: {
             label: {
               show: true,
               fontSize: 18,
               fontWeight: "bold",
-              color: "var(--md-text-primary)",
-            },
+              color: "var(--md-text-primary)"
+            }
           },
           labelLine: {
-            show: false,
+            show: false
           },
           data: data.map((item, index) => ({
             ...item,
             itemStyle: {
-              color: colors[index % colors.length],
-            },
-          })),
-        },
-      ],
+              color: colors[index % colors.length]
+            }
+          }))
+        }
+      ]
     };
 
     chartInstance.current.setOption(option);

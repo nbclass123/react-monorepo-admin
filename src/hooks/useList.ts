@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import type { ResultVo, PageVo } from "@/api/module/user";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import type { PageVo, ResultVo } from "@/api/module/user";
 
 /** useList Hook 配置选项 */
 export interface UseListOptions<T> {
@@ -22,20 +23,14 @@ export interface UseListOptions<T> {
  * 封装分页、搜索、加载状态等常见逻辑
  */
 export function useList<T>(options: UseListOptions<T>) {
-  const {
-    fetchFn,
-    initialPage = 1,
-    initialSize = 10,
-    initialSearchParams = {},
-  } = options;
+  const { fetchFn, initialPage = 1, initialSize = 10, initialSearchParams = {} } = options;
 
   const [list, setList] = useState<T[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(initialPage);
   const [size, setSize] = useState(initialSize);
   const [total, setTotal] = useState(0);
-  const [searchParams, setSearchParams] =
-    useState<Record<string, unknown>>(initialSearchParams);
+  const [searchParams, setSearchParams] = useState<Record<string, unknown>>(initialSearchParams);
   const initialSearchParamsRef = useRef(initialSearchParams);
   const isMountedRef = useRef(false);
 
@@ -44,14 +39,14 @@ export function useList<T>(options: UseListOptions<T>) {
     async (
       currentPage: number,
       currentSize: number,
-      currentSearchParams: Record<string, unknown>,
+      currentSearchParams: Record<string, unknown>
     ) => {
       setLoading(true);
       try {
         const result = await fetchFn({
           page: currentPage,
           size: currentSize,
-          ...currentSearchParams,
+          ...currentSearchParams
         });
         setList(result.data.list);
         setTotal(result.data.total);
@@ -61,7 +56,7 @@ export function useList<T>(options: UseListOptions<T>) {
         setLoading(false);
       }
     },
-    [fetchFn],
+    [fetchFn]
   );
 
   /** 刷新当前列表数据 */
@@ -75,7 +70,7 @@ export function useList<T>(options: UseListOptions<T>) {
       setSearchParams(params);
       await fetchData(1, size, params);
     },
-    [fetchData, size],
+    [fetchData, size]
   );
 
   /** 重置搜索参数和分页 */
@@ -90,7 +85,7 @@ export function useList<T>(options: UseListOptions<T>) {
     async (newPage: number, newSize: number) => {
       await fetchData(newPage, newSize, searchParams);
     },
-    [fetchData, searchParams],
+    [fetchData, searchParams]
   );
 
   /** 组件挂载时请求初始数据 */
@@ -112,6 +107,6 @@ export function useList<T>(options: UseListOptions<T>) {
     refresh,
     search,
     reset,
-    handlePageChange,
+    handlePageChange
   };
 }

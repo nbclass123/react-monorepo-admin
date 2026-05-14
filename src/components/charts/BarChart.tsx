@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
 import * as echarts from "echarts";
+import { useEffect, useRef } from "react";
 
 interface BarChartProps {
   data: { name: string; value: number }[];
@@ -24,47 +24,47 @@ export default function BarChart({ data, height = 280 }: BarChartProps) {
         borderColor: "var(--md-border-color)",
         borderWidth: 1,
         textStyle: {
-          color: "var(--md-text-primary)",
+          color: "var(--md-text-primary)"
         },
         axisPointer: {
-          type: "shadow",
-        },
+          type: "shadow"
+        }
       },
       grid: {
         left: "3%",
         right: "4%",
         bottom: "3%",
         top: "10%",
-        containLabel: true,
+        containLabel: true
       },
       xAxis: {
         type: "category",
         data: data.map((item) => item.name),
         axisLine: {
           lineStyle: {
-            color: "var(--md-border-color)",
-          },
+            color: "var(--md-border-color)"
+          }
         },
         axisLabel: {
-          color: "var(--md-text-secondary)",
-        },
+          color: "var(--md-text-secondary)"
+        }
       },
       yAxis: {
         type: "value",
         axisLine: {
-          show: false,
+          show: false
         },
         axisTick: {
-          show: false,
+          show: false
         },
         splitLine: {
           lineStyle: {
-            color: "var(--md-border-subtle)",
-          },
+            color: "var(--md-border-subtle)"
+          }
         },
         axisLabel: {
-          color: "var(--md-text-secondary)",
-        },
+          color: "var(--md-text-secondary)"
+        }
       },
       series: [
         {
@@ -74,14 +74,14 @@ export default function BarChart({ data, height = 280 }: BarChartProps) {
             itemStyle: {
               color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
                 { offset: 0, color: index % 2 === 0 ? "#6366F1" : "#EC4899" },
-                { offset: 1, color: index % 2 === 0 ? "#818CF8" : "#F472B6" },
+                { offset: 1, color: index % 2 === 0 ? "#818CF8" : "#F472B6" }
               ]),
-              borderRadius: [4, 4, 0, 0],
-            },
+              borderRadius: [4, 4, 0, 0]
+            }
           })),
-          barWidth: "60%",
-        },
-      ],
+          barWidth: "60%"
+        }
+      ]
     };
 
     chartInstance.current.setOption(option);

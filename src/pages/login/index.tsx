@@ -1,9 +1,11 @@
+import { LockOutlined, SafetyCertificateOutlined, UserOutlined } from "@ant-design/icons";
+import { Button, Checkbox, Form, Input, message } from "antd";
 import { useState } from "react";
-import { Form, Input, Button, message, Checkbox } from "antd";
-import { UserOutlined, LockOutlined, SafetyCertificateOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+
+import { type LoginVo, login } from "@/api/module/user";
 import { useAuth } from "@/store/useAuth";
-import { login, type LoginVo } from "@/api/module/user";
+
 import "./index.css";
 
 type FieldType = {
@@ -19,8 +21,7 @@ const LoginPage: React.FC = () => {
   const onFinish = async (values: FieldType) => {
     setLoading(true);
     try {
-      const result: { code: number; message: string; data: LoginVo } =
-        await login(values);
+      const result: { code: number; message: string; data: LoginVo } = await login(values);
       await loginAction(result.data.token, result.data.id);
       message.success("登录成功");
       navigate("/userList", { replace: true });
@@ -60,27 +61,20 @@ const LoginPage: React.FC = () => {
         <Form onFinish={onFinish} autoComplete="off" disabled={loading}>
           <Form.Item<FieldType>
             name="username"
-            rules={[{ required: true, message: "请输入用户名" }]}>
-            <Input
-              prefix={<UserOutlined />}
-              placeholder="用户名"
-              size="large"
-            />
+            rules={[{ required: true, message: "请输入用户名" }]}
+          >
+            <Input prefix={<UserOutlined />} placeholder="用户名" size="large" />
           </Form.Item>
 
-          <Form.Item<FieldType>
-            name="password"
-            rules={[{ required: true, message: "请输入密码" }]}>
-            <Input.Password
-              prefix={<LockOutlined />}
-              placeholder="密码"
-              size="large"
-            />
+          <Form.Item<FieldType> name="password" rules={[{ required: true, message: "请输入密码" }]}>
+            <Input.Password prefix={<LockOutlined />} placeholder="密码" size="large" />
           </Form.Item>
 
           <div className="login-options">
             <Checkbox>记住我</Checkbox>
-            <a className="login-forgot" href="#">忘记密码？</a>
+            <a className="login-forgot" href="#">
+              忘记密码？
+            </a>
           </div>
 
           <Form.Item>
@@ -89,7 +83,8 @@ const LoginPage: React.FC = () => {
               htmlType="submit"
               block
               loading={loading}
-              className="login-submit-btn">
+              className="login-submit-btn"
+            >
               {loading ? "登录中..." : "登 录"}
             </Button>
           </Form.Item>

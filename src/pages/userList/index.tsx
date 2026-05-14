@@ -1,30 +1,24 @@
-import { useState } from "react";
-import { Table, Button, Input, Space, Tag, Modal, message, Form } from "antd";
-import type { ColumnsType } from "antd/es/table";
 import {
-  PlusOutlined,
-  SearchOutlined,
-  ReloadOutlined,
-  EyeOutlined,
-  EditOutlined,
   DeleteOutlined,
+  EditOutlined,
+  EyeOutlined,
+  PlusOutlined,
+  ReloadOutlined,
+  SearchOutlined
 } from "@ant-design/icons";
-import {
-  getUserList,
-  deleteUser,
-  freezeUser,
-  activateUser,
-  type UserVo,
-} from "@/api/module/user";
-import { useList } from "@/hooks/useList";
+import { Button, Form, Input, Modal, Space, Table, Tag, message } from "antd";
+import type { ColumnsType } from "antd/es/table";
+import { useState } from "react";
+
+import { type UserVo, activateUser, deleteUser, freezeUser, getUserList } from "@/api/module/user";
 import UserModal from "@/components/UserModal/index";
+import { useList } from "@/hooks/useList";
+
 import "./index.css";
 
 const UserListPage: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalMode, setModalMode] = useState<"create" | "edit" | "view">(
-    "create",
-  );
+  const [modalMode, setModalMode] = useState<"create" | "edit" | "view">("create");
   const [modalData, setModalData] = useState<UserVo | null>(null);
 
   const [form] = Form.useForm();
@@ -34,25 +28,25 @@ const UserListPage: React.FC = () => {
       title: "ID",
       dataIndex: "id",
       key: "id",
-      width: 80,
+      width: 80
     },
     {
       title: "用户名",
       dataIndex: "username",
       key: "username",
-      width: 120,
+      width: 120
     },
     {
       title: "昵称",
       dataIndex: "nickname",
       key: "nickname",
-      width: 120,
+      width: 120
     },
     {
       title: "邮箱",
       dataIndex: "email",
       key: "email",
-      width: 180,
+      width: 180
     },
     {
       title: "状态",
@@ -60,18 +54,15 @@ const UserListPage: React.FC = () => {
       key: "status",
       width: 100,
       render: (status: number) => (
-        <Tag color={status === 1 ? "green" : "red"}>
-          {status === 1 ? "正常" : "禁用"}
-        </Tag>
-      ),
+        <Tag color={status === 1 ? "green" : "red"}>{status === 1 ? "正常" : "禁用"}</Tag>
+      )
     },
     {
       title: "创建时间",
       dataIndex: "createdAt",
       key: "createdAt",
       width: 180,
-      render: (createdAt: string) =>
-        createdAt ? new Date(createdAt).toLocaleString("zh-CN") : "-",
+      render: (createdAt: string) => (createdAt ? new Date(createdAt).toLocaleString("zh-CN") : "-")
     },
     {
       title: "操作",
@@ -80,49 +71,27 @@ const UserListPage: React.FC = () => {
       width: 200,
       render: (_: unknown, record: UserVo) => (
         <Space>
-          <Button
-            type="link"
-            icon={<EyeOutlined />}
-            onClick={() => handleView(record)}>
+          <Button type="link" icon={<EyeOutlined />} onClick={() => handleView(record)}>
             查看
           </Button>
-          <Button
-            type="link"
-            icon={<EditOutlined />}
-            onClick={() => handleEdit(record)}>
+          <Button type="link" icon={<EditOutlined />} onClick={() => handleEdit(record)}>
             编辑
           </Button>
-          <Button
-            type="link"
-            icon={<DeleteOutlined />}
-            onClick={() => handleStatus(record)}>
+          <Button type="link" icon={<DeleteOutlined />} onClick={() => handleStatus(record)}>
             {record.status === 1 ? "禁用" : "启用"}
           </Button>
-          <Button
-            type="link"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => handleDelete(record)}>
+          <Button type="link" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record)}>
             删除
           </Button>
         </Space>
-      ),
-    },
+      )
+    }
   ];
 
-  const {
-    list,
-    loading,
-    page,
-    size,
-    total,
-    refresh,
-    search,
-    reset,
-    handlePageChange,
-  } = useList<UserVo>({
-    fetchFn: getUserList,
-  });
+  const { list, loading, page, size, total, refresh, search, reset, handlePageChange } =
+    useList<UserVo>({
+      fetchFn: getUserList
+    });
 
   const handleSearch = () => {
     const values = form.getFieldsValue();
@@ -163,7 +132,7 @@ const UserListPage: React.FC = () => {
         await deleteUser(record.id);
         message.success("删除成功");
         refresh();
-      },
+      }
     });
   };
 
@@ -181,7 +150,7 @@ const UserListPage: React.FC = () => {
         }
         message.success(record.status === 1 ? "禁用成功" : "启用成功");
         refresh();
-      },
+      }
     });
   };
 
@@ -209,19 +178,13 @@ const UserListPage: React.FC = () => {
           </Form.Item>
           <Form.Item>
             <Space className="search-buttons">
-              <Button
-                type="primary"
-                icon={<SearchOutlined />}
-                onClick={handleSearch}>
+              <Button type="primary" icon={<SearchOutlined />} onClick={handleSearch}>
                 搜索
               </Button>
               <Button icon={<ReloadOutlined />} onClick={handleReset}>
                 重置
               </Button>
-              <Button
-                type="primary"
-                icon={<PlusOutlined />}
-                onClick={handleAdd}>
+              <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
                 新增
               </Button>
             </Space>
@@ -242,7 +205,7 @@ const UserListPage: React.FC = () => {
             showSizeChanger: true,
             showTotal: (total: number) => `共 ${total} 条`,
             pageSizeOptions: [10, 20, 50, 100],
-            onChange: handlePageChange,
+            onChange: handlePageChange
           }}
         />
       </div>
