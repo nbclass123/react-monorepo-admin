@@ -7,6 +7,7 @@ import {
   SearchOutlined
 } from "@ant-design/icons";
 import { Button, Form, Input, InputNumber, Modal, Select, Space, Table, Tag, message } from "antd";
+import useApp from "antd/es/app/useApp";
 import { useState } from "react";
 
 import {
@@ -26,6 +27,7 @@ const BlogCategoryPage = () => {
   const [modalMode, setModalMode] = useState<"create" | "edit" | "view">("create");
   const [modalData, setModalData] = useState<BlogCategoryVo | null>(null);
   const [form] = Form.useForm();
+  const { modal } = useApp();
 
   const { list, loading, page, size, total, refresh, search, reset, handlePageChange } =
     useList<BlogCategoryVo>({ fetchFn: getCategoryList });
@@ -45,7 +47,7 @@ const BlogCategoryPage = () => {
   };
 
   const handleDelete = (record: BlogCategoryVo) => {
-    Modal.confirm({
+    modal.confirm({
       title: "确认删除",
       content: `确定要删除分类"${record.categoryName}"吗？`,
       okType: "danger",
@@ -153,7 +155,7 @@ const BlogCategoryPage = () => {
         open={modalVisible}
         onOk={modalMode !== "view" ? handleModalOk : undefined}
         onCancel={() => setModalVisible(false)}
-        destroyOnClose
+        destroyOnHidden
       >
         <Form form={form} layout="vertical" disabled={modalMode === "view"}>
           <Form.Item name="categoryName" label="分类名称" rules={[{ required: true }]}>

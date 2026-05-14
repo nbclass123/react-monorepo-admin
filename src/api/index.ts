@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 
 /** axios 实例配置 */
 const instance = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: import.meta.env.VITE_APP_BASE_URL || "http://localhost:8080",
   timeout: 10000,
   headers: {
     "Content-Type": "application/x-www-form-urlencoded"

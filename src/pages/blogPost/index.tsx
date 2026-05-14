@@ -9,6 +9,7 @@ import {
   StopOutlined
 } from "@ant-design/icons";
 import { Button, Drawer, Form, Input, Modal, Select, Space, Table, Tag, message } from "antd";
+import useApp from "antd/es/app/useApp";
 import { useEffect, useState } from "react";
 
 import {
@@ -45,6 +46,7 @@ const BlogPostPage = () => {
   const [tags, setTags] = useState<BlogTagVo[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(false);
   const [loadingTags, setLoadingTags] = useState(false);
+  const { modal } = useApp();
 
   const { list, loading, page, size, total, refresh, search, reset, handlePageChange } =
     useList<BlogPostVo>({ fetchFn: getPostList as any });
@@ -105,7 +107,7 @@ const BlogPostPage = () => {
   };
 
   const handleDelete = (record: BlogPostVo) => {
-    Modal.confirm({
+    modal.confirm({
       title: "确认删除",
       content: `确定要删除文章"${record.title}"吗？`,
       okType: "danger",
@@ -264,7 +266,7 @@ const BlogPostPage = () => {
           width={600}
           open={drawerVisible}
           onClose={() => setDrawerVisible(false)}
-          destroyOnClose
+          destroyOnHidden
           footer={
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
               <Button onClick={() => setDrawerVisible(false)}>取消</Button>
@@ -300,6 +302,7 @@ const BlogPostPage = () => {
                 placeholder="请选择分类"
                 loading={loadingCategories}
                 options={categories.map((c) => ({
+                  key: c.id,
                   label: c.categoryName,
                   value: c.id
                 }))}
@@ -316,6 +319,7 @@ const BlogPostPage = () => {
                 placeholder="请选择标签（可多选）"
                 loading={loadingTags}
                 options={tags.map((t) => ({
+                  key: t.id,
                   label: t.tagName,
                   value: t.id
                 }))}
@@ -373,7 +377,7 @@ const BlogPostPage = () => {
               关闭
             </Button>
           }
-          destroyOnClose
+          destroyOnHidden
           width={640}
         >
           <Form form={form} layout="vertical" disabled>
@@ -388,6 +392,7 @@ const BlogPostPage = () => {
             <Form.Item name="categoryId" label="分类">
               <Select
                 options={categories.map((c) => ({
+                  key: c.id,
                   label: c.categoryName,
                   value: c.id
                 }))}

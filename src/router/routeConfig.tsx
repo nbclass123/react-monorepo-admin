@@ -13,6 +13,7 @@ const BlogTagPage = lazy(() => import("@/pages/blogTag/index"));
 const BlogPostPage = lazy(() => import("@/pages/blogPost/index"));
 const SysRolePage = lazy(() => import("@/pages/sysRole/index"));
 const SysPermissionPage = lazy(() => import("@/pages/sysPermission/index"));
+const SvgIconPage = lazy(() => import("@/pages/svgIcon/index"));
 
 export const appRoutes: AppRouteConfig[] = [
   {
@@ -77,5 +78,11 @@ export const appRoutes: AppRouteConfig[] = [
     title: "个人中心",
     element: <UserProfilePage />,
     hideInMenu: true
+  },
+  {
+    path: "/svg-icon",
+    key: "svgIcon",
+    title: "图标图鉴",
+    element: <SvgIconPage />
   }
 ];

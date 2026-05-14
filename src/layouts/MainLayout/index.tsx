@@ -6,12 +6,14 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   MoonOutlined,
+  RocketOutlined,
   SafetyCertificateOutlined,
   SunOutlined,
   TeamOutlined,
   UserOutlined
 } from "@ant-design/icons";
-import { Avatar, Button, Dropdown, Layout, Menu, Modal, Space } from "antd";
+import { Avatar, Button, Dropdown, Layout, Menu, Space } from "antd";
+import useApp from "antd/es/app/useApp";
 import { useRef, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
@@ -31,12 +33,18 @@ const MainLayout: React.FC = () => {
   const { userInfo, logoutAction } = useAuth();
   const { mode, toggleMode } = useTheme();
   const loggingOutRef = useRef(false);
+  const { modal } = useApp();
 
   const menuItems = [
     {
       key: "/dashboard",
       icon: <DashboardOutlined />,
       label: "仪表盘"
+    },
+    {
+      key: "/svg-icon",
+      icon: <RocketOutlined />,
+      label: "图标图鉴"
     },
     {
       key: "/userList",
@@ -70,7 +78,7 @@ const MainLayout: React.FC = () => {
 
   const handleLogout = () => {
     if (loggingOutRef.current) return;
-    Modal.confirm({
+    modal.confirm({
       title: "退出登录",
       icon: <LogoutOutlined />,
       content: (

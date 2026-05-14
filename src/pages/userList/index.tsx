@@ -6,7 +6,8 @@ import {
   ReloadOutlined,
   SearchOutlined
 } from "@ant-design/icons";
-import { Button, Form, Input, Modal, Space, Table, Tag, message } from "antd";
+import { Button, Form, Input, Space, Table, Tag, message } from "antd";
+import useApp from "antd/es/app/useApp";
 import type { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 
@@ -20,8 +21,8 @@ const UserListPage: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit" | "view">("create");
   const [modalData, setModalData] = useState<UserVo | null>(null);
-
   const [form] = Form.useForm();
+  const { modal } = useApp();
 
   const columns: ColumnsType<UserVo> = [
     {
@@ -122,7 +123,7 @@ const UserListPage: React.FC = () => {
   };
 
   const handleDelete = (record: UserVo) => {
-    Modal.confirm({
+    modal.confirm({
       title: "确认删除",
       content: `确定要删除用户"${record.username}"吗？`,
       okText: "确认",
@@ -137,7 +138,7 @@ const UserListPage: React.FC = () => {
   };
 
   const handleStatus = (record: UserVo) => {
-    Modal.confirm({
+    modal.confirm({
       title: "确认操作",
       content: `确定要${record.status === 1 ? "禁用" : "启用"}用户"${record.username}"吗？`,
       okText: "确认",
