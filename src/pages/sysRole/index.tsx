@@ -98,7 +98,7 @@ const SysRolePage = () => {
           dataSource={list}
           rowKey="id"
           loading={loading}
-          scroll={{ x: 1000 }}
+          scroll={{ x: "max-content" }}
           columns={[
             { title: "ID", dataIndex: "id", width: 60 },
             { title: "角色编码", dataIndex: "roleCode", width: 130 },

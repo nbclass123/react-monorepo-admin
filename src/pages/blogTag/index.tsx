@@ -95,7 +95,7 @@ const BlogTagPage = () => {
           dataSource={list}
           rowKey="id"
           loading={loading}
-          scroll={{ x: 700 }}
+          scroll={{ x: "max-content" }}
           columns={[
             { title: "ID", dataIndex: "id", width: 80 },
             { title: "标签名称", dataIndex: "tagName", width: 140 },

@@ -105,7 +105,7 @@ const SysPermissionPage = () => {
           dataSource={list}
           rowKey="id"
           loading={loading}
-          scroll={{ x: 1100 }}
+          scroll={{ x: "max-content" }}
           columns={[
             { title: "ID", dataIndex: "id", width: 60 },
             { title: "权限编码", dataIndex: "permissionCode", width: 150 },

@@ -78,7 +78,7 @@ const BlogCategoryPage = () => {
           dataSource={list}
           rowKey="id"
           loading={loading}
-          scroll={{ x: 800 }}
+          scroll={{ x: "max-content" }}
           columns={[
             { title: "ID", dataIndex: "id", width: 80 },
             { title: "分类名称", dataIndex: "categoryName", width: 140 },
@@ -102,7 +102,7 @@ const BlogCategoryPage = () => {
               title: "操作",
               key: "action",
               fixed: "right",
-              width: 180,
+              width: 200,
               render: (_: unknown, r: BlogCategoryVo) => (
                 <Space>
                   <Button type="link" icon={<EyeOutlined />} onClick={() => crud.open("view", r)}>
@@ -138,7 +138,7 @@ const BlogCategoryPage = () => {
         open={crud.visible}
         onOk={crud.isView ? undefined : handleModalOk}
         onCancel={crud.close}
-        destroyOnClose
+        destroyOnHidden
       >
         <Form form={form} layout="vertical" disabled={crud.isView}>
           <Form.Item name="categoryName" label="分类名称" rules={[{ required: true }]}>

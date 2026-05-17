@@ -194,7 +194,7 @@ const BlogPostPage = () => {
           dataSource={list}
           rowKey="id"
           loading={loading}
-          scroll={{ x: 1200 }}
+          scroll={{ x: "max-content" }}
           columns={[
             { title: "ID", dataIndex: "id", width: 60 },
             { title: "标题", dataIndex: "title", width: 200, ellipsis: true },
@@ -263,7 +263,7 @@ const BlogPostPage = () => {
         <Drawer
           title={drawerMode === "create" ? "新增文章" : "编辑文章"}
           placement="right"
-          width={600}
+          styles={{ wrapper: { width: 600 } }}
           open={drawerVisible}
           onClose={() => setDrawerVisible(false)}
           destroyOnHidden
