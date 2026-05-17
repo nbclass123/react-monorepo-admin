@@ -6,9 +6,7 @@ import {
   ReloadOutlined,
   SearchOutlined
 } from "@ant-design/icons";
-import { Button, Form, Input, InputNumber, Modal, Select, Space, Table, Tag, message } from "antd";
-import useApp from "antd/es/app/useApp";
-import { useState } from "react";
+import { Button, Form, Input, InputNumber, Modal, Select, Space, Table, Tag } from "antd";
 
 import {
   type BlogCategoryReq,
@@ -18,19 +16,25 @@ import {
   getCategoryList,
   updateCategory
 } from "@/api/module/blog";
+import { useCrudWithForm } from "@/hooks/useCrud";
 import { useList } from "@/hooks/useList";
 
 import "./index.css";
 
 const BlogCategoryPage = () => {
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalMode, setModalMode] = useState<"create" | "edit" | "view">("create");
-  const [modalData, setModalData] = useState<BlogCategoryVo | null>(null);
   const [form] = Form.useForm();
-  const { modal } = useApp();
-
   const { list, loading, page, size, total, refresh, search, reset, handlePageChange } =
     useList<BlogCategoryVo>({ fetchFn: getCategoryList });
+
+  const crud = useCrudWithForm<BlogCategoryVo, BlogCategoryReq, BlogCategoryReq>(form, {
+    createApi: createCategory,
+    updateApi: updateCategory,
+    deleteApi: deleteCategory,
+    onRefresh: refresh,
+    deleteConfirm: {
+      content: (record) => `确定要删除分类"${record.categoryName}"吗？`
+    }
+  });
 
   const handleSearch = () => search(form.getFieldsValue());
   const handleReset = () => {
@@ -38,34 +42,13 @@ const BlogCategoryPage = () => {
     reset();
   };
 
-  const openModal = (mode: "create" | "edit" | "view", record?: BlogCategoryVo) => {
-    setModalMode(mode);
-    setModalData(record || null);
-    setModalVisible(true);
-    if (record) form.setFieldsValue(record);
-    else form.resetFields();
-  };
-
-  const handleDelete = (record: BlogCategoryVo) => {
-    modal.confirm({
-      title: "确认删除",
-      content: `确定要删除分类"${record.categoryName}"吗？`,
-      okType: "danger",
-      onOk: async () => {
-        await deleteCategory(record.id);
-        message.success("删除成功");
-        refresh();
-      }
-    });
-  };
-
   const handleModalOk = async () => {
     const values = await form.validateFields();
-    if (modalMode === "create") await createCategory(values as BlogCategoryReq);
-    else await updateCategory({ ...values, id: modalData!.id });
-    message.success(modalMode === "create" ? "创建成功" : "更新成功");
-    setModalVisible(false);
-    refresh();
+    if (crud.isCreate) {
+      await crud.handleCreate(values);
+    } else {
+      await crud.handleUpdate({ ...values, id: crud.data!.id });
+    }
   };
 
   return (
@@ -83,7 +66,7 @@ const BlogCategoryPage = () => {
               <Button icon={<ReloadOutlined />} onClick={handleReset}>
                 重置
               </Button>
-              <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal("create")}>
+              <Button type="primary" icon={<PlusOutlined />} onClick={() => crud.open("create")}>
                 新增
               </Button>
             </Space>
@@ -122,17 +105,17 @@ const BlogCategoryPage = () => {
               width: 180,
               render: (_: unknown, r: BlogCategoryVo) => (
                 <Space>
-                  <Button type="link" icon={<EyeOutlined />} onClick={() => openModal("view", r)}>
+                  <Button type="link" icon={<EyeOutlined />} onClick={() => crud.open("view", r)}>
                     查看
                   </Button>
-                  <Button type="link" icon={<EditOutlined />} onClick={() => openModal("edit", r)}>
+                  <Button type="link" icon={<EditOutlined />} onClick={() => crud.open("edit", r)}>
                     编辑
                   </Button>
                   <Button
                     type="link"
                     danger
                     icon={<DeleteOutlined />}
-                    onClick={() => handleDelete(r)}
+                    onClick={() => crud.deleteWithConfirm(r)}
                   >
                     删除
                   </Button>
@@ -151,13 +134,13 @@ const BlogCategoryPage = () => {
         />
       </div>
       <Modal
-        title={modalMode === "create" ? "新增分类" : modalMode === "edit" ? "编辑分类" : "查看分类"}
-        open={modalVisible}
-        onOk={modalMode !== "view" ? handleModalOk : undefined}
-        onCancel={() => setModalVisible(false)}
-        destroyOnHidden
+        title={crud.isCreate ? "新增分类" : crud.isEdit ? "编辑分类" : "查看分类"}
+        open={crud.visible}
+        onOk={crud.isView ? undefined : handleModalOk}
+        onCancel={crud.close}
+        destroyOnClose
       >
-        <Form form={form} layout="vertical" disabled={modalMode === "view"}>
+        <Form form={form} layout="vertical" disabled={crud.isView}>
           <Form.Item name="categoryName" label="分类名称" rules={[{ required: true }]}>
             <Input />
           </Form.Item>

@@ -82,6 +82,7 @@ export function authReducer(state: AuthState, action: AuthAction): AuthState {
 export interface AuthContextType {
   userInfo: UserInfo | null;
   token: string;
+  isAuthenticated: boolean;
   loginAction: (token: string, userId: number) => Promise<void>;
   logoutAction: () => Promise<void>;
 }
