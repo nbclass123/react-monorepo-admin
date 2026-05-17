@@ -42,7 +42,7 @@ const MainLayout: React.FC = () => {
       label: "仪表盘"
     },
     {
-      key: "/svg-icon",
+      key: "/svgIcon",
       icon: <RocketOutlined />,
       label: "图标图鉴"
     },
@@ -183,7 +183,7 @@ const MainLayout: React.FC = () => {
                   {userInfo?.avatarUrl ? (
                     <Avatar size={32} src={userInfo?.avatarUrl} icon={<UserOutlined />} />
                   ) : (
-                    <SvgIcon name="xihonhshi" />
+                    <SvgIcon name="fanqie" />
                   )}
                   {!collapsed && (
                     <span className="vercel-username">

@@ -80,7 +80,7 @@ export const appRoutes: AppRouteConfig[] = [
     hideInMenu: true
   },
   {
-    path: "/svg-icon",
+    path: "/svgIcon",
     key: "svgIcon",
     title: "图标图鉴",
     element: <SvgIconPage />

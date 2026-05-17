@@ -1,9 +1,10 @@
-import { useState } from "react";
 import { message } from "antd";
-
-import SvgIcon from "@/components/SvgIcon";
+import { useState } from "react";
 import iconNames from "virtual:svg-icons-names";
 
+import SvgIcon from "@/components/SvgIcon";
+
+import { getChineseName } from "./iconMap";
 import "./index.css";
 
 export default function SvgIconPage() {
@@ -32,6 +33,7 @@ export default function SvgIconPage() {
       <div className="svg-icon-grid">
         {iconNames.map((fullName) => {
           const name = fullName.replace("icon-", "");
+          const chineseName = getChineseName(name);
           return (
             <div
               key={fullName}
@@ -40,9 +42,8 @@ export default function SvgIconPage() {
             >
               <SvgIcon name={name} width={48} height={48} />
               <span className="svg-icon-name">{name}</span>
-              {copiedName === name && (
-                <span className="svg-icon-copied">✓ 已复制</span>
-              )}
+              <span className="svg-icon-chinese">{chineseName}</span>
+              {copiedName === name && <span className="svg-icon-copied">✓ 已复制</span>}
             </div>
           );
         })}
