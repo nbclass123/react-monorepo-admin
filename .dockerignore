@@ -1,0 +1,17 @@
+# 排除不需要打包到 Docker 镜像的文件和目录
+node_modules
+dist
+.build
+.cache
+.git
+.gitignore
+.npmrc
+.eslintrc.js
+.prettierrc.json
+.prettierignore
+*.log
+.env
+.env.*
+.idea
+.vscode
+.DS_Store

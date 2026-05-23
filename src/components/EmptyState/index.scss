@@ -1,0 +1,29 @@
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+
+  &__icon {
+    color: rgba(0, 0, 0, 0.15);
+    margin-bottom: 16px;
+  }
+
+  &__title {
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.65);
+    margin-bottom: 8px;
+  }
+
+  &__description {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.45);
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  &__action {
+    margin-top: 4px;
+  }
+}

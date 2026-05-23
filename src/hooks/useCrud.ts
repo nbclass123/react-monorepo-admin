@@ -1,5 +1,4 @@
 import type { FormInstance } from "antd";
-import { message, Modal } from "antd";
 import { useCallback } from "react";
 
 import { useModalForm, useModalFormWithForm } from "./useModalForm";
@@ -32,7 +31,8 @@ export function useCrud<
   CreateDto = unknown,
   UpdateDto = unknown
 >(
-  options: UseCrudOptions<T, CreateDto, UpdateDto> = {}
+  options: UseCrudOptions<T, CreateDto, UpdateDto> = {},
+  { message, modal }: { message?: { success: (msg: string) => void }; modal?: { confirm: (opts: Record<string, unknown>) => void } }
 ): UseCrudReturn<T, CreateDto, UpdateDto> {
   const { createApi, updateApi, deleteApi, onRefresh, successMessage, deleteConfirm } = options;
 
@@ -44,7 +44,7 @@ export function useCrud<
     async (formData: CreateDto) => {
       if (createApi) {
         await createApi(formData);
-        message.success(successMessage?.create ?? "创建成功");
+        message?.success(successMessage?.create ?? "创建成功");
       }
       modalForm.close();
       onRefresh?.();
@@ -56,7 +56,7 @@ export function useCrud<
     async (formData: UpdateDto & { id: number }) => {
       if (updateApi) {
         await updateApi(formData);
-        message.success(successMessage?.update ?? "更新成功");
+        message?.success(successMessage?.update ?? "更新成功");
       }
       modalForm.close();
       onRefresh?.();
@@ -68,7 +68,7 @@ export function useCrud<
     async (record: T, deleteFn?: () => Promise<void>) => {
       const { title, content } = deleteConfirm ?? {};
 
-      Modal.confirm({
+      modal?.confirm({
         title: title ?? "确认删除",
         content:
           typeof content === "function" ? content(record) : content ?? "确定要删除吗？",
@@ -82,7 +82,7 @@ export function useCrud<
             } else if (deleteApi) {
               await deleteApi((record as { id: number }).id);
             }
-            message.success(successMessage?.delete ?? "删除成功");
+            message?.success(successMessage?.delete ?? "删除成功");
             onRefresh?.();
           } catch (error) {
             console.error("Delete failed:", error);
@@ -107,7 +107,8 @@ export function useCrudWithForm<
   UpdateDto = unknown
 >(
   form: FormInstance<T>,
-  options: UseCrudOptions<T, CreateDto, UpdateDto> = {}
+  options: UseCrudOptions<T, CreateDto, UpdateDto> = {},
+  { message, modal }: { message?: { success: (msg: string) => void }; modal?: { confirm: (opts: Record<string, unknown>) => void } }
 ): UseCrudReturn<T, CreateDto, UpdateDto> {
   const { createApi, updateApi, deleteApi, onRefresh, successMessage, deleteConfirm } = options;
 
@@ -117,7 +118,7 @@ export function useCrudWithForm<
     async (formData: CreateDto) => {
       if (createApi) {
         await createApi(formData);
-        message.success(successMessage?.create ?? "创建成功");
+        message?.success(successMessage?.create ?? "创建成功");
       }
       modalForm.close();
       onRefresh?.();
@@ -129,7 +130,7 @@ export function useCrudWithForm<
     async (formData: UpdateDto & { id: number }) => {
       if (updateApi) {
         await updateApi(formData);
-        message.success(successMessage?.update ?? "更新成功");
+        message?.success(successMessage?.update ?? "更新成功");
       }
       modalForm.close();
       onRefresh?.();
@@ -141,7 +142,7 @@ export function useCrudWithForm<
     async (record: T, deleteFn?: () => Promise<void>) => {
       const { title, content } = deleteConfirm ?? {};
 
-      Modal.confirm({
+      modal?.confirm({
         title: title ?? "确认删除",
         content:
           typeof content === "function" ? content(record) : content ?? "确定要删除吗？",
@@ -155,7 +156,7 @@ export function useCrudWithForm<
             } else if (deleteApi) {
               await deleteApi((record as { id: number }).id);
             }
-            message.success(successMessage?.delete ?? "删除成功");
+            message?.success(successMessage?.delete ?? "删除成功");
             onRefresh?.();
           } catch (error) {
             console.error("Delete failed:", error);

@@ -1,6 +1,6 @@
 import { type ReactNode, useCallback, useState } from "react";
 
-import "./index.css";
+import "./index.scss";
 
 interface BootSplashProps {
   visible?: boolean;

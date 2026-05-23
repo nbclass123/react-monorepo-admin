@@ -4,9 +4,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { type LoginVo, login } from "@/api/module/user";
+import SvgIcon from "@/components/SvgIcon";
 import { useAuth } from "@/store/useAuth";
 
-import "./index.css";
+import "./index.scss";
 
 type FieldType = {
   username: string;
@@ -52,9 +53,7 @@ const LoginPage: React.FC = () => {
 
       <div className="login-card">
         <div className="login-brand">
-          <div className="login-brand-icon">
-            <SafetyCertificateOutlined />
-          </div>
+          <SvgIcon name="fanqie" className="login-brand-icon" />
         </div>
         <h1 className="login-title">欢迎回来</h1>
         <p className="login-subtitle">登录您的账户以继续</p>

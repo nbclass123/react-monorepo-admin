@@ -84,48 +84,48 @@ export interface UserVo {
 
 /** 登录接口 */
 export function login(data: LoginReq) {
-  return post<ResultVo<LoginVo>>("/sys/user/login", data as unknown as Record<string, unknown>);
+  return post<ResultVo<LoginVo>>("/auth/user/login", data as unknown as Record<string, unknown>);
 }
 
 /** 退出登录接口 */
 export function logout() {
-  return post<ResultVo<null>>("/sys/user/logout");
+  return post<ResultVo<null>>("/auth/user/logout");
 }
 
 /** 根据ID获取用户信息 */
-export function getSysUserById(id: number) {
-  return get<ResultVo<UserVo>>("/sys/user/getSysUserById", { id } as Record<string, unknown>);
+export function getSysUserById(id: number, signal?: AbortSignal) {
+  return get<ResultVo<UserVo>>("/auth/user/getSysUserById", { id } as Record<string, unknown>, { signal });
 }
 
 /** 注册新用户 */
 export function register(data: RegisterReq) {
-  return post<ResultVo<null>>("/sys/user/register", data as unknown as Record<string, unknown>);
+  return post<ResultVo<null>>("/auth/user/register", data as unknown as Record<string, unknown>);
 }
 
 /** 更新用户信息 */
 export function updateUser(data: UpdateUserReq) {
-  return put<ResultVo<null>>("/sys/user/update", data as unknown as Record<string, unknown>);
+  return put<ResultVo<null>>("/auth/user/update", data as unknown as Record<string, unknown>);
 }
 
 /** 冻结用户 */
 export function freezeUser(id: number) {
-  return put<ResultVo<null>>("/sys/user/freeze", { id } as unknown as Record<string, unknown>);
+  return put<ResultVo<null>>("/auth/user/freeze", { id } as unknown as Record<string, unknown>);
 }
 
 /** 激活用户 */
 export function activateUser(id: number) {
-  return put<ResultVo<null>>("/sys/user/activate", { id } as unknown as Record<string, unknown>);
+  return put<ResultVo<null>>("/auth/user/activate", { id } as unknown as Record<string, unknown>);
 }
 
 /** 删除用户 */
 export function deleteUser(id: number) {
-  return del<ResultVo<null>>("/sys/user/delete", { id } as Record<string, unknown>);
+  return del<ResultVo<null>>("/auth/user/delete", { id } as Record<string, unknown>);
 }
 
 /** 更新密码 */
 export function updatePassword(data: UpdatePasswordReq) {
   return put<ResultVo<null>>(
-    "/sys/user/updatePassword",
+    "/auth/user/updatePassword",
     data as unknown as Record<string, unknown>
   );
 }
@@ -133,7 +133,7 @@ export function updatePassword(data: UpdatePasswordReq) {
 /** 获取用户列表（分页） */
 export function getUserList(params: UserListReq) {
   return get<ResultVo<PageVo<UserVo>>>(
-    "/sys/user/getList",
+    "/auth/user/getList",
     params as unknown as Record<string, unknown>
   );
 }

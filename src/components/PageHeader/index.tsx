@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import "./index.css";
+import "./index.scss";
 
 interface PageHeaderProps {
   title: string;

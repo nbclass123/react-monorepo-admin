@@ -1,13 +1,14 @@
-import { message } from "antd";
+import { App } from "antd";
 import { useState } from "react";
 import iconNames from "virtual:svg-icons-names";
 
 import SvgIcon from "@/components/SvgIcon";
 
 import { getChineseName } from "./iconMap";
-import "./index.css";
+import "./index.scss";
 
 export default function SvgIconPage() {
+  const { message } = App.useApp();
   const [copiedName, setCopiedName] = useState<string | null>(null);
 
   const handleCopy = async (name: string) => {

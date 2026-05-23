@@ -1,10 +1,9 @@
-import { message } from "antd";
 import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 
 /** axios 实例配置 */
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_APP_BASE_URL || "http://localhost:8080",
+  baseURL: import.meta.env.VITE_APP_BASE_URL,
   timeout: 10000,
   headers: {
     "Content-Type": "application/x-www-form-urlencoded"
@@ -31,12 +30,10 @@ instance.interceptors.response.use(
     if (response.data.code === 200) {
       return response.data;
     } else {
-      message.warning(response.data.msg || "请求失败");
       return Promise.reject(response.data);
     }
   },
   (error) => {
-    console.error("Request failed:", error);
     return Promise.reject(error);
   }
 );
@@ -45,9 +42,9 @@ instance.interceptors.response.use(
 export function get<T>(
   url: string,
   params?: Record<string, unknown>,
-  config?: AxiosRequestConfig
+  config?: AxiosRequestConfig & { signal?: AbortSignal }
 ): Promise<T> {
-  return instance.get(url, { params, ...config });
+  return instance.get(url, { params, signal: config?.signal, ...config });
 }
 
 /** POST 请求封装 */

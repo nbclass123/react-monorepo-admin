@@ -33,6 +33,7 @@ export function useList<T>(options: UseListOptions<T>) {
   const [searchParams, setSearchParams] = useState<Record<string, unknown>>(initialSearchParams);
   const initialSearchParamsRef = useRef(initialSearchParams);
   const isMountedRef = useRef(false);
+  const abortedRef = useRef(false);
 
   /** 内部数据请求方法 */
   const fetchData = useCallback(
@@ -41,6 +42,7 @@ export function useList<T>(options: UseListOptions<T>) {
       currentSize: number,
       currentSearchParams: Record<string, unknown>
     ) => {
+      if (abortedRef.current) return;
       setLoading(true);
       try {
         const result = await fetchFn({
@@ -95,6 +97,11 @@ export function useList<T>(options: UseListOptions<T>) {
       const params = initialSearchParamsRef.current;
       fetchData(initialPage, initialSize, params);
     }
+
+    return () => {
+      abortedRef.current = true;
+      isMountedRef.current = false;
+    };
   }, [fetchData, initialPage, initialSize]);
 
   return {

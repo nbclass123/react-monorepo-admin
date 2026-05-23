@@ -1,4 +1,5 @@
 import {
+  AppstoreOutlined,
   BookOutlined,
   DashboardOutlined,
   IdcardOutlined,
@@ -12,16 +13,17 @@ import {
   TeamOutlined,
   UserOutlined
 } from "@ant-design/icons";
-import { Avatar, Button, Dropdown, Layout, Menu, Space } from "antd";
+import { Avatar, Breadcrumb, Button, Dropdown, Layout, Menu, Space, Tooltip } from "antd";
 import useApp from "antd/es/app/useApp";
 import { useRef, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import SvgIcon from "@/components/SvgIcon";
+import { useLayout } from "@/hooks/useLayout";
 import { useAuth } from "@/store/useAuth";
 import { useTheme } from "@/theme/index";
 
-import "./index.css";
+import "./index.scss";
 
 const { Sider, Header, Content } = Layout;
 
@@ -32,6 +34,7 @@ const MainLayout: React.FC = () => {
   const location = useLocation();
   const { userInfo, logoutAction } = useAuth();
   const { mode, toggleMode } = useTheme();
+  const { layout, toggleLayout } = useLayout();
   const loggingOutRef = useRef(false);
   const { modal } = useApp();
 
@@ -108,6 +111,48 @@ const MainLayout: React.FC = () => {
 
   const currentPath = location.pathname;
 
+  const getBreadcrumbItems = () => {
+    const items: Array<{ key: string; label: string; path: string }> = [
+      { key: "dashboard", label: "仪表盘", path: "/dashboard" }
+    ];
+
+    const findPath = (
+      menuList: any[],
+      targetPath: string,
+      parentItems: Array<{ key: string; label: string; path: string }> = []
+    ): boolean => {
+      for (const menu of menuList) {
+        if (menu.key === targetPath) {
+          items.push(...parentItems, {
+            key: menu.key,
+            label: menu.label,
+            path: ""
+          });
+          return true;
+        }
+        if (menu.children) {
+          if (
+            findPath(menu.children, targetPath, [
+              ...parentItems,
+              { key: menu.key, label: menu.label, path: menu.children?.[0]?.key || menu.key }
+            ])
+          ) {
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+
+    if (currentPath !== "/dashboard") {
+      findPath(menuItems, currentPath);
+    }
+
+    return items;
+  };
+
+  const breadcrumbItems = getBreadcrumbItems();
+
   const userMenuItems = [
     {
       key: "userInfo",
@@ -140,7 +185,7 @@ const MainLayout: React.FC = () => {
     }
   ];
 
-  return (
+  const renderSideLayout = () => (
     <Layout className="main-layout">
       <Sider collapsible collapsed={collapsed} trigger={null} width={240} className="vercel-sider">
         <div className="vercel-brand">
@@ -156,6 +201,7 @@ const MainLayout: React.FC = () => {
           openKeys={collapsed ? [] : openKeys}
           onOpenChange={setOpenKeys}
           items={menuItems}
+          inlineCollapsed={collapsed}
           onClick={handleMenuClick}
           className="vercel-menu"
         />
@@ -172,6 +218,14 @@ const MainLayout: React.FC = () => {
               />
             </div>
             <div className="vercel-header-right">
+              <Tooltip title="切换到顶部菜单布局">
+                <Button
+                  type="text"
+                  icon={<AppstoreOutlined />}
+                  onClick={toggleLayout}
+                  className="vercel-layout-btn"
+                />
+              </Tooltip>
               <Button
                 type="text"
                 icon={mode === "dark" ? <SunOutlined /> : <MoonOutlined />}
@@ -195,12 +249,92 @@ const MainLayout: React.FC = () => {
             </div>
           </div>
         </Header>
+        <div className="vercel-breadcrumb-wrapper">
+          <Breadcrumb
+            items={breadcrumbItems.map((item) => ({
+              title: item.path ? (
+                <a onClick={() => navigate(item.path)}>{item.label}</a>
+              ) : (
+                item.label
+              )
+            }))}
+          />
+        </div>
         <Content className="vercel-content">
           <Outlet />
         </Content>
       </Layout>
     </Layout>
   );
+
+  const renderTopLayout = () => (
+    <Layout className="main-layout top-layout">
+      <Header className="vercel-header top-header">
+        <div className="vercel-header-content">
+          <div className="vercel-header-left">
+            <div className="vercel-brand">
+              <span className="vercel-brand-text">呼呼呼</span>
+            </div>
+          </div>
+          <div className="vercel-header-center">
+            <Menu
+              mode="horizontal"
+              selectedKeys={[currentPath]}
+              items={menuItems}
+              onClick={handleMenuClick}
+              className="vercel-top-menu"
+            />
+          </div>
+          <div className="vercel-header-right">
+            <Tooltip title="切换到侧边栏布局">
+              <Button
+                type="text"
+                icon={<MenuFoldOutlined />}
+                onClick={toggleLayout}
+                className="vercel-layout-btn"
+              />
+            </Tooltip>
+            <Button
+              type="text"
+              icon={mode === "dark" ? <SunOutlined /> : <MoonOutlined />}
+              onClick={toggleMode}
+              className="vercel-theme-btn"
+            />
+            <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
+              <Space className="vercel-user-dropdown">
+                {userInfo?.avatarUrl ? (
+                  <Avatar size={32} src={userInfo?.avatarUrl} icon={<UserOutlined />} />
+                ) : (
+                  <SvgIcon name="fanqie" />
+                )}
+                <span className="vercel-username">
+                  {userInfo?.username || userInfo?.nickname || "用户"}
+                </span>
+              </Space>
+            </Dropdown>
+          </div>
+        </div>
+      </Header>
+      <Layout className="main-layout-inner">
+        <div className="vercel-breadcrumb-wrapper">
+          <Breadcrumb
+            items={breadcrumbItems.map((item) => ({
+              title: item.path ? (
+                <a onClick={() => navigate(item.path)}>{item.label}</a>
+              ) : (
+                item.label
+              )
+            }))}
+          />
+        </div>
+        <Content className="vercel-content">
+          <Outlet />
+        </Content>
+      </Layout>
+    </Layout>
+  );
+
+  return layout === "side" ? renderSideLayout() : renderTopLayout();
 };
 
 export default MainLayout;

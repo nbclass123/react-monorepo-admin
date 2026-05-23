@@ -7,7 +7,7 @@ import router from "@/router/index";
 import { ThemeProvider } from "@/theme";
 
 import "virtual:svg-icons-register";
-import "./index.css";
+import "./index.scss";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

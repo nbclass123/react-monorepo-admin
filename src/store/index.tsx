@@ -29,9 +29,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
+    const controller = new AbortController();
     createRestoreAction(dispatch, token, userId, () => {
       setReady(true);
-    });
+    }, controller.signal);
+
+    return () => {
+      controller.abort();
+    };
   }, []);
 
   const loginAction = useCallback(async (token: string, userId: number) => {

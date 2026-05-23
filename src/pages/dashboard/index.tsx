@@ -20,7 +20,7 @@ import BarChart from "@/components/charts/BarChart";
 import LineChart from "@/components/charts/LineChart";
 import PieChart from "@/components/charts/PieChart";
 
-import "./index.css";
+import "./index.scss";
 
 // 迷你柱状图组件
 const MiniBarChart = ({ data, color }: { data: number[]; color: string }) => {
@@ -532,6 +532,7 @@ const DashboardPage = () => {
             <Table
               className="orders-table"
               dataSource={recentOrders}
+              rowKey="id"
               columns={orderColumns}
               pagination={false}
               size="small"

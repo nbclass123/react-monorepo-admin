@@ -6,13 +6,13 @@ import type { AppRouteConfig } from "./types";
 
 const LoginPage = lazy(() => import("@/pages/login/index"));
 const DashboardPage = lazy(() => import("@/pages/dashboard/index"));
-const UserListPage = lazy(() => import("@/pages/userList/index"));
-const UserProfilePage = lazy(() => import("@/pages/userProfile/index"));
-const BlogCategoryPage = lazy(() => import("@/pages/blogCategory/index"));
-const BlogTagPage = lazy(() => import("@/pages/blogTag/index"));
-const BlogPostPage = lazy(() => import("@/pages/blogPost/index"));
-const SysRolePage = lazy(() => import("@/pages/sysRole/index"));
-const SysPermissionPage = lazy(() => import("@/pages/sysPermission/index"));
+const UserListPage = lazy(() => import("@/pages/user/userList/index"));
+const UserProfilePage = lazy(() => import("@/pages/user/userProfile/index"));
+const BlogCategoryPage = lazy(() => import("@/pages/blog/blogCategory/index"));
+const BlogTagPage = lazy(() => import("@/pages/blog/blogTag/index"));
+const BlogPostPage = lazy(() => import("@/pages/blog/blogPost/index"));
+const SysRolePage = lazy(() => import("@/pages/sys/sysRole/index"));
+const SysPermissionPage = lazy(() => import("@/pages/sys/sysPermission/index"));
 const SvgIconPage = lazy(() => import("@/pages/svgIcon/index"));
 
 export const appRoutes: AppRouteConfig[] = [

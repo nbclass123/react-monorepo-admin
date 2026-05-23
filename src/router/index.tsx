@@ -20,6 +20,7 @@ const protectedRoutes = appRoutes.filter((r) => !r.hideInMenu);
 
 const router = createBrowserRouter([
   {
+    path: "/",
     element: (
       <AuthProvider>
         <Outlet />
@@ -28,6 +29,7 @@ const router = createBrowserRouter([
     children: [
       ...toRouteObjects(authRoutes),
       {
+        path: "",
         element: (
           <PrivateRoute>
             <MainLayout />

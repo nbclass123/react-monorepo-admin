@@ -1,6 +1,8 @@
 import { Form, Input, Modal, message } from "antd";
 import { type ReactNode, useEffect } from "react";
 
+import "./index.scss";
+
 import {
   type RegisterReq,
   type UpdateUserReq,

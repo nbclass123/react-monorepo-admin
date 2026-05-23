@@ -11,9 +11,12 @@ import { type AuthAction, type UserInfo } from "./context";
  * @param userId 用户 ID
  * @returns 用户信息对象，如果失败返回 null
  */
-export async function fetchUserInfoById(userId: string): Promise<UserInfo | null> {
+export async function fetchUserInfoById(
+  userId: string,
+  signal?: AbortSignal
+): Promise<UserInfo | null> {
   try {
-    const result = await getSysUserById(parseInt(userId, 10));
+    const result = await getSysUserById(parseInt(userId, 10), signal);
     const data = result.data;
     return {
       id: data.id,
@@ -22,8 +25,14 @@ export async function fetchUserInfoById(userId: string): Promise<UserInfo | null
       email: data.email,
       avatarUrl: data.avatarUrl
     };
-  } catch (error) {
-    console.error("Failed to fetch user info:", error);
+  } catch (error: any) {
+    if (
+      error?.name === "AbortError" ||
+      error?.name === "CanceledError" ||
+      error?.code === "ERR_CANCELED"
+    ) {
+      return null;
+    }
     return null;
   }
 }
@@ -95,11 +104,12 @@ export async function createRestoreAction(
   dispatch: React.Dispatch<AuthAction>,
   token: string,
   userId: string,
-  onComplete: () => void
+  onComplete: () => void,
+  signal?: AbortSignal
 ): Promise<void> {
   dispatch({ type: "RESTORE", payload: { token } });
 
-  const userInfo = await fetchUserInfoById(userId);
+  const userInfo = await fetchUserInfoById(userId, signal);
   if (userInfo) {
     dispatch({ type: "SET_USER_INFO", payload: userInfo });
   }

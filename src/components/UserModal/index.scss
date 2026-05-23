@@ -1,0 +1,32 @@
+.ant-modal {
+  .ant-form-item {
+    margin-bottom: var(--md-space-4);
+  }
+
+  .ant-form-item-label > label {
+    color: var(--md-text-secondary);
+    font-weight: 500;
+  }
+
+  .ant-input,
+  .ant-input-password,
+  .ant-input-affix-wrapper {
+    border-radius: var(--md-radius-sm);
+    border-color: var(--md-border-color);
+    transition: all var(--md-transition);
+  }
+
+  .ant-input:hover,
+  .ant-input-password:hover,
+  .ant-input-affix-wrapper:hover {
+    border-color: var(--md-text-secondary);
+  }
+
+  .ant-input:focus,
+  .ant-input-password:focus,
+  .ant-input-affix-wrapper-focused {
+    border-color: var(--md-primary);
+    box-shadow: 0 0 0 2px var(--md-primary-bg);
+    background: var(--md-surface);
+  }
+}
