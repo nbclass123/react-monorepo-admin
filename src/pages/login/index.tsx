@@ -1,4 +1,4 @@
-import { LockOutlined, SafetyCertificateOutlined, UserOutlined } from "@ant-design/icons";
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Form, Input, message } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
