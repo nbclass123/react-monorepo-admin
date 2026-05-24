@@ -74,9 +74,6 @@ const SysRolePage = () => {
           <Form.Item name="roleName">
             <Input placeholder="角色名称" allowClear />
           </Form.Item>
-          <Form.Item name="roleCode">
-            <Input placeholder="角色编码" allowClear />
-          </Form.Item>
           <Form.Item>
             <Space className="search-buttons">
               <Button type="primary" icon={<SearchOutlined />} onClick={handleSearch}>

@@ -1,70 +1,45 @@
 version: '3.8'
 
+# ============================================================
+# hu-platform 前端独立部署配置
+#
+# 与后端系统（E:\javaProject\hy-platform\.docs\docker-compose.yml）
+# 使用相同的网络名称 hu-platform-net，实现容器间互通
+#
+# 使用方式：
+#   1. 先启动后端：cd E:\javaProject\hy-platform\.docs && docker-compose up -d
+#   2. 再启动前端：cd e:\myProject\react-app-java && docker-compose up -d
+#
+# 架构说明：
+#   - 前端（8088）-> gateway（8080）-> 各业务服务
+# ============================================================
+
 services:
   # 前端服务
   frontend:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: hy-platform-frontend
+      args:
+        # API 路径前缀，通过 Nginx 反向代理
+        # 例如：/api/auth/user/login -> Nginx -> gateway:8080/api/auth/user/login
+        - VITE_APP_BASE_URL=/api
+        - VITE_APP_TITLE=呼呼呼
+    container_name: hy-platform-web
     ports:
       - "8088:80"
-    environment:
-      - VITE_API_URL=http://localhost:8081/api
-      - VITE_APP_TITLE=呼呼呼
     networks:
-      - hy-platform-network
+      # 使用与后端相同的网络，实现容器间通信
+      - hu-platform-net
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      test: ["CMD", "curl", "-f", "http://localhost/"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
 
-  # 后端服务（示例配置，根据实际情况修改）
-  backend:
-    image: openjdk:21-jdk-alpine
-    container_name: hy-platform-backend
-    ports:
-      - "8081:8080"
-    volumes:
-      - ./backend:/app
-    working_dir: /app
-    command: ["java", "-jar", "hy-platform.jar"]
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - DATABASE_URL=jdbc:mysql://mysql:3306/example_db
-      - DATABASE_USERNAME=admin
-      - DATABASE_PASSWORD=password
-    networks:
-      - hy-platform-network
-    depends_on:
-      - mysql
-    restart: unless-stopped
-
-  # MySQL 数据库（示例配置）
-  mysql:
-    image: mysql:8.0
-    container_name: hy-platform-mysql
-    ports:
-      - "3306:3306"
-    environment:
-      - MYSQL_ROOT_PASSWORD=root_password
-      - MYSQL_DATABASE=example_db
-      - MYSQL_USER=admin
-      - MYSQL_PASSWORD=password
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - hy-platform-network
-    restart: unless-stopped
-
+# 引用后端项目已创建的网络（不重复创建）
 networks:
-  hy-platform-network:
-    driver: bridge
-
-volumes:
-  mysql_data:
-    driver: local
+  hu-platform-net:
+    external: true

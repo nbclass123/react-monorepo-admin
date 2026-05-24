@@ -94,8 +94,12 @@ export function useList<T>(options: UseListOptions<T>) {
   useEffect(() => {
     if (!isMountedRef.current) {
       isMountedRef.current = true;
+      abortedRef.current = false;
       const params = initialSearchParamsRef.current;
       fetchData(initialPage, initialSize, params);
+    } else {
+      // StrictMode remount - reset abortedRef so search works
+      abortedRef.current = false;
     }
 
     return () => {
