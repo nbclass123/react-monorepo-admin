@@ -23,7 +23,7 @@ RUN npm ci
 COPY . .
 
 # 构建项目
-RUN npm run build
+RUN npm run build:prod
 
 # 第二阶段：运行项目（使用 Nginx）
 FROM nginx:alpine

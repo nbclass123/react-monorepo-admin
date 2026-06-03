@@ -1,7 +1,9 @@
 import {
   AppstoreOutlined,
   BookOutlined,
+  CloudUploadOutlined,
   DashboardOutlined,
+  VideoCameraOutlined,
   IdcardOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
@@ -20,64 +22,21 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import SvgIcon from "@/components/SvgIcon";
 import { useLayout } from "@/hooks/useLayout";
-import { useAuth } from "@/store/useAuth";
+import { useAuth } from "@/auth/useAuth";
 import { useTheme } from "@/theme/index";
 
 import "./index.scss";
 
 const { Sider, Header, Content } = Layout;
 
-const MainLayout: React.FC = () => {
-  const [collapsed, setCollapsed] = useState(false);
-  const [openKeys, setOpenKeys] = useState<string[]>(["blog", "sysAuth"]);
+/** 顶部右侧操作区：布局切换、主题切换、用户下拉 */
+function HeaderRight({ collapsed }: { collapsed: boolean }) {
   const navigate = useNavigate();
-  const location = useLocation();
   const { userInfo, logoutAction } = useAuth();
   const { mode, toggleMode } = useTheme();
   const { layout, toggleLayout } = useLayout();
   const loggingOutRef = useRef(false);
   const { modal } = useApp();
-
-  const menuItems = [
-    {
-      key: "/dashboard",
-      icon: <DashboardOutlined />,
-      label: "仪表盘"
-    },
-    {
-      key: "/svgIcon",
-      icon: <RocketOutlined />,
-      label: "图标图鉴"
-    },
-    {
-      key: "/userList",
-      icon: <TeamOutlined />,
-      label: "用户管理"
-    },
-    {
-      key: "blog",
-      icon: <BookOutlined />,
-      label: "博客管理",
-      children: [
-        { key: "/blog/category", label: "文章分类" },
-        { key: "/blog/tag", label: "文章标签" },
-        { key: "/blog/post", label: "文章管理" }
-      ]
-    },
-    {
-      key: "sysAuth",
-      icon: <SafetyCertificateOutlined />,
-      label: "权限管理",
-      children: [
-        { key: "/sys/role", label: "角色管理" },
-        { key: "/sys/permission", label: "权限管理" }
-      ]
-    }
-  ];
-
-  const handleMenuClick = ({ key }: { key: string }) => {
-    navigate(key);
-  };
 
   const handleLogout = () => {
     if (loggingOutRef.current) return;
@@ -109,50 +68,6 @@ const MainLayout: React.FC = () => {
     });
   };
 
-  const currentPath = location.pathname;
-
-  const getBreadcrumbItems = () => {
-    const items: Array<{ key: string; label: string; path: string }> = [
-      { key: "dashboard", label: "仪表盘", path: "/dashboard" }
-    ];
-
-    const findPath = (
-      menuList: any[],
-      targetPath: string,
-      parentItems: Array<{ key: string; label: string; path: string }> = []
-    ): boolean => {
-      for (const menu of menuList) {
-        if (menu.key === targetPath) {
-          items.push(...parentItems, {
-            key: menu.key,
-            label: menu.label,
-            path: ""
-          });
-          return true;
-        }
-        if (menu.children) {
-          if (
-            findPath(menu.children, targetPath, [
-              ...parentItems,
-              { key: menu.key, label: menu.label, path: menu.children?.[0]?.key || menu.key }
-            ])
-          ) {
-            return true;
-          }
-        }
-      }
-      return false;
-    };
-
-    if (currentPath !== "/dashboard") {
-      findPath(menuItems, currentPath);
-    }
-
-    return items;
-  };
-
-  const breadcrumbItems = getBreadcrumbItems();
-
   const userMenuItems = [
     {
       key: "userInfo",
@@ -168,24 +83,195 @@ const MainLayout: React.FC = () => {
       ),
       disabled: true
     },
-    {
-      type: "divider" as const
-    },
-    {
-      key: "profile",
-      icon: <IdcardOutlined />,
-      label: "个人中心",
-      onClick: () => navigate("/userProfile")
-    },
-    {
-      key: "logout",
-      icon: <LogoutOutlined />,
-      label: "退出登录",
-      onClick: handleLogout
-    }
+    { type: "divider" as const },
+    { key: "profile", icon: <IdcardOutlined />, label: "个人中心", onClick: () => navigate("/userProfile") },
+    { key: "logout", icon: <LogoutOutlined />, label: "退出登录", onClick: handleLogout }
   ];
 
-  const renderSideLayout = () => (
+  const isSideLayout = layout === "side";
+
+  return (
+    <div className="vercel-header-right">
+      <Tooltip title={isSideLayout ? "切换到顶部菜单布局" : "切换到侧边栏布局"}>
+        <Button
+          type="text"
+          icon={isSideLayout ? <AppstoreOutlined /> : <MenuFoldOutlined />}
+          onClick={toggleLayout}
+          className="vercel-layout-btn"
+        />
+      </Tooltip>
+      <Button
+        type="text"
+        icon={mode === "dark" ? <SunOutlined /> : <MoonOutlined />}
+        onClick={toggleMode}
+        className="vercel-theme-btn"
+      />
+      <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
+        <Space className="vercel-user-dropdown">
+          {userInfo?.avatarUrl ? (
+            <Avatar size={32} src={userInfo?.avatarUrl} icon={<UserOutlined />} />
+          ) : (
+            <SvgIcon name="fanqie" />
+          )}
+          {!collapsed && (
+            <span className="vercel-username">
+              {userInfo?.username || userInfo?.nickname || "用户"}
+            </span>
+          )}
+        </Space>
+      </Dropdown>
+    </div>
+  );
+}
+
+/** 面包屑导航 */
+function BreadcrumbNav({
+  menuItems,
+  currentPath
+}: {
+  menuItems: Array<{ key: string; label: string; children?: Array<{ key: string; label: string }> }>;
+  currentPath: string;
+}) {
+  const navigate = useNavigate();
+
+  const getBreadcrumbItems = () => {
+    const items: Array<{ key: string; label: string; path: string }> = [
+      { key: "dashboard", label: "仪表盘", path: "/dashboard" }
+    ];
+
+    const findPath = (
+      list: typeof menuItems,
+      targetPath: string,
+      parents: Array<{ key: string; label: string; path: string }> = []
+    ): boolean => {
+      for (const menu of list) {
+        if (menu.key === targetPath) {
+          items.push(...parents, { key: menu.key, label: menu.label, path: "" });
+          return true;
+        }
+        if (menu.children) {
+          if (findPath(menu.children, targetPath, [...parents, { key: menu.key, label: menu.label, path: menu.children?.[0]?.key || menu.key }])) {
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+
+    if (currentPath !== "/dashboard") {
+      findPath(menuItems, currentPath);
+    }
+    return items;
+  };
+
+  const breadcrumbItems = getBreadcrumbItems();
+
+  return (
+    <div className="vercel-breadcrumb-wrapper">
+      <Breadcrumb
+        items={breadcrumbItems.map((item) => ({
+          title: item.path ? (
+            <a onClick={() => navigate(item.path)}>{item.label}</a>
+          ) : (
+            item.label
+          )
+        }))}
+      />
+    </div>
+  );
+}
+
+const menuItems = [
+  { key: "/dashboard", icon: <DashboardOutlined />, label: "仪表盘" },
+  { key: "/svgIcon", icon: <RocketOutlined />, label: "图标图鉴" },
+  { key: "/userList", icon: <TeamOutlined />, label: "用户管理" },
+  {
+    key: "blog",
+    icon: <BookOutlined />,
+    label: "博客管理",
+    children: [
+      { key: "/blog/category", label: "文章分类" },
+      { key: "/blog/tag", label: "文章标签" },
+      { key: "/blog/post", label: "文章管理" }
+    ]
+  },
+  {
+    key: "sysAuth",
+    icon: <SafetyCertificateOutlined />,
+    label: "权限管理",
+    children: [
+      { key: "/sys/role", label: "角色管理" },
+      { key: "/sys/permission", label: "权限管理" }
+    ]
+  },
+  {
+    key: "/uploadTest",
+    icon: <CloudUploadOutlined />,
+    label: "上传测试"
+  },
+  {
+    key: "recording",
+    icon: <VideoCameraOutlined />,
+    label: "会话录制",
+    children: [
+      { key: "/recording/manage", label: "录制管理" },
+      { key: "/recording/playback", label: "视频回放" }
+    ]
+  }
+];
+
+const MainLayout: React.FC = () => {
+  const [collapsed, setCollapsed] = useState(false);
+  const [openKeys, setOpenKeys] = useState<string[]>(["blog", "sysAuth", "recording"]);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { layout } = useLayout();
+
+  const currentPath = location.pathname;
+
+  const handleMenuClick = ({ key }: { key: string }) => {
+    navigate(key);
+  };
+
+  const sharedBreadcrumb = <BreadcrumbNav menuItems={menuItems} currentPath={currentPath} />;
+
+  const sharedContent = (
+    <>
+      {sharedBreadcrumb}
+      <Content className="vercel-content">
+        <Outlet />
+      </Content>
+    </>
+  );
+
+  if (layout === "top") {
+    return (
+      <Layout className="main-layout top-layout">
+        <Header className="vercel-header top-header">
+          <div className="vercel-header-content">
+            <div className="vercel-header-left">
+              <div className="vercel-brand">
+                <span className="vercel-brand-text">呼呼呼</span>
+              </div>
+            </div>
+            <div className="vercel-header-center">
+              <Menu
+                mode="horizontal"
+                selectedKeys={[currentPath]}
+                items={menuItems}
+                onClick={handleMenuClick}
+                className="vercel-top-menu"
+              />
+            </div>
+            <HeaderRight collapsed={false} />
+          </div>
+        </Header>
+        <Layout className="main-layout-inner">{sharedContent}</Layout>
+      </Layout>
+    );
+  }
+
+  return (
     <Layout className="main-layout">
       <Sider collapsible collapsed={collapsed} trigger={null} width={240} className="vercel-sider">
         <div className="vercel-brand">
@@ -217,124 +303,13 @@ const MainLayout: React.FC = () => {
                 className="vercel-collapse-btn"
               />
             </div>
-            <div className="vercel-header-right">
-              <Tooltip title="切换到顶部菜单布局">
-                <Button
-                  type="text"
-                  icon={<AppstoreOutlined />}
-                  onClick={toggleLayout}
-                  className="vercel-layout-btn"
-                />
-              </Tooltip>
-              <Button
-                type="text"
-                icon={mode === "dark" ? <SunOutlined /> : <MoonOutlined />}
-                onClick={toggleMode}
-                className="vercel-theme-btn"
-              />
-              <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-                <Space className="vercel-user-dropdown">
-                  {userInfo?.avatarUrl ? (
-                    <Avatar size={32} src={userInfo?.avatarUrl} icon={<UserOutlined />} />
-                  ) : (
-                    <SvgIcon name="fanqie" />
-                  )}
-                  {!collapsed && (
-                    <span className="vercel-username">
-                      {userInfo?.username || userInfo?.nickname || "用户"}
-                    </span>
-                  )}
-                </Space>
-              </Dropdown>
-            </div>
+            <HeaderRight collapsed={collapsed} />
           </div>
         </Header>
-        <div className="vercel-breadcrumb-wrapper">
-          <Breadcrumb
-            items={breadcrumbItems.map((item) => ({
-              title: item.path ? (
-                <a onClick={() => navigate(item.path)}>{item.label}</a>
-              ) : (
-                item.label
-              )
-            }))}
-          />
-        </div>
-        <Content className="vercel-content">
-          <Outlet />
-        </Content>
+        {sharedContent}
       </Layout>
     </Layout>
   );
-
-  const renderTopLayout = () => (
-    <Layout className="main-layout top-layout">
-      <Header className="vercel-header top-header">
-        <div className="vercel-header-content">
-          <div className="vercel-header-left">
-            <div className="vercel-brand">
-              <span className="vercel-brand-text">呼呼呼</span>
-            </div>
-          </div>
-          <div className="vercel-header-center">
-            <Menu
-              mode="horizontal"
-              selectedKeys={[currentPath]}
-              items={menuItems}
-              onClick={handleMenuClick}
-              className="vercel-top-menu"
-            />
-          </div>
-          <div className="vercel-header-right">
-            <Tooltip title="切换到侧边栏布局">
-              <Button
-                type="text"
-                icon={<MenuFoldOutlined />}
-                onClick={toggleLayout}
-                className="vercel-layout-btn"
-              />
-            </Tooltip>
-            <Button
-              type="text"
-              icon={mode === "dark" ? <SunOutlined /> : <MoonOutlined />}
-              onClick={toggleMode}
-              className="vercel-theme-btn"
-            />
-            <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-              <Space className="vercel-user-dropdown">
-                {userInfo?.avatarUrl ? (
-                  <Avatar size={32} src={userInfo?.avatarUrl} icon={<UserOutlined />} />
-                ) : (
-                  <SvgIcon name="fanqie" />
-                )}
-                <span className="vercel-username">
-                  {userInfo?.username || userInfo?.nickname || "用户"}
-                </span>
-              </Space>
-            </Dropdown>
-          </div>
-        </div>
-      </Header>
-      <Layout className="main-layout-inner">
-        <div className="vercel-breadcrumb-wrapper">
-          <Breadcrumb
-            items={breadcrumbItems.map((item) => ({
-              title: item.path ? (
-                <a onClick={() => navigate(item.path)}>{item.label}</a>
-              ) : (
-                item.label
-              )
-            }))}
-          />
-        </div>
-        <Content className="vercel-content">
-          <Outlet />
-        </Content>
-      </Layout>
-    </Layout>
-  );
-
-  return layout === "side" ? renderSideLayout() : renderTopLayout();
 };
 
 export default MainLayout;

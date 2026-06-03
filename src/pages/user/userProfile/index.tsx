@@ -16,7 +16,7 @@ import { App, Button, Form, Input } from "antd";
 import { useCallback, useEffect, useState } from "react";
 
 import { type UserVo, getSysUserById, updatePassword, updateUser } from "@/api/module/user";
-import { useAuth } from "@/store/useAuth";
+import { useAuth } from "@/auth/useAuth";
 
 import "./index.scss";
 

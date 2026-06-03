@@ -1,0 +1,136 @@
+.recording-manage-page {
+  max-width: 900px;
+  margin: 0 auto;
+
+  .page-header {
+    margin-bottom: var(--md-space-6);
+
+    h2 {
+      margin-bottom: 4px;
+      font-size: 20px;
+    }
+
+    p {
+      color: var(--md-text-secondary);
+      font-size: 14px;
+    }
+  }
+}
+
+.recording-tab {
+  .recording-card {
+    & + .recording-card {
+      margin-top: var(--md-space-5);
+    }
+  }
+}
+
+.status-steps {
+  margin-top: var(--md-space-5);
+}
+
+.status-error {
+  margin-top: var(--md-space-4);
+  padding: 8px 12px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  color: #dc2626;
+  font-size: 13px;
+}
+
+.task-id-text {
+  font-family: monospace;
+  font-size: 12px;
+  word-break: break-all;
+}
+
+// ======================= 前端录制 =======================
+
+.frontend-recording {
+  .frontend-recording-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--md-space-6);
+    padding: var(--md-space-8) 0;
+  }
+
+  .recording-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .pulse-dot {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: #ef4444;
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+
+  .recording-text {
+    font-size: 18px;
+    font-weight: 600;
+    color: #ef4444;
+  }
+
+  .recording-stats {
+    display: flex;
+    gap: var(--md-space-8);
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--md-text-secondary);
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--md-text-primary);
+    }
+  }
+
+  .video-link {
+    margin-top: var(--md-space-4);
+
+    a {
+      color: var(--md-primary);
+      font-size: 14px;
+    }
+  }
+
+  .ant-tabs-content-holder {
+    padding: 24px;
+    background: var(--md-surface);
+    border-radius: 0 0 var(--md-radius-md) var(--md-radius-md);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
+}
+
+// Make Tabs work inside the card
+.frontend-recording {
+  .ant-tabs-nav {
+    margin-bottom: 0 !important;
+  }
+}

@@ -1,0 +1,33 @@
+.content-area {
+  padding: var(--md-space-6);
+}
+
+.search-bar {
+  background: var(--md-surface);
+  box-shadow: var(--md-elevation-1);
+  border-radius: var(--md-radius-md);
+  padding: var(--md-space-4) var(--md-space-6);
+  margin-bottom: var(--md-space-4);
+}
+
+.table-card {
+  background: var(--md-surface);
+  box-shadow: var(--md-elevation-1);
+  border-radius: var(--md-radius-md);
+  padding: var(--md-space-6);
+}
+
+.task-id-text {
+  font-family: monospace;
+  font-size: 12px;
+  word-break: break-all;
+}
+
+.ellipsis-text {
+  display: inline-block;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}

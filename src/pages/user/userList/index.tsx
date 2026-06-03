@@ -8,18 +8,16 @@ import {
 } from "@ant-design/icons";
 import { App, Button, Form, Input, Space, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { useState } from "react";
 
 import { type UserVo, activateUser, deleteUser, freezeUser, getUserList } from "@/api/module/user";
 import UserModal from "@/components/UserModal/index";
 import { useList } from "@/hooks/useList";
+import { useModalForm } from "@/hooks/useModalForm";
 
 import "./index.scss";
 
 const UserListPage: React.FC = () => {
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalMode, setModalMode] = useState<"create" | "edit" | "view">("create");
-  const [modalData, setModalData] = useState<UserVo | null>(null);
+  const modalForm = useModalForm<UserVo>();
   const [form] = Form.useForm();
   const { message, modal } = App.useApp();
 
@@ -103,23 +101,9 @@ const UserListPage: React.FC = () => {
     reset();
   };
 
-  const handleAdd = () => {
-    setModalMode("create");
-    setModalData(null);
-    setModalVisible(true);
-  };
-
-  const handleView = (record: UserVo) => {
-    setModalMode("view");
-    setModalData(record);
-    setModalVisible(true);
-  };
-
-  const handleEdit = (record: UserVo) => {
-    setModalMode("edit");
-    setModalData(record);
-    setModalVisible(true);
-  };
+  const handleAdd = () => modalForm.open("create");
+  const handleView = (record: UserVo) => modalForm.open("view", record);
+  const handleEdit = (record: UserVo) => modalForm.open("edit", record);
 
   const handleDelete = (record: UserVo) => {
     modal.confirm({
@@ -154,12 +138,10 @@ const UserListPage: React.FC = () => {
     });
   };
 
-  const handleModalClose = () => {
-    setModalVisible(false);
-  };
+  const handleModalClose = () => modalForm.close();
 
   const handleModalSuccess = () => {
-    setModalVisible(false);
+    modalForm.close();
     refresh();
   };
 
@@ -210,9 +192,9 @@ const UserListPage: React.FC = () => {
         />
       </div>
       <UserModal
-        visible={modalVisible}
-        mode={modalMode}
-        data={modalData}
+        visible={modalForm.visible}
+        mode={modalForm.mode}
+        data={modalForm.data}
         onClose={handleModalClose}
         onSuccess={handleModalSuccess}
       />

@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 import { type LoginVo, login } from "@/api/module/user";
 import SvgIcon from "@/components/SvgIcon";
-import { useAuth } from "@/store/useAuth";
+import { useAuth } from "@/auth/useAuth";
 
 import "./index.scss";
 

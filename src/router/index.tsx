@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { Outlet, type RouteObject, createBrowserRouter } from "react-router-dom";
 
 import MainLayout from "@/layouts/MainLayout/index";
-import { AuthProvider, PrivateRoute } from "@/store/index";
+import { AuthProvider, PrivateRoute } from "@/auth/index";
 
 import { appRoutes } from "./routeConfig";
 import type { AppRouteConfig } from "./types";

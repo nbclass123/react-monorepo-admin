@@ -6,7 +6,7 @@ import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   return {
-    base: "./",
+    base: "/",
     plugins: [
       react(),
       createSvgIconsPlugin({

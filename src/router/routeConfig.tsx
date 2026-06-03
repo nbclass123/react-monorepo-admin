@@ -14,6 +14,9 @@ const BlogPostPage = lazy(() => import("@/pages/blog/blogPost/index"));
 const SysRolePage = lazy(() => import("@/pages/sys/sysRole/index"));
 const SysPermissionPage = lazy(() => import("@/pages/sys/sysPermission/index"));
 const SvgIconPage = lazy(() => import("@/pages/svgIcon/index"));
+const UploadTestPage = lazy(() => import("@/pages/uploadTest/index"));
+const RecordingManagePage = lazy(() => import("@/pages/recording/manage/index"));
+const RecordingPlaybackPage = lazy(() => import("@/pages/recording/playback/index"));
 
 export const appRoutes: AppRouteConfig[] = [
   {
@@ -84,5 +87,23 @@ export const appRoutes: AppRouteConfig[] = [
     key: "svgIcon",
     title: "图标图鉴",
     element: <SvgIconPage />
+  },
+  {
+    path: "/uploadTest",
+    key: "uploadTest",
+    title: "上传测试",
+    element: <UploadTestPage />
+  },
+  {
+    path: "/recording/manage",
+    key: "recordingManage",
+    title: "录制管理",
+    element: <RecordingManagePage />
+  },
+  {
+    path: "/recording/playback",
+    key: "recordingPlayback",
+    title: "视频回放",
+    element: <RecordingPlaybackPage />
   }
 ];

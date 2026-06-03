@@ -6,7 +6,7 @@ const instance = axios.create({
   baseURL: import.meta.env.VITE_APP_BASE_URL,
   timeout: 10000,
   headers: {
-    "Content-Type": "application/x-www-form-urlencoded"
+    "Content-Type": "application/json"
   }
 });
 
@@ -16,6 +16,10 @@ instance.interceptors.request.use(
     const token = Cookies.get("token");
     if (token && config.headers) {
       config.headers.Authorization = token;
+    }
+    const userId = Cookies.get("userId");
+    if (userId && config.headers) {
+      config.headers["X-User-Id"] = userId;
     }
     return config;
   },
@@ -50,7 +54,7 @@ export function get<T>(
 /** POST 请求封装 */
 export function post<T>(
   url: string,
-  data?: Record<string, unknown>,
+  data?: Record<string, unknown> | FormData,
   config?: AxiosRequestConfig
 ): Promise<T> {
   return instance.post(url, data, config);

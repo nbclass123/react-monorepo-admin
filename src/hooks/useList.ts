@@ -21,6 +21,10 @@ export interface UseListOptions<T> {
 /**
  * 通用列表数据管理 Hook
  * 封装分页、搜索、加载状态等常见逻辑
+ *
+ * 使用 requestId 序列号机制防止竞态条件：
+ * 每次请求分配递增 ID，仅当响应回来时 ID 仍为最新才更新状态，
+ * 解决 StrictMode 双重挂载和快速翻页导致的重复请求问题
  */
 export function useList<T>(options: UseListOptions<T>) {
   const { fetchFn, initialPage = 1, initialSize = 10, initialSearchParams = {} } = options;
@@ -31,9 +35,13 @@ export function useList<T>(options: UseListOptions<T>) {
   const [size, setSize] = useState(initialSize);
   const [total, setTotal] = useState(0);
   const [searchParams, setSearchParams] = useState<Record<string, unknown>>(initialSearchParams);
-  const initialSearchParamsRef = useRef(initialSearchParams);
-  const isMountedRef = useRef(false);
-  const abortedRef = useRef(false);
+
+  // 请求序列号：每次发起新请求时递增，响应回来后比对，仅最新请求的结果生效
+  const requestIdRef = useRef(0);
+  // 初始挂载标记：使用 ref 而非 state 避免 StrictMode 下双重触发
+  const initializedRef = useRef(false);
+  // 初始参数的快照（避免 initialSearchParams 对象引用变化导致 effect 重复执行）
+  const initialParamsRef = useRef(initialSearchParams);
 
   /** 内部数据请求方法 */
   const fetchData = useCallback(
@@ -42,7 +50,7 @@ export function useList<T>(options: UseListOptions<T>) {
       currentSize: number,
       currentSearchParams: Record<string, unknown>
     ) => {
-      if (abortedRef.current) return;
+      const requestId = ++requestIdRef.current;
       setLoading(true);
       try {
         const result = await fetchFn({
@@ -50,12 +58,16 @@ export function useList<T>(options: UseListOptions<T>) {
           size: currentSize,
           ...currentSearchParams
         });
+        // 仅当本次请求仍是最新时更新状态（防止 StrictMode 双调用 / 快速翻页覆盖）
+        if (requestId !== requestIdRef.current) return;
         setList(result.data.list);
         setTotal(result.data.total);
         setPage(result.data.page);
         setSize(result.data.size);
       } finally {
-        setLoading(false);
+        if (requestId === requestIdRef.current) {
+          setLoading(false);
+        }
       }
     },
     [fetchFn]
@@ -77,7 +89,7 @@ export function useList<T>(options: UseListOptions<T>) {
 
   /** 重置搜索参数和分页 */
   const reset = useCallback(async () => {
-    const initialParams = initialSearchParamsRef.current;
+    const initialParams = initialParamsRef.current;
     setSearchParams(initialParams);
     await fetchData(initialPage, initialSize, initialParams);
   }, [fetchData, initialPage, initialSize]);
@@ -90,22 +102,11 @@ export function useList<T>(options: UseListOptions<T>) {
     [fetchData, searchParams]
   );
 
-  /** 组件挂载时请求初始数据 */
+  /** 组件挂载时请求初始数据（ref guard 确保只执行一次） */
   useEffect(() => {
-    if (!isMountedRef.current) {
-      isMountedRef.current = true;
-      abortedRef.current = false;
-      const params = initialSearchParamsRef.current;
-      fetchData(initialPage, initialSize, params);
-    } else {
-      // StrictMode remount - reset abortedRef so search works
-      abortedRef.current = false;
-    }
-
-    return () => {
-      abortedRef.current = true;
-      isMountedRef.current = false;
-    };
+    if (initializedRef.current) return;
+    initializedRef.current = true;
+    fetchData(initialPage, initialSize, initialParamsRef.current);
   }, [fetchData, initialPage, initialSize]);
 
   return {

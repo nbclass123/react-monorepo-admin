@@ -23,7 +23,7 @@ services:
       args:
         # API 路径前缀，通过 Nginx 反向代理
         # 例如：/api/auth/user/login -> Nginx -> gateway:8080/api/auth/user/login
-        - VITE_APP_BASE_URL=/api
+        - VITE_APP_BASE_URL=http://localhost:8080/api
         - VITE_APP_TITLE=呼呼呼
     container_name: hy-platform-web
     ports:
