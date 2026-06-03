@@ -19,20 +19,25 @@ export interface UseCrudOptions<T = unknown, CreateDto = unknown, UpdateDto = un
   };
 }
 
-export interface UseCrudReturn<T = unknown, CreateDto = unknown, UpdateDto = unknown>
-  extends ReturnType<typeof useModalForm<T>> {
+export interface UseCrudReturn<
+  T = unknown,
+  CreateDto = unknown,
+  UpdateDto = unknown
+> extends ReturnType<typeof useModalForm<T>> {
   deleteWithConfirm: (record: T, deleteFn?: () => Promise<void>) => Promise<void>;
   handleCreate: (data: CreateDto) => Promise<void>;
   handleUpdate: (data: UpdateDto & { id: number }) => Promise<void>;
 }
 
-export function useCrud<
-  T = unknown,
-  CreateDto = unknown,
-  UpdateDto = unknown
->(
+export function useCrud<T = unknown, CreateDto = unknown, UpdateDto = unknown>(
   options: UseCrudOptions<T, CreateDto, UpdateDto> = {},
-  { message, modal }: { message?: { success: (msg: string) => void }; modal?: { confirm: (opts: Record<string, unknown>) => void } }
+  {
+    message,
+    modal
+  }: {
+    message?: { success: (msg: string) => void };
+    modal?: { confirm: (opts: Record<string, unknown>) => void };
+  }
 ): UseCrudReturn<T, CreateDto, UpdateDto> {
   const { createApi, updateApi, deleteApi, onRefresh, successMessage, deleteConfirm } = options;
 
@@ -70,8 +75,7 @@ export function useCrud<
 
       modal?.confirm({
         title: title ?? "确认删除",
-        content:
-          typeof content === "function" ? content(record) : content ?? "确定要删除吗？",
+        content: typeof content === "function" ? content(record) : (content ?? "确定要删除吗？"),
         okText: "确认",
         cancelText: "取消",
         okType: "danger",
@@ -101,14 +105,16 @@ export function useCrud<
   };
 }
 
-export function useCrudWithForm<
-  T = unknown,
-  CreateDto = unknown,
-  UpdateDto = unknown
->(
+export function useCrudWithForm<T = unknown, CreateDto = unknown, UpdateDto = unknown>(
   form: FormInstance<T>,
   options: UseCrudOptions<T, CreateDto, UpdateDto> = {},
-  { message, modal }: { message?: { success: (msg: string) => void }; modal?: { confirm: (opts: Record<string, unknown>) => void } }
+  {
+    message,
+    modal
+  }: {
+    message?: { success: (msg: string) => void };
+    modal?: { confirm: (opts: Record<string, unknown>) => void };
+  }
 ): UseCrudReturn<T, CreateDto, UpdateDto> {
   const { createApi, updateApi, deleteApi, onRefresh, successMessage, deleteConfirm } = options;
 
@@ -144,8 +150,7 @@ export function useCrudWithForm<
 
       modal?.confirm({
         title: title ?? "确认删除",
-        content:
-          typeof content === "function" ? content(record) : content ?? "确定要删除吗？",
+        content: typeof content === "function" ? content(record) : (content ?? "确定要删除吗？"),
         okText: "确认",
         cancelText: "取消",
         okType: "danger",

@@ -27,7 +27,7 @@ export function useDeleteConfirm<T = unknown>(
 
         Modal.confirm({
           title: title ?? "确认删除",
-          content: typeof content === "function" ? content(record) : content ?? "确定要删除吗？",
+          content: typeof content === "function" ? content(record) : (content ?? "确定要删除吗？"),
           okText: okText ?? "确认",
           cancelText: cancelText ?? "取消",
           okType: "danger",

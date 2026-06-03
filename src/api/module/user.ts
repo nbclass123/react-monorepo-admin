@@ -94,7 +94,9 @@ export function logout() {
 
 /** 根据ID获取用户信息 */
 export function getSysUserById(id: number, signal?: AbortSignal) {
-  return get<ResultVo<UserVo>>("/auth/user/getSysUserById", { id } as Record<string, unknown>, { signal });
+  return get<ResultVo<UserVo>>("/auth/user/getSysUserById", { id } as Record<string, unknown>, {
+    signal
+  });
 }
 
 /** 注册新用户 */

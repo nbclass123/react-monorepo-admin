@@ -28,10 +28,7 @@ export function useModal() {
 
   const confirm = useCallback(
     (
-      config: Omit<
-        Parameters<typeof modal.confirm>[0],
-        "onOk" | "onCancel"
-      > & {
+      config: Omit<Parameters<typeof modal.confirm>[0], "onOk" | "onCancel"> & {
         onOk?: () => void | Promise<void>;
         onCancel?: () => void;
       }

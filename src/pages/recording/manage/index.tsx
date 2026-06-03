@@ -5,7 +5,20 @@ import {
   StopOutlined,
   VideoCameraOutlined
 } from "@ant-design/icons";
-import { App, Button, Card, Descriptions, Form, Input, InputNumber, Select, Slider, Steps, Tabs, Tag } from "antd";
+import {
+  App,
+  Button,
+  Card,
+  Descriptions,
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  Slider,
+  Steps,
+  Tabs,
+  Tag
+} from "antd";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
@@ -132,7 +145,11 @@ function BackendRecordingTab() {
   return (
     <div className="recording-tab">
       <Card title="录制参数配置" className="recording-card">
-        <Form form={form} layout="vertical" initialValues={{ duration: 30, quality: "high", fps: 10 }}>
+        <Form
+          form={form}
+          layout="vertical"
+          initialValues={{ duration: 30, quality: "high", fps: 10 }}
+        >
           <Form.Item
             name="targetUrl"
             label="目标 URL"
@@ -214,28 +231,18 @@ function StatusDisplay({
             {taskStatus.targetUrl}
           </Descriptions.Item>
         ) : null}
-        <Descriptions.Item label="事件数">
-          {taskStatus?.eventCount ?? 0}
-        </Descriptions.Item>
+        <Descriptions.Item label="事件数">{taskStatus?.eventCount ?? 0}</Descriptions.Item>
         <Descriptions.Item label="创建时间">
-          {taskStatus?.createdAt
-            ? new Date(taskStatus.createdAt).toLocaleString("zh-CN")
-            : "-"}
+          {taskStatus?.createdAt ? new Date(taskStatus.createdAt).toLocaleString("zh-CN") : "-"}
         </Descriptions.Item>
       </Descriptions>
 
       <div className="status-steps">
-        <Steps
-          current={getStepIndex(status)}
-          items={getCurrentStep(status)}
-          size="small"
-        />
+        <Steps current={getStepIndex(status)} items={getCurrentStep(status)} size="small" />
       </div>
 
       {status === "FAILED" && taskStatus?.errorMessage ? (
-        <div className="status-error">
-          错误信息: {taskStatus.errorMessage}
-        </div>
+        <div className="status-error">错误信息: {taskStatus.errorMessage}</div>
       ) : null}
     </Card>
   );
@@ -261,7 +268,10 @@ function FrontendRecordingTab() {
           const result = await getTaskStatus(id);
           setTaskStatus(result.data);
           if (result.data.status === "COMPLETED" || result.data.status === "FAILED") {
-            if (pollingRef.current) { clearInterval(pollingRef.current); pollingRef.current = null; }
+            if (pollingRef.current) {
+              clearInterval(pollingRef.current);
+              pollingRef.current = null;
+            }
             if (result.data.status === "COMPLETED") {
               message.success("视频生成完成");
             } else {
@@ -269,7 +279,10 @@ function FrontendRecordingTab() {
             }
           }
         } catch {
-          if (pollingRef.current) { clearInterval(pollingRef.current); pollingRef.current = null; }
+          if (pollingRef.current) {
+            clearInterval(pollingRef.current);
+            pollingRef.current = null;
+          }
         }
       }, 2000);
     },
@@ -279,7 +292,10 @@ function FrontendRecordingTab() {
   // 组件卸载时清理
   useEffect(() => {
     return () => {
-      if (pollingRef.current) { clearInterval(pollingRef.current); pollingRef.current = null; }
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+        pollingRef.current = null;
+      }
     };
   }, []);
 
@@ -334,9 +350,7 @@ function FrontendRecordingTab() {
                 ) : (
                   <span className="pulse-dot" />
                 )}
-                <span className="recording-text">
-                  {stopping ? "正在停止..." : "录制中"}
-                </span>
+                <span className="recording-text">{stopping ? "正在停止..." : "录制中"}</span>
               </div>
               <div className="recording-stats">
                 <div className="stat-item">
@@ -367,12 +381,7 @@ function FrontendRecordingTab() {
           ) : showStatus ? (
             <StatusDisplay taskId={taskId!} taskStatus={taskStatus} />
           ) : (
-            <Button
-              type="primary"
-              size="large"
-              icon={<PlayCircleOutlined />}
-              onClick={handleStart}
-            >
+            <Button type="primary" size="large" icon={<PlayCircleOutlined />} onClick={handleStart}>
               开始录制
             </Button>
           )}
@@ -385,9 +394,7 @@ function FrontendRecordingTab() {
             </div>
           ) : null}
           {isFailed && taskStatus?.errorMessage ? (
-            <div className="status-error">
-              错误信息: {taskStatus.errorMessage}
-            </div>
+            <div className="status-error">错误信息: {taskStatus.errorMessage}</div>
           ) : null}
         </div>
       </Card>

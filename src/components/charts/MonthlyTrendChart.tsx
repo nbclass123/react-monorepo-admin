@@ -1,6 +1,19 @@
 /** 月度增长趋势图 — 展示 12 个月的趋势柱状图及汇总统计 */
 export default function MonthlyTrendChart({ data }: { data: number[] }) {
-  const months = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
+  const months = [
+    "1月",
+    "2月",
+    "3月",
+    "4月",
+    "5月",
+    "6月",
+    "7月",
+    "8月",
+    "9月",
+    "10月",
+    "11月",
+    "12月"
+  ];
   const maxValue = Math.max(...data);
 
   return (
@@ -16,7 +29,9 @@ export default function MonthlyTrendChart({ data }: { data: number[] }) {
         </div>
         <div className="summary-item">
           <span className="summary-label">平均值</span>
-          <span className="summary-value">{Math.round(data.reduce((a, b) => a + b, 0) / data.length)}</span>
+          <span className="summary-value">
+            {Math.round(data.reduce((a, b) => a + b, 0) / data.length)}
+          </span>
         </div>
       </div>
 

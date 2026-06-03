@@ -58,14 +58,18 @@ const DashboardPage = () => {
         <Row gutter={[16, 16]} className="stats-row">
           {[1, 2, 3, 4].map((i) => (
             <Col xs={24} sm={12} lg={6} key={i}>
-              <Card className="stat-card"><Skeleton active paragraph={{ rows: 4 }} /></Card>
+              <Card className="stat-card">
+                <Skeleton active paragraph={{ rows: 4 }} />
+              </Card>
             </Col>
           ))}
         </Row>
         <Row gutter={[16, 16]} className="quick-stats-row">
           {[1, 2, 3, 4].map((i) => (
             <Col xs={24} sm={6} key={i}>
-              <Card className="quick-stat-card"><Skeleton active paragraph={{ rows: 3 }} /></Card>
+              <Card className="quick-stat-card">
+                <Skeleton active paragraph={{ rows: 3 }} />
+              </Card>
             </Col>
           ))}
         </Row>
@@ -83,7 +87,9 @@ const DashboardPage = () => {
 
       <div className="dashboard-header">
         <div className="dashboard-welcome">
-          <div className="dashboard-avatar"><UserOutlined /></div>
+          <div className="dashboard-avatar">
+            <UserOutlined />
+          </div>
           <div className="dashboard-title-section">
             <h1>欢迎回来！</h1>
             <p>这是您的数据仪表盘，包含最新的业务概览</p>
@@ -101,7 +107,10 @@ const DashboardPage = () => {
                   <div className="stat-card-title">{stat.title}</div>
                   <div className="stat-card-value">{stat.value}</div>
                 </div>
-                <div className="stat-card-icon" style={{ background: `${stat.color}15`, color: stat.color }}>
+                <div
+                  className="stat-card-icon"
+                  style={{ background: `${stat.color}15`, color: stat.color }}
+                >
                   {stat.icon}
                 </div>
               </div>
@@ -109,7 +118,9 @@ const DashboardPage = () => {
                 <ArrowUpOutlined />
                 <span>{stat.trend}</span>
                 {stat.trendText && (
-                  <span style={{ color: "var(--md-text-secondary)", fontWeight: 400, marginLeft: 4 }}>
+                  <span
+                    style={{ color: "var(--md-text-secondary)", fontWeight: 400, marginLeft: 4 }}
+                  >
                     vs {stat.trendText}
                   </span>
                 )}
@@ -120,8 +131,14 @@ const DashboardPage = () => {
                 <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 16 }}>
                   <MiniDonut pct={stat.donutPct} color={stat.color} />
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 12, color: "var(--md-text-secondary)", marginBottom: 4 }}>{stat.trendText}</div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: stat.trendColor }}>{stat.trend}</div>
+                    <div
+                      style={{ fontSize: 12, color: "var(--md-text-secondary)", marginBottom: 4 }}
+                    >
+                      {stat.trendText}
+                    </div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: stat.trendColor }}>
+                      {stat.trend}
+                    </div>
                   </div>
                 </div>
               ) : null}
@@ -135,7 +152,10 @@ const DashboardPage = () => {
         {quickStats.map((item, index) => (
           <Col xs={24} sm={6} key={index}>
             <Card className="quick-stat-card">
-              <div className="quick-stat-icon" style={{ background: `${item.color}15`, color: item.color }}>
+              <div
+                className="quick-stat-icon"
+                style={{ background: `${item.color}15`, color: item.color }}
+              >
                 {item.icon}
               </div>
               <div className="quick-stat-content">
@@ -173,7 +193,9 @@ const DashboardPage = () => {
                 { icon: <TeamOutlined />, label: "团队设置", color: "#EC4899" }
               ].map((item, i) => (
                 <div key={i} className="quick-entry-item">
-                  <div className="quick-entry-icon" style={{ color: item.color }}>{item.icon}</div>
+                  <div className="quick-entry-icon" style={{ color: item.color }}>
+                    {item.icon}
+                  </div>
                   <div className="quick-entry-label">{item.label}</div>
                 </div>
               ))}
@@ -187,9 +209,15 @@ const DashboardPage = () => {
         <Col xs={24}>
           <Card
             title={
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div
+                style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}
+              >
                 <span>{showMultiDimensional ? "多维度数据趋势" : "访问量趋势"}</span>
-                <Button type="text" size="small" onClick={() => setShowMultiDimensional(!showMultiDimensional)}>
+                <Button
+                  type="text"
+                  size="small"
+                  onClick={() => setShowMultiDimensional(!showMultiDimensional)}
+                >
                   {showMultiDimensional ? "单一维度" : "多维度"}
                 </Button>
               </div>

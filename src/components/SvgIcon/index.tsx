@@ -6,13 +6,7 @@ interface SvgIconProps {
   className?: string;
 }
 
-export function SvgIcon({
-  name,
-  width = 24,
-  height = 24,
-  color,
-  className
-}: SvgIconProps) {
+export function SvgIcon({ name, width = 24, height = 24, color, className }: SvgIconProps) {
   const symbolId = `#icon-${name}`;
 
   return (

@@ -29,14 +29,11 @@ export function useModalForm<T = unknown>(
   const [mode, setMode] = useState<ModalMode>("create");
   const [data, setData] = useState<T | null>(null);
 
-  const open = useCallback(
-    (newMode: ModalMode, newData?: T | null) => {
-      setMode(newMode);
-      setData(newData ?? null);
-      setVisible(true);
-    },
-    []
-  );
+  const open = useCallback((newMode: ModalMode, newData?: T | null) => {
+    setMode(newMode);
+    setData(newData ?? null);
+    setVisible(true);
+  }, []);
 
   const close = useCallback(() => {
     setVisible(false);
@@ -67,9 +64,7 @@ export function useModalForm<T = unknown>(
   };
 }
 
-export function useModalFormWithForm<T = unknown>(
-  form: FormInstance<T>
-): UseModalFormReturn<T> {
+export function useModalFormWithForm<T = unknown>(form: FormInstance<T>): UseModalFormReturn<T> {
   const [visible, setVisible] = useState(false);
   const [mode, setMode] = useState<ModalMode>("create");
   const [data, setData] = useState<T | null>(null);

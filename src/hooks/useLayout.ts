@@ -8,10 +8,7 @@ const STORAGE_KEY = "layout-mode";
 const DEFAULT_LAYOUT: LayoutMode = "side";
 
 export function useLayout() {
-  const [layout, setLayout] = useLocalStorage<LayoutMode>(
-    STORAGE_KEY,
-    DEFAULT_LAYOUT
-  );
+  const [layout, setLayout] = useLocalStorage<LayoutMode>(STORAGE_KEY, DEFAULT_LAYOUT);
 
   const toggleLayout = useCallback(() => {
     setLayout((prev) => (prev === "side" ? "top" : "side"));

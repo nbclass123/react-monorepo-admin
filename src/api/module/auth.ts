@@ -128,7 +128,10 @@ export function getPermissionById(id: number) {
 }
 
 export function createPermission(data: SysPermissionReq) {
-  return post<ResultVo<null>>("/auth/permission/create", data as unknown as Record<string, unknown>);
+  return post<ResultVo<null>>(
+    "/auth/permission/create",
+    data as unknown as Record<string, unknown>
+  );
 }
 
 export function updatePermission(data: SysPermissionReq & { id: number }) {

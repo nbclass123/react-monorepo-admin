@@ -3,8 +3,13 @@ import { Navigate } from "react-router-dom";
 
 import BootSplash from "@/components/BootSplash/index";
 
+import {
+  createLoginAction,
+  createLogoutAction,
+  createRestoreAction,
+  getAuthFromCookies
+} from "./actions";
 import { AuthContext, type AuthContextType, authReducer, initialState } from "./context";
-import { createLoginAction, createLogoutAction, createRestoreAction, getAuthFromCookies } from "./actions";
 import { selectIsAuthenticated } from "./selectors";
 import { useAuth } from "./useAuth";
 
@@ -19,7 +24,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
   const [ready, setReady] = useState(false);
   const loggingOutRef = useRef(false);
-  
+
   const initRef = useRef({ ...getAuthFromCookies() });
 
   useEffect(() => {
@@ -30,9 +35,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const controller = new AbortController();
-    createRestoreAction(dispatch, token, userId, () => {
-      setReady(true);
-    }, controller.signal);
+    createRestoreAction(
+      dispatch,
+      token,
+      userId,
+      () => {
+        setReady(true);
+      },
+      controller.signal
+    );
 
     return () => {
       controller.abort();

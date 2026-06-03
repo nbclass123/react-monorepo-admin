@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { type LoginVo, login } from "@/api/module/user";
-import SvgIcon from "@/components/SvgIcon";
 import { useAuth } from "@/auth/useAuth";
+import SvgIcon from "@/components/SvgIcon";
 
 import "./index.scss";
 

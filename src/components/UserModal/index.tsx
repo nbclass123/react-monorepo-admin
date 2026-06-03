@@ -1,8 +1,6 @@
 import { Form, Input, Modal, message } from "antd";
 import { type ReactNode, useEffect } from "react";
 
-import "./index.scss";
-
 import {
   type RegisterReq,
   type UpdateUserReq,
@@ -10,6 +8,8 @@ import {
   register,
   updateUser
 } from "@/api/module/user";
+
+import "./index.scss";
 
 interface UserModalProps {
   visible: boolean;

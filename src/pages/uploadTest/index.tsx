@@ -51,7 +51,14 @@ function ImageUploadDemo() {
   };
 
   return (
-    <Card title={<><FileImageOutlined /> 图片上传测试</>} className="upload-demo-card">
+    <Card
+      title={
+        <>
+          <FileImageOutlined /> 图片上传测试
+        </>
+      }
+      className="upload-demo-card"
+    >
       <div className="demo-description">
         <Tag color="blue">jpg</Tag>
         <Tag color="blue">png</Tag>
@@ -68,7 +75,9 @@ function ImageUploadDemo() {
         showUploadList={{ showPreviewIcon: false }}
         disabled={uploading}
       >
-        <p className="upload-icon"><CloudUploadOutlined /></p>
+        <p className="upload-icon">
+          <CloudUploadOutlined />
+        </p>
         <p className="upload-text">点击或拖拽图片文件到此区域</p>
         <p className="upload-hint">支持 jpg / png / gif / webp</p>
       </Upload.Dragger>
@@ -79,10 +88,22 @@ function ImageUploadDemo() {
       {result && (
         <div className="upload-result">
           <Divider />
-          <p><CheckCircleOutlined style={{ color: "#10B981" }} /> 上传成功</p>
+          <p>
+            <CheckCircleOutlined style={{ color: "#10B981" }} /> 上传成功
+          </p>
           <p>文件名: {result.filename}</p>
-          <p>URL: <a href={result.url} target="_blank" rel="noopener noreferrer">{result.url}</a></p>
-          <Image src={result.url} alt={result.filename} style={{ maxWidth: 300, marginTop: 8 }} fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" />
+          <p>
+            URL:{" "}
+            <a href={result.url} target="_blank" rel="noopener noreferrer">
+              {result.url}
+            </a>
+          </p>
+          <Image
+            src={result.url}
+            alt={result.filename}
+            style={{ maxWidth: 300, marginTop: 8 }}
+            fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+          />
         </div>
       )}
     </Card>
@@ -113,7 +134,14 @@ function FileUploadDemo() {
   };
 
   return (
-    <Card title={<><FileOutlined /> 文件上传测试</>} className="upload-demo-card">
+    <Card
+      title={
+        <>
+          <FileOutlined /> 文件上传测试
+        </>
+      }
+      className="upload-demo-card"
+    >
       <div className="demo-description">
         <Tag color="purple">pdf</Tag>
         <Tag color="purple">doc/docx</Tag>
@@ -132,7 +160,9 @@ function FileUploadDemo() {
         showUploadList={{ showPreviewIcon: false }}
         disabled={uploading}
       >
-        <p className="upload-icon"><CloudUploadOutlined /></p>
+        <p className="upload-icon">
+          <CloudUploadOutlined />
+        </p>
         <p className="upload-text">点击或拖拽文件到此区域</p>
         <p className="upload-hint">支持 pdf / doc / xls / zip / txt / mp4</p>
       </Upload.Dragger>
@@ -143,9 +173,16 @@ function FileUploadDemo() {
       {result && (
         <div className="upload-result">
           <Divider />
-          <p><CheckCircleOutlined style={{ color: "#10B981" }} /> 上传成功</p>
+          <p>
+            <CheckCircleOutlined style={{ color: "#10B981" }} /> 上传成功
+          </p>
           <p>文件名: {result.filename}</p>
-          <p>URL: <a href={result.url} target="_blank" rel="noopener noreferrer">{result.url}</a></p>
+          <p>
+            URL:{" "}
+            <a href={result.url} target="_blank" rel="noopener noreferrer">
+              {result.url}
+            </a>
+          </p>
         </div>
       )}
     </Card>
@@ -167,23 +204,14 @@ function ChunkedUploadDemo() {
   const [result, setResult] = useState<{ url: string; filename: string } | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const {
-    upload,
-    pause,
-    resume,
-    uploading,
-    paused,
-    progress,
-    chunkStatusMap,
-    stage,
-    error
-  } = useChunkedUpload({
-    onSuccess: (res) => {
-      setResult(res);
-      message.success(`大文件上传成功: ${res.filename}`);
-    },
-    onError: (err) => message.error(err.message)
-  });
+  const { upload, pause, resume, uploading, paused, progress, chunkStatusMap, stage, error } =
+    useChunkedUpload({
+      onSuccess: (res) => {
+        setResult(res);
+        message.success(`大文件上传成功: ${res.filename}`);
+      },
+      onError: (err) => message.error(err.message)
+    });
 
   const handleStartUpload = async () => {
     if (!selectedFile) return;
@@ -215,7 +243,14 @@ function ChunkedUploadDemo() {
   ];
 
   return (
-    <Card title={<><ThunderboltOutlined /> 大文件分片上传测试</>} className="upload-demo-card">
+    <Card
+      title={
+        <>
+          <ThunderboltOutlined /> 大文件分片上传测试
+        </>
+      }
+      className="upload-demo-card"
+    >
       <div className="demo-description">
         <Tag color="orange">任意类型</Tag>
         <Tag color="orange">分片 5MB</Tag>
@@ -279,9 +314,25 @@ function ChunkedUploadDemo() {
       {stage !== "idle" && (
         <div className="chunk-progress-info">
           <div className="chunk-progress-stage">
-            当前阶段: <Tag>{stage === "md5" ? "MD5 计算" : stage === "uploading" ? "分片上传" : stage === "merging" ? "合并分片" : stage === "done" ? "完成" : stage === "paused" ? "已暂停" : stage}</Tag>
+            当前阶段:{" "}
+            <Tag>
+              {stage === "md5"
+                ? "MD5 计算"
+                : stage === "uploading"
+                  ? "分片上传"
+                  : stage === "merging"
+                    ? "合并分片"
+                    : stage === "done"
+                      ? "完成"
+                      : stage === "paused"
+                        ? "已暂停"
+                        : stage}
+            </Tag>
           </div>
-          <Progress percent={progress} status={paused ? "exception" : progress === 100 ? "success" : "active"} />
+          <Progress
+            percent={progress}
+            status={paused ? "exception" : progress === 100 ? "success" : "active"}
+          />
           {error && <div className="upload-error">{error}</div>}
         </div>
       )}
@@ -291,7 +342,11 @@ function ChunkedUploadDemo() {
         <>
           <Divider>分片状态 ({chunkEntries.length} 片)</Divider>
           <Table
-            dataSource={chunkEntries.map(([idx, status]) => ({ key: idx, chunkIndex: idx, status }))}
+            dataSource={chunkEntries.map(([idx, status]) => ({
+              key: idx,
+              chunkIndex: idx,
+              status
+            }))}
             columns={chunkColumns}
             size="small"
             pagination={false}
@@ -315,9 +370,16 @@ function ChunkedUploadDemo() {
       {result && (
         <div className="upload-result">
           <Divider />
-          <p><CheckCircleOutlined style={{ color: "#10B981" }} /> 上传成功</p>
+          <p>
+            <CheckCircleOutlined style={{ color: "#10B981" }} /> 上传成功
+          </p>
           <p>文件名: {result.filename}</p>
-          <p>URL: <a href={result.url} target="_blank" rel="noopener noreferrer">{result.url}</a></p>
+          <p>
+            URL:{" "}
+            <a href={result.url} target="_blank" rel="noopener noreferrer">
+              {result.url}
+            </a>
+          </p>
         </div>
       )}
     </Card>
@@ -328,15 +390,41 @@ function ChunkedUploadDemo() {
 
 const UploadTestPage: React.FC = () => {
   const tabItems = [
-    { key: "image", label: <span><FileImageOutlined /> 图片上传</span>, children: <ImageUploadDemo /> },
-    { key: "file", label: <span><FileOutlined /> 文件上传</span>, children: <FileUploadDemo /> },
-    { key: "chunk", label: <span><ThunderboltOutlined /> 大文件分片上传</span>, children: <ChunkedUploadDemo /> }
+    {
+      key: "image",
+      label: (
+        <span>
+          <FileImageOutlined /> 图片上传
+        </span>
+      ),
+      children: <ImageUploadDemo />
+    },
+    {
+      key: "file",
+      label: (
+        <span>
+          <FileOutlined /> 文件上传
+        </span>
+      ),
+      children: <FileUploadDemo />
+    },
+    {
+      key: "chunk",
+      label: (
+        <span>
+          <ThunderboltOutlined /> 大文件分片上传
+        </span>
+      ),
+      children: <ChunkedUploadDemo />
+    }
   ];
 
   return (
     <div className="upload-test-page">
       <div className="page-header">
-        <h2><CloudUploadOutlined /> 上传服务测试</h2>
+        <h2>
+          <CloudUploadOutlined /> 上传服务测试
+        </h2>
         <p>测试 hy-upload 后端服务的图片上传、文件上传、大文件分片上传功能</p>
       </div>
       <Tabs defaultActiveKey="image" items={tabItems} size="large" />

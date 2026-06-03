@@ -3,7 +3,6 @@ import {
   BookOutlined,
   CloudUploadOutlined,
   DashboardOutlined,
-  VideoCameraOutlined,
   IdcardOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
@@ -13,16 +12,17 @@ import {
   SafetyCertificateOutlined,
   SunOutlined,
   TeamOutlined,
-  UserOutlined
+  UserOutlined,
+  VideoCameraOutlined
 } from "@ant-design/icons";
 import { Avatar, Breadcrumb, Button, Dropdown, Layout, Menu, Space, Tooltip } from "antd";
 import useApp from "antd/es/app/useApp";
 import { useRef, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
+import { useAuth } from "@/auth/useAuth";
 import SvgIcon from "@/components/SvgIcon";
 import { useLayout } from "@/hooks/useLayout";
-import { useAuth } from "@/auth/useAuth";
 import { useTheme } from "@/theme/index";
 
 import "./index.scss";
@@ -84,7 +84,12 @@ function HeaderRight({ collapsed }: { collapsed: boolean }) {
       disabled: true
     },
     { type: "divider" as const },
-    { key: "profile", icon: <IdcardOutlined />, label: "个人中心", onClick: () => navigate("/userProfile") },
+    {
+      key: "profile",
+      icon: <IdcardOutlined />,
+      label: "个人中心",
+      onClick: () => navigate("/userProfile")
+    },
     { key: "logout", icon: <LogoutOutlined />, label: "退出登录", onClick: handleLogout }
   ];
 
@@ -129,7 +134,11 @@ function BreadcrumbNav({
   menuItems,
   currentPath
 }: {
-  menuItems: Array<{ key: string; label: string; children?: Array<{ key: string; label: string }> }>;
+  menuItems: Array<{
+    key: string;
+    label: string;
+    children?: Array<{ key: string; label: string }>;
+  }>;
   currentPath: string;
 }) {
   const navigate = useNavigate();
@@ -150,7 +159,12 @@ function BreadcrumbNav({
           return true;
         }
         if (menu.children) {
-          if (findPath(menu.children, targetPath, [...parents, { key: menu.key, label: menu.label, path: menu.children?.[0]?.key || menu.key }])) {
+          if (
+            findPath(menu.children, targetPath, [
+              ...parents,
+              { key: menu.key, label: menu.label, path: menu.children?.[0]?.key || menu.key }
+            ])
+          ) {
             return true;
           }
         }
@@ -170,11 +184,7 @@ function BreadcrumbNav({
     <div className="vercel-breadcrumb-wrapper">
       <Breadcrumb
         items={breadcrumbItems.map((item) => ({
-          title: item.path ? (
-            <a onClick={() => navigate(item.path)}>{item.label}</a>
-          ) : (
-            item.label
-          )
+          title: item.path ? <a onClick={() => navigate(item.path)}>{item.label}</a> : item.label
         }))}
       />
     </div>

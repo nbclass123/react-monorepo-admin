@@ -1,4 +1,5 @@
 import instance, { get, post } from "@/api/index";
+
 import type { ResultVo } from "./user";
 
 // ======================= 请求类型 =======================
@@ -98,16 +99,12 @@ export function sendCompressedEvents(
   batchIndex: number,
   compressedData: Uint8Array
 ) {
-  return instance.post<ResultVo<ReceiveEventsVo>>(
-    "/recording/events/compressed",
-    compressedData,
-    {
-      headers: {
-        "Content-Type": "application/octet-stream",
-        "X-Task-Id": taskId,
-        "X-Batch-Index": String(batchIndex),
-        "Content-Encoding": "gzip"
-      }
+  return instance.post<ResultVo<ReceiveEventsVo>>("/recording/events/compressed", compressedData, {
+    headers: {
+      "Content-Type": "application/octet-stream",
+      "X-Task-Id": taskId,
+      "X-Batch-Index": String(batchIndex),
+      "Content-Encoding": "gzip"
     }
-  );
+  });
 }
