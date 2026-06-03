@@ -27,7 +27,7 @@ if errorlevel 1 (
 
 echo.
 echo [2/4] 返回前端目录并构建镜像...
-cd /d e:\myProject\react-app-java
+cd /d e:\myProject\hy-admin
 docker-compose build --no-cache
 
 echo.

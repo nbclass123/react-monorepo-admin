@@ -52,7 +52,7 @@ docker-compose ps
 
 ```powershell
 # 打开前端项目目录
-cd e:\myProject\react-app-java
+cd e:\myProject\hy-admin
 
 # 构建并启动前端服务
 docker-compose up -d --build
@@ -198,7 +198,7 @@ curl -I http://gateway:8080/api
 ## 目录结构
 
 ```
-e:\myProject\react-app-java\
+e:\myProject\hy-admin\
 ├── docker-compose.yml          # Docker Compose 配置
 ├── Dockerfile                  # Docker 镜像构建文件
 ├── docker/

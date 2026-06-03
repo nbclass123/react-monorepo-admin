@@ -5,7 +5,7 @@ echo   Docker 前端服务停止脚本
 echo ========================================
 echo.
 
-cd /d e:\myProject\react-app-java
+cd /d e:\myProject\hy-admin
 
 echo 停止前端服务...
 docker-compose down

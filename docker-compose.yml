@@ -8,7 +8,7 @@ version: '3.8'
 #
 # 使用方式：
 #   1. 先启动后端：cd E:\javaProject\hy-platform\.docs && docker-compose up -d
-#   2. 再启动前端：cd e:\myProject\react-app-java && docker-compose up -d
+#   2. 再启动前端：cd e:\myProject\hy-admin && docker-compose up -d
 #
 # 架构说明：
 #   - 前端（8088）-> gateway（8080）-> 各业务服务
