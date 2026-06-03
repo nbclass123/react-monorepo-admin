@@ -49,7 +49,7 @@ export function useCrud<
       modalForm.close();
       onRefresh?.();
     },
-    [createApi, modalForm, onRefresh, successMessage]
+    [createApi, modalForm, onRefresh, successMessage, message]
   );
 
   const handleUpdate = useCallback(
@@ -61,7 +61,7 @@ export function useCrud<
       modalForm.close();
       onRefresh?.();
     },
-    [modalForm, onRefresh, successMessage, updateApi]
+    [modalForm, onRefresh, successMessage, updateApi, message]
   );
 
   const deleteWithConfirm = useCallback(
@@ -90,7 +90,7 @@ export function useCrud<
         }
       });
     },
-    [deleteApi, deleteConfirm, onRefresh, successMessage]
+    [deleteApi, deleteConfirm, onRefresh, successMessage, message, modal]
   );
 
   return {
@@ -123,7 +123,7 @@ export function useCrudWithForm<
       modalForm.close();
       onRefresh?.();
     },
-    [createApi, modalForm, onRefresh, successMessage]
+    [createApi, modalForm, onRefresh, successMessage, message]
   );
 
   const handleUpdate = useCallback(
@@ -135,7 +135,7 @@ export function useCrudWithForm<
       modalForm.close();
       onRefresh?.();
     },
-    [modalForm, onRefresh, successMessage, updateApi]
+    [modalForm, onRefresh, successMessage, updateApi, message]
   );
 
   const deleteWithConfirm = useCallback(
@@ -164,7 +164,7 @@ export function useCrudWithForm<
         }
       });
     },
-    [deleteApi, deleteConfirm, onRefresh, successMessage]
+    [deleteApi, deleteConfirm, onRefresh, successMessage, message, modal]
   );
 
   return {

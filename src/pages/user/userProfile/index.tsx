@@ -41,7 +41,7 @@ const UserProfilePage: React.FC = () => {
       const err = error as { message?: string };
       message.error(err.message || "获取用户信息失败");
     }
-  }, [userInfo]);
+  }, [userInfo, message]);
 
   useEffect(() => {
     fetchUserInfo();

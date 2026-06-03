@@ -11,8 +11,8 @@
  * - pause() 设置 Ref 标志 → 上传循环在下一轮检查时停止
  * - resume() 查询服务端进度 → 继续上传未完成分片
  */
-import SparkMD5 from "spark-md5";
 import { useCallback, useRef, useState } from "react";
+import SparkMD5 from "spark-md5";
 
 import {
   type UploadResult,
@@ -106,28 +106,52 @@ export function useChunkedUpload(options: UseChunkedUploadOptions = {}): UseChun
   );
 
   /** 获取指定分片的 Blob */
-  const getChunkBlob = (chunkIndex: number): Blob => {
-    const file = fileRef.current!;
-    const start = chunkIndex * chunkSize;
-    const end = Math.min(start + chunkSize, file.size);
-    return file.slice(start, end);
-  };
+  const getChunkBlob = useCallback(
+    (chunkIndex: number): Blob => {
+      const file = fileRef.current!;
+      const start = chunkIndex * chunkSize;
+      const end = Math.min(start + chunkSize, file.size);
+      return file.slice(start, end);
+    },
+    [chunkSize]
+  );
 
   /** 标记单个分片状态 */
-  const markChunk = (chunkIndex: number, status: ChunkStatus) => {
+  const markChunk = useCallback((chunkIndex: number, status: ChunkStatus) => {
     setChunkStatusMap((prev) => {
       const next = new Map(prev);
       next.set(chunkIndex, status);
       return next;
     });
-  };
+  }, []);
 
   /** 更新进度百分比 */
-  const updateProgress = (completed: number, total: number) => {
-    const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
-    setProgress(pct);
-    onProgress?.(pct);
-  };
+  const updateProgress = useCallback(
+    (completed: number, total: number) => {
+      const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+      setProgress(pct);
+      onProgress?.(pct);
+    },
+    [onProgress]
+  );
+
+  /** 合并所有分片 */
+  const doMerge = useCallback(async (): Promise<UploadResult | undefined> => {
+    setStage("merging");
+    try {
+      const result = await mergeChunks(uploadIdRef.current);
+      setStage("done");
+      updateProgress(totalChunksRef.current, totalChunksRef.current);
+      onSuccess?.(result.data);
+      return result.data;
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error("分片合并失败");
+      setError(error.message);
+      onError?.(error);
+    } finally {
+      setUploading(false);
+    }
+  }, [onSuccess, onError, updateProgress]);
 
   /** 并发上传待处理的分片列表 */
   const uploadPendingChunks = useCallback(
@@ -185,7 +209,7 @@ export function useChunkedUpload(options: UseChunkedUploadOptions = {}): UseChun
 
       return true;
     },
-    [chunkSize, concurrent, onProgress]
+    [concurrent, getChunkBlob, markChunk, updateProgress]
   );
 
   /** 暂停上传 */
@@ -233,25 +257,7 @@ export function useChunkedUpload(options: UseChunkedUploadOptions = {}): UseChun
       setError(error.message);
       onError?.(error);
     }
-  }, [uploadPendingChunks, onError]);
-
-  /** 合并所有分片 */
-  const doMerge = useCallback(async (): Promise<UploadResult | undefined> => {
-    setStage("merging");
-    try {
-      const result = await mergeChunks(uploadIdRef.current);
-      setStage("done");
-      updateProgress(totalChunksRef.current, totalChunksRef.current);
-      onSuccess?.(result.data);
-      return result.data;
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error("分片合并失败");
-      setError(error.message);
-      onError?.(error);
-    } finally {
-      setUploading(false);
-    }
-  }, [onSuccess, onError, onProgress]);
+  }, [doMerge, markChunk, onError, uploadPendingChunks]);
 
   /** 主入口：上传文件 */
   const upload = useCallback(
@@ -316,7 +322,7 @@ export function useChunkedUpload(options: UseChunkedUploadOptions = {}): UseChun
         setUploading(false);
       }
     },
-    [chunkSize, computeMD5, uploadPendingChunks, doMerge, onError]
+    [computeMD5, doMerge, onError, updateProgress, uploadPendingChunks]
   );
 
   return {

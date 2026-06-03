@@ -1,5 +1,5 @@
 import { App, Button, Drawer, Form, Input, Modal, Select } from "antd";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import {
   type BlogCategoryVo,
@@ -29,7 +29,7 @@ const PostModal = ({ visible, mode, data, onClose, onSuccess }: PostModalProps) 
   const [loadingCategories, setLoadingCategories] = useState(false);
   const [loadingTags, setLoadingTags] = useState(false);
 
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     setLoadingCategories(true);
     try {
       const res = await getCategoryList({ page: 1, size: 100 });
@@ -41,9 +41,9 @@ const PostModal = ({ visible, mode, data, onClose, onSuccess }: PostModalProps) 
     } finally {
       setLoadingCategories(false);
     }
-  };
+  }, [message]);
 
-  const fetchTags = async () => {
+  const fetchTags = useCallback(async () => {
     setLoadingTags(true);
     try {
       const res = await getTagList({ page: 1, size: 100 });
@@ -55,14 +55,14 @@ const PostModal = ({ visible, mode, data, onClose, onSuccess }: PostModalProps) 
     } finally {
       setLoadingTags(false);
     }
-  };
+  }, [message]);
 
   useEffect(() => {
     if (visible) {
       fetchCategories();
       fetchTags();
     }
-  }, [visible]);
+  }, [visible, fetchCategories, fetchTags]);
 
   useEffect(() => {
     if (visible) {
