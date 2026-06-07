@@ -1,22 +1,19 @@
 ---
 kind: pipeline
 type: docker
-name: ci-cd
+name: ci
 
 trigger:
   branch:
     - master
-    - release-v*
   event:
     - push
     - pull_request
-    - tag
 
 environment:
   NPM_REGISTRY: "https://registry.npmmirror.com"
 
 steps:
-  # ======================== CI ========================
   - name: ci-check-and-build
     image: node:22-alpine
     commands:
@@ -27,14 +24,33 @@ steps:
       - pnpm format:check
       - pnpm build
 
-  # ======================== CD ========================
+---
+kind: pipeline
+type: docker
+name: cd
+
+trigger:
+  ref:
+    - refs/tags/release-v*
+  event:
+    - tag
+
+environment:
+  NPM_REGISTRY: "https://registry.npmmirror.com"
+
+steps:
+  - name: ci-check-and-build
+    image: node:22-alpine
+    commands:
+      - corepack enable
+      - pnpm config set registry ${NPM_REGISTRY}
+      - pnpm install --frozen-lockfile
+      - pnpm lint
+      - pnpm format:check
+      - pnpm build
+
   - name: build-and-push-docker
     image: plugins/docker
-    when:
-      event:
-        - tag
-      ref:
-        - refs/tags/release-v*
     environment:
       VITE_APP_BASE_URL:
         from_secret: VITE_APP_BASE_URL
@@ -57,11 +73,6 @@ steps:
 
   - name: deploy-to-production
     image: appleboy/drone-ssh
-    when:
-      event:
-        - tag
-      ref:
-        - refs/tags/release-v*
     environment:
       DOCKER_REPO:
         from_secret: DOCKER_REPO
