@@ -384,20 +384,20 @@ server_ssh_key      → "-----BEGIN.." from_secret: server_ssh_key
 
 ```bash
 # 创建 release 标签
-git tag -a release-v1.0.1 -m "发布 v1.0.1 版本"
+git tag -a github-v1.0.1 -m "发布 v1.0.1 版本"
 
 # 推送标签（触发 GitHub Actions 部署）
-git push origin release-v1.0.1
+git push origin github-v1.0.1
 ```
 
 ### Drone 发布
 
 ```bash
 # 创建 drone 标签
-git tag -a drone-v1.0.1 -m "发布 v1.0.1 版本"
+git tag -a release-v1.0.1 -m "发布 v1.0.1 版本"
 
 # 推送标签（触发 Drone 部署）
-git push origin drone-v1.0.1
+git push origin release-v1.0.1
 ```
 
 ### CI 校验（无需打 tag，推送代码自动触发）
