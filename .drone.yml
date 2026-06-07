@@ -11,29 +11,29 @@ trigger:
     - pull_request
 
 steps:
-  - name: install
-    image: "node:20-alpine"
+  - name: 安装依赖
+    image: "node:22-alpine"
     commands:
       - corepack enable
       - "corepack prepare pnpm@9.15.0 --activate"
       - pnpm install --frozen-lockfile
 
-  - name: lint
-    image: "node:20-alpine"
+  - name: 校验代码
+    image: "node:22-alpine"
     commands:
       - corepack enable
       - "corepack prepare pnpm@9.15.0 --activate"
       - pnpm lint
 
-  - name: format-check
-    image: "node:20-alpine"
+  - name: 校验格式化是否正确
+    image: "node:22-alpine"
     commands:
       - corepack enable
       - "corepack prepare pnpm@9.15.0 --activate"
       - "pnpm format:check"
 
-  - name: build
-    image: "node:20-alpine"
+  - name: 构建项目
+    image: "node:22-alpine"
     commands:
       - corepack enable
       - "corepack prepare pnpm@9.15.0 --activate"
