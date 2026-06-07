@@ -1,45 +1,38 @@
 ---
 kind: pipeline
 type: docker
-name: ci
+name: ci-cd
+
+clone:
+  disable: true
 
 trigger:
   branch:
     - master
+    - release-v*
   event:
     - push
     - pull_request
-
-environment:
-  NPM_REGISTRY: "https://registry.npmmirror.com"
-
-steps:
-  - name: ci-check-and-build
-    image: node:22-alpine
-    commands:
-      - corepack enable
-      - pnpm config set registry ${NPM_REGISTRY}
-      - pnpm install --frozen-lockfile
-      - pnpm lint
-      - pnpm format:check
-      - pnpm build
-
----
-kind: pipeline
-type: docker
-name: cd
-
-trigger:
-  ref:
-    - refs/tags/release-v*
-  event:
     - tag
 
 environment:
   NPM_REGISTRY: "https://registry.npmmirror.com"
 
+volumes:
+  - name: docker-sock
+    host:
+      path: /var/run/docker.sock
+
 steps:
-  - name: ci-check-and-build
+  - name: 克隆代码
+    image: alpine/git
+    commands:
+      - git config --global http.version HTTP/1.1
+      - git config --global http.postBuffer 524288000
+      - git clone --depth 20 ${DRONE_REMOTE_URL} .
+      - git checkout ${DRONE_COMMIT_SHA}
+
+  - name: 安装依赖并校验
     image: node:22-alpine
     commands:
       - corepack enable
@@ -49,30 +42,46 @@ steps:
       - pnpm format:check
       - pnpm build
 
-  - name: build-and-push-docker
-    image: plugins/docker
+  - name: 构建并推送Docker镜像
+    image: docker:cli
+    when:
+      event:
+        - tag
+      ref:
+        - refs/tags/release-v*
+    volumes:
+      - name: docker-sock
+        path: /var/run/docker.sock
     environment:
+      DOCKER_USERNAME:
+        from_secret: DOCKER_HUB_USERNAME
+      DOCKER_PASSWORD:
+        from_secret: DOCKER_HUB_TOKEN
+      DOCKER_REPO:
+        from_secret: DOCKER_REPO
       VITE_APP_BASE_URL:
         from_secret: VITE_APP_BASE_URL
       VITE_APP_TITLE:
         from_secret: VITE_APP_TITLE
-    settings:
-      repo:
-        from_secret: DOCKER_REPO
-      username:
-        from_secret: DOCKER_HUB_USERNAME
-      password:
-        from_secret: DOCKER_HUB_TOKEN
-      dockerfile: Dockerfile
-      tags:
-        - ${DRONE_TAG}
-        - production
-      build_args_from_env:
-        - VITE_APP_BASE_URL
-        - VITE_APP_TITLE
+    commands:
+      - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+      - |
+        docker build \
+          --build-arg VITE_APP_BASE_URL="${VITE_APP_BASE_URL}" \
+          --build-arg VITE_APP_TITLE="${VITE_APP_TITLE}" \
+          -t "${DOCKER_REPO}:${DRONE_TAG}" \
+          -t "${DOCKER_REPO}:production" \
+          .
+      - docker push "${DOCKER_REPO}:${DRONE_TAG}"
+      - docker push "${DOCKER_REPO}:production"
 
-  - name: deploy-to-production
+  - name: 部署到生产服务器
     image: appleboy/drone-ssh
+    when:
+      event:
+        - tag
+      ref:
+        - refs/tags/release-v*
     environment:
       DOCKER_REPO:
         from_secret: DOCKER_REPO
