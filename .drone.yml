@@ -10,19 +10,9 @@ trigger:
     - push
     - pull_request
 
-concurrency:
-  limit: 1
-
-volumes:
-  - name: workspace
-    temp: {}
-
 steps:
   - name: install
     image: "node:20-alpine"
-    volumes:
-      - name: workspace
-        path: /drone/src
     commands:
       - corepack enable
       - "corepack prepare pnpm@9.15.0 --activate"
@@ -30,9 +20,6 @@ steps:
 
   - name: lint
     image: "node:20-alpine"
-    volumes:
-      - name: workspace
-        path: /drone/src
     commands:
       - corepack enable
       - "corepack prepare pnpm@9.15.0 --activate"
@@ -40,9 +27,6 @@ steps:
 
   - name: format-check
     image: "node:20-alpine"
-    volumes:
-      - name: workspace
-        path: /drone/src
     commands:
       - corepack enable
       - "corepack prepare pnpm@9.15.0 --activate"
@@ -50,9 +34,6 @@ steps:
 
   - name: build
     image: "node:20-alpine"
-    volumes:
-      - name: workspace
-        path: /drone/src
     commands:
       - corepack enable
       - "corepack prepare pnpm@9.15.0 --activate"
