@@ -29,7 +29,7 @@ steps:
       - pnpm build
 
   - name: 构建并推送Docker镜像
-    image: plugins/kaniko
+    image: registry.cn-hangzhou.aliyuncs.com/kaniko-project/executor:latest
     pull: if-not-exists
     when:
       event: [tag]
@@ -39,20 +39,23 @@ steps:
         from_secret: VITE_APP_BASE_URL
       VITE_APP_TITLE:
         from_secret: VITE_APP_TITLE
-    settings:
-      repo:
-        from_secret: DOCKER_REPO
-      username:
+      DOCKER_HUB_USERNAME:
         from_secret: DOCKER_HUB_USERNAME
-      password:
+      DOCKER_HUB_TOKEN:
         from_secret: DOCKER_HUB_TOKEN
-      dockerfile: Dockerfile
-      tags:
-        - ${DRONE_TAG}
-        - production
-      build_args:
-        - VITE_APP_BASE_URL=${VITE_APP_BASE_URL}
-        - VITE_APP_TITLE=${VITE_APP_TITLE}
+      DOCKER_REPO:
+        from_secret: DOCKER_REPO
+    commands:
+      - mkdir -p /kaniko/.docker
+      - echo "{\"auths\":{\"https://index.docker.io/v1/\":{\"auth\":\"$(echo -n $DOCKER_HUB_USERNAME:$DOCKER_HUB_TOKEN | base64)\"}}}" > /kaniko/.docker/config.json
+      - /kaniko/executor
+          --context .
+          --dockerfile Dockerfile
+          --destination "${DOCKER_REPO}:${DRONE_TAG}"
+          --destination "${DOCKER_REPO}:production"
+          --build-arg VITE_APP_BASE_URL="${VITE_APP_BASE_URL}"
+          --build-arg VITE_APP_TITLE="${VITE_APP_TITLE}"
+          --cache=true
 
   - name: 部署到生产服务器
     image: appleboy/drone-ssh
