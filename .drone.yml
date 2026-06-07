@@ -31,7 +31,7 @@ steps:
   - name: 构建并推送Docker镜像
     image: docker.1ms.run/plugins/docker
     pull: if-not-exists
-    privileged: true
+
     volumes:
       - name: dockersock
         path: /var/run/docker.sock
