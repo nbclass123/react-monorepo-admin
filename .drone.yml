@@ -1,3 +1,4 @@
+---
 kind: pipeline
 type: docker
 name: ci-cd
@@ -71,69 +72,78 @@ steps:
       key:
         from_secret: SERVER_SSH_KEY
       port: 22
-      script:
-        - set -e
-        - IMAGE="${DOCKER_REPO}:${DRONE_TAG}"
-        - COMPOSE_FILE="/opt/hy-platform-web/docker-compose.yml"
-        - CONTAINER="hy-platform-web"
-        - echo "=========================================="
-        - echo "  部署镜像: ${IMAGE}"
-        - echo "=========================================="
-        - echo "[1/4] 拉取镜像..."
-        - docker pull "${IMAGE}"
-        - echo "[2/4] 准备 compose 文件..."
-        - mkdir -p /opt/hy-platform-web
-        - |
-          cat > "${COMPOSE_FILE}" << 'COMPOSE_EOF'
-          version: '3.8'
-          services:
-            frontend:
-              image: IMAGE_PLACEHOLDER
-              container_name: hy-platform-web
-              ports:
-                - "80:80"
-              restart: unless-stopped
-              healthcheck:
-                test: ["CMD", "wget", "-qO-", "http://localhost/health"]
-                interval: 30s
-                timeout: 5s
-                retries: 3
-                start_period: 10s
-              logging:
-                driver: "json-file"
-                options:
-                  max-size: "10m"
-                  max-file: "3"
-              deploy:
-                resources:
-                  limits:
-                    cpus: "0.50"
-                    memory: 256M
-                  reservations:
-                    cpus: "0.25"
-                    memory: 128M
-          COMPOSE_EOF
-        - sed -i "s|IMAGE_PLACEHOLDER|${IMAGE}|g" "${COMPOSE_FILE}"
-        - echo "[3/4] 更新容器..."
-        - docker compose -f "${COMPOSE_FILE}" up -d --remove-orphans
-        - echo "[4/4] 等待健康检查..."
-        - |
-          HEALTHY=0
-          for i in $(seq 1 30); do
-            STATUS=$(docker inspect --format='{{.State.Health.Status}}' "${CONTAINER}" 2>/dev/null || echo "not_found")
-            if [ "${STATUS}" = "healthy" ]; then
-              echo "✅ 健康检查通过"
-              HEALTHY=1
-              break
-            fi
-            echo "  [${i}/30] 状态: ${STATUS}，等待中..."
-            sleep 3
-          done
-          if [ "${HEALTHY}" != "1" ]; then
-            echo "❌ 健康检查失败，最近日志:"
-            docker compose -f "${COMPOSE_FILE}" logs --tail=50
-            exit 1
+      script: |
+        set -e
+
+        IMAGE="${DOCKER_REPO}:${DRONE_TAG}"
+        COMPOSE_FILE="/opt/hy-platform-web/docker-compose.yml"
+        CONTAINER="hy-platform-web"
+
+        echo "=========================================="
+        echo "  部署镜像: ${IMAGE}"
+        echo "=========================================="
+
+        echo "[1/4] 拉取镜像..."
+        docker pull "${IMAGE}"
+
+        echo "[2/4] 准备 compose 文件..."
+        mkdir -p /opt/hy-platform-web
+
+        cat > "${COMPOSE_FILE}" << 'COMPOSE_EOF'
+        version: '3.8'
+        services:
+          frontend:
+            image: IMAGE_PLACEHOLDER
+            container_name: hy-platform-web
+            ports:
+              - "80:80"
+            restart: unless-stopped
+            healthcheck:
+              test: ["CMD", "wget", "-qO-", "http://localhost/health"]
+              interval: 30s
+              timeout: 5s
+              retries: 3
+              start_period: 10s
+            logging:
+              driver: "json-file"
+              options:
+                max-size: "10m"
+                max-file: "3"
+            deploy:
+              resources:
+                limits:
+                  cpus: "0.50"
+                  memory: 256M
+                reservations:
+                  cpus: "0.25"
+                  memory: 128M
+        COMPOSE_EOF
+
+        sed -i "s|IMAGE_PLACEHOLDER|${IMAGE}|g" "${COMPOSE_FILE}"
+
+        echo "[3/4] 更新容器..."
+        docker compose -f "${COMPOSE_FILE}" up -d --remove-orphans
+
+        echo "[4/4] 等待健康检查..."
+
+        HEALTHY=0
+        for i in $(seq 1 30); do
+          STATUS=$(docker inspect --format='{{.State.Health.Status}}' "${CONTAINER}" 2>/dev/null || echo "not_found")
+          if [ "${STATUS}" = "healthy" ]; then
+            echo "健康检查通过"
+            HEALTHY=1
+            break
           fi
-        - echo "=========================================="
-        - echo "  ✅ 部署成功: ${IMAGE}"
-        - echo "=========================================="
+          echo "  [${i}/30] 状态: ${STATUS}，等待中..."
+          sleep 3
+        done
+
+        if [ "${HEALTHY}" != "1" ]; then
+          echo "健康检查失败，最近日志:"
+          docker compose -f "${COMPOSE_FILE}" logs --tail=50
+          exit 1
+        fi
+
+        echo "=========================================="
+        echo "  部署成功: ${IMAGE}"
+        echo "=========================================="
