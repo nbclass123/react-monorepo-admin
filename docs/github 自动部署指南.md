@@ -36,23 +36,38 @@ cat ~/.ssh/github-actions
 
 ## 发布命令
 
+### GitHub Actions 发布（tag 前缀：`release-v*`）
+
 ```bash
 # 创建版本标签
-git tag -a v1.0.1 -m "发布 v1.0.1 版本"
+git tag -a release-v1.0.1 -m "发布 v1.0.1 版本"
 
-# 推送标签到远程（触发自动部署）
-git push origin v1.0.1
+# 推送标签到远程（触发 GitHub Actions 自动部署）
+git push origin release-v1.0.1
 ```
 
-`git push origin <tag>` 之后，GitHub Actions 自动触发以下流水线。
+### Drone CI 发布（tag 前缀：`drone-v*`）
+
+```bash
+# 创建版本标签
+git tag -a drone-v1.0.1 -m "发布 v1.0.1 版本"
+
+# 推送标签到远程（触发 Drone 自动部署）
+git push origin drone-v1.0.1
+```
+
+`git push origin <tag>` 之后，对应的 CI/CD 平台自动触发以下流水线。
 
 ## 触发规则
 
-| 事件 | 触发工作流 | 说明 |
-|------|-----------|------|
-| `git push origin v*` | `deploy-production.yml` | 打版本标签 → 构建镜像 → 部署到生产 |
-| `push: master` | `ci.yml` | 代码推送 → lint + format + build 校验 |
-| `pull_request: master` | `ci.yml` | PR → lint + format + build 校验 |
+| 平台 | 事件 | 触发工作流 | 说明 |
+|------|------|-----------|------|
+| GitHub Actions | `git push origin release-v*` | `deploy-production.yml` | 打版本标签 → 构建镜像 → 部署到生产 |
+| Drone | `git push origin drone-v*` | `drone-v*` pipeline | 打版本标签 → 构建镜像 → 部署到生产 |
+| GitHub Actions | `push: master` | `ci.yml` | 代码推送 → lint + format + build 校验 |
+| Drone | `push: master` | `CI/CD 测试` pipeline | 代码推送 → lint + format + build 校验 |
+| GitHub Actions | `pull_request: master` | `ci.yml` | PR → lint + format + build 校验 |
+| Drone | `pull_request: master` | `CI/CD 测试` pipeline | PR → lint + format + build 校验 |
 
 ## CI/CD 流水线
 
@@ -60,8 +75,8 @@ git push origin v1.0.1
 开发机                          GitHub Actions                         服务器
 ───────                         ──────────────                         ──────
 
-git tag -a v1.0.1 -m "..."
-git push origin v1.0.1  ──────→  [1] 检出代码
+git tag -a release-v1.0.1 -m "..."
+git push origin release-v1.0.1  ──→  [1] 检出代码
                                   │
                                   [2] Docker Buildx 构建
                                   │   ├── docker build

@@ -1,0 +1,181 @@
+---
+# ============================================================
+# Pipeline 1: CI（push + PR → master）
+# 对应 .github/workflows/ci.yml
+# ============================================================
+kind: pipeline
+type: docker
+name: CI/CD 测试
+
+trigger:
+  branch:
+    - master
+  event:
+    - push
+    - pull_request
+
+concurrency:
+  limit: 1
+
+volumes:
+  - name: workspace
+    temp: {}
+
+steps:
+  - name: install
+    image: node:20-alpine
+    volumes:
+      - name: workspace
+        path: /drone/src
+    commands:
+      - corepack enable
+      - corepack prepare pnpm@9.15.0 --activate
+      - pnpm install --frozen-lockfile
+
+  - name: lint
+    image: node:20-alpine
+    volumes:
+      - name: workspace
+        path: /drone/src
+    commands:
+      - corepack enable
+      - corepack prepare pnpm@9.15.0 --activate
+      - pnpm lint
+
+  - name: format-check
+    image: node:20-alpine
+    volumes:
+      - name: workspace
+        path: /drone/src
+    commands:
+      - corepack enable
+      - corepack prepare pnpm@9.15.0 --activate
+      - pnpm format:check
+
+  - name: build
+    image: node:20-alpine
+    volumes:
+      - name: workspace
+        path: /drone/src
+    commands:
+      - corepack enable
+      - corepack prepare pnpm@9.15.0 --activate
+      - pnpm build
+
+---
+# ============================================================
+# Pipeline 2: 部署（v* Tag 触发）
+# 对应 .github/workflows/deploy-production.yml
+# ============================================================
+kind: pipeline
+type: docker
+name: 部署到生产环境
+
+trigger:
+  event:
+    - tag
+  ref:
+    - refs/tags/drone-v*
+
+steps:
+  - name: docker-build-push
+    image: plugins/docker
+    environment:
+      DOCKER_HUB_USERNAME: &docker_hub_username
+        from_secret: docker_hub_username
+      VITE_APP_BASE_URL: &vite_app_base_url
+        from_secret: vite_app_base_url
+      VITE_APP_TITLE: &vite_app_title
+        from_secret: vite_app_title
+    settings:
+      repo: docker.io/${DOCKER_HUB_USERNAME}/hy-admin
+      username: *docker_hub_username
+      password:
+        from_secret: docker_hub_token
+      tags:
+        - ${DRONE_TAG}
+        - production
+      build_args:
+        - VITE_APP_BASE_URL=${VITE_APP_BASE_URL}
+        - VITE_APP_TITLE=${VITE_APP_TITLE}
+
+  - name: deploy-to-server
+    image: appleboy/drone-ssh
+    environment:
+      DOCKER_HUB_USERNAME: *docker_hub_username
+    settings:
+      host:
+        from_secret: server_host
+      username:
+        from_secret: server_user
+      key:
+        from_secret: server_ssh_key
+      port: 22
+      script:
+        - set -e
+        - IMAGE="docker.io/${DOCKER_HUB_USERNAME}/hy-admin:${DRONE_TAG}"
+        - COMPOSE_FILE="/opt/hy-platform-web/docker-compose.yml"
+        - CONTAINER="hy-platform-web"
+        - echo "=========================================="
+        - echo "  部署镜像: ${IMAGE}"
+        - echo "=========================================="
+        - echo "[1/4] 拉取镜像..."
+        - docker pull "${IMAGE}"
+        - echo "[2/4] 准备 compose 文件..."
+        - mkdir -p /opt/hy-platform-web
+        - |
+          cat > "${COMPOSE_FILE}" << 'COMPOSE_EOF'
+          version: '3.8'
+
+          services:
+            frontend:
+              image: IMAGE_PLACEHOLDER
+              container_name: hy-platform-web
+              ports:
+                - "80:80"
+              restart: unless-stopped
+              healthcheck:
+                test: ["CMD", "wget", "-qO-", "http://localhost/health"]
+                interval: 30s
+                timeout: 5s
+                retries: 3
+                start_period: 10s
+              logging:
+                driver: "json-file"
+                options:
+                  max-size: "10m"
+                  max-file: "3"
+              deploy:
+                resources:
+                  limits:
+                    cpus: "0.50"
+                    memory: "256M"
+                  reservations:
+                    cpus: "0.25"
+                    memory: "128M"
+          COMPOSE_EOF
+        - sed -i "s|IMAGE_PLACEHOLDER|${IMAGE}|g" "${COMPOSE_FILE}"
+        - echo "[3/4] 更新容器..."
+        - docker compose -f "${COMPOSE_FILE}" up -d --remove-orphans
+        - echo "[4/4] 等待健康检查..."
+        - |
+          HEALTHY=0
+          for i in $(seq 1 30); do
+            STATUS=$(docker inspect --format='{{.State.Health.Status}}' "${CONTAINER}" 2>/dev/null || echo "not_found")
+            if [ "${STATUS}" = "healthy" ]; then
+              echo "容器健康检查通过"
+              HEALTHY=1
+              break
+            fi
+            echo "  [${i}/30] status: ${STATUS}, waiting..."
+            sleep 3
+          done
+
+          if [ "${HEALTHY}" != "1" ]; then
+            echo "健康检查失败, 最近日志:"
+            docker compose -f "${COMPOSE_FILE}" logs --tail=50
+            exit 1
+          fi
+        - echo "=========================================="
+        - echo "  部署成功: ${IMAGE}"
+        - echo "=========================================="

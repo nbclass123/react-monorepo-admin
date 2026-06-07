@@ -31,9 +31,9 @@ GitHub Secrets (VITE_APP_BASE_URL, VITE_APP_TITLE)
 
 ## 镜像版本策略
 
-| 标签 | 含义 | 用途 |
-|------|------|------|
-| `v1.2.3` | Git 标签对应的不可变版本 | 精确追溯、回滚 |
+| 标签           | 含义             | 用途         |
+| ------------ | -------------- | ---------- |
+| `v1.2.3`     | Git 标签对应的不可变版本 | 精确追溯、回滚    |
 | `production` | 当前生产运行版本（滚动覆盖） | 快速回滚到上一次部署 |
 
 每次推送 `v*` 标签时，CI 同时打上版本标签和 `production` 标签。回滚时只需将服务器 compose 文件中的镜像标签改为上一版本号即可。
@@ -51,18 +51,19 @@ GitHub Secrets (VITE_APP_BASE_URL, VITE_APP_TITLE)
 
 在仓库 `Settings → Environments → production` 中配置以下 Secrets：
 
-| Secret | 说明 | 示例 |
-|--------|------|------|
-| `DOCKER_HUB_USERNAME` | Docker Hub 用户名 | `mycompany` |
-| `DOCKER_HUB_TOKEN` | Docker Hub Access Token | `dckr_pat_xxx...` |
-| `VITE_APP_BASE_URL` | 浏览器访问 API 的地址 | `http://124.221.127.123:8080/api` |
-| `VITE_APP_TITLE` | 网页标题 | `呼呼呼管理系统` |
-| `SERVER_HOST` | 生产服务器 IP 或域名 | `124.221.127.123` |
-| `SERVER_USER` | SSH 登录用户名 | `root` |
-| `SERVER_SSH_KEY` | SSH 私钥（换行符保留） | `-----BEGIN OPENSSH PRIVATE KEY-----\n...` |
-| `SERVER_PORT` | SSH 端口（可选，默认 22） | `22` |
+| Secret                | 说明                      | 示例                                         |
+| --------------------- | ----------------------- | ------------------------------------------ |
+| `DOCKER_HUB_USERNAME` | Docker Hub 用户名          | `mycompany`                                |
+| `DOCKER_HUB_TOKEN`    | Docker Hub Access Token | `dckr_pat_xxx...`                          |
+| `VITE_APP_BASE_URL`   | 浏览器访问 API 的地址           | `http://124.221.127.123:8080/api`          |
+| `VITE_APP_TITLE`      | 网页标题                    | `呼呼呼管理系统`                                  |
+| `SERVER_HOST`         | 生产服务器 IP 或域名            | `124.221.127.123`                          |
+| `SERVER_USER`         | SSH 登录用户名               | `root`                                     |
+| `SERVER_SSH_KEY`      | SSH 私钥（换行符保留）           | `-----BEGIN OPENSSH PRIVATE KEY-----\n...` |
+| `SERVER_PORT`         | SSH 端口（可选，默认 22）        | `22`                                       |
 
 **注意**：
+
 - `DOCKER_HUB_TOKEN` 不是密码，需要在 Docker Hub `Account Settings → Security → New Access Token` 创建
 - `SERVER_SSH_KEY` 是多行值，GitHub Secrets 会保留换行符
 
@@ -142,9 +143,11 @@ curl -f http://localhost/health
 ### 2. 容器启动后立即退出
 
 查看日志：
+
 ```bash
 docker logs hy-platform-web
 ```
+
 常见原因：80 端口被占用、Nginx 配置文件语法错误。
 
 ### 3. 后端 API 请求超时
@@ -187,11 +190,12 @@ docker compose down
 
 本地 compose 与生产 compose 的区别：
 
-| 项目 | 本地 `docker-compose.yml` | 生产 `docker-compose.prod.yml` |
-|------|---------------------------|-------------------------------|
-| 镜像来源 | 本地构建 `build:` | 远程拉取 `image:` |
-| 端口 | 8088:80 | 80:80 |
-| 网络 | `hu-platform-net` (external) | `hu-platform-net` (external) |
-| 资源限制 | 无 | CPU 0.5 / 内存 256M |
-| 日志轮转 | 无 | max-size 10m / max-file 3 |
-| 变量注入 | Dockerfile ARG | 环境变量 `${IMAGE_TAG}` |
+| 项目   | 本地 `docker-compose.yml`      | 生产 `docker-compose.prod.yml` |
+| ---- | ---------------------------- | ---------------------------- |
+| 镜像来源 | 本地构建 `build:`                | 远程拉取 `image:`                |
+| 端口   | 8088:80                      | 80:80                        |
+| 网络   | `hu-platform-net` (external) | `hu-platform-net` (external) |
+| 资源限制 | 无                            | CPU 0.5 / 内存 256M            |
+| 日志轮转 | 无                            | max-size 10m / max-file 3    |
+| 变量注入 | Dockerfile ARG               | 环境变量 `${IMAGE_TAG}`          |
+
