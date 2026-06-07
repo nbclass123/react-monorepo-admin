@@ -50,7 +50,7 @@ steps:
     commands:
       - corepack enable
       - corepack prepare pnpm@9.15.0 --activate
-      - pnpm format:check
+      - "pnpm format:check"
 
   - name: build
     image: node:20-alpine
@@ -81,15 +81,16 @@ steps:
   - name: docker-build-push
     image: plugins/docker
     environment:
-      DOCKER_HUB_USERNAME: &docker_hub_username
+      DOCKER_HUB_USERNAME:
         from_secret: docker_hub_username
-      VITE_APP_BASE_URL: &vite_app_base_url
+      VITE_APP_BASE_URL:
         from_secret: vite_app_base_url
-      VITE_APP_TITLE: &vite_app_title
+      VITE_APP_TITLE:
         from_secret: vite_app_title
     settings:
       repo: docker.io/${DOCKER_HUB_USERNAME}/hy-admin
-      username: *docker_hub_username
+      username:
+        from_secret: docker_hub_username
       password:
         from_secret: docker_hub_token
       tags:
@@ -102,7 +103,8 @@ steps:
   - name: deploy-to-server
     image: appleboy/drone-ssh
     environment:
-      DOCKER_HUB_USERNAME: *docker_hub_username
+      DOCKER_HUB_USERNAME:
+        from_secret: docker_hub_username
     settings:
       host:
         from_secret: server_host
