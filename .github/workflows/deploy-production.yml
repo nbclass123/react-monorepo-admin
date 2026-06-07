@@ -3,7 +3,7 @@ name: 部署到生产环境
 on:
   push:
     tags:
-      - "release-v*"
+      - "github-v*"
 
 jobs:
   build-and-deploy:

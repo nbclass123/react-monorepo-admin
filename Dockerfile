@@ -1,6 +1,6 @@
 # 多阶段构建 Dockerfile
 # 第一阶段：构建项目
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 # 构建参数 - 用于在构建阶段传递 Vite 环境变量
 ARG VITE_APP_BASE_URL
@@ -14,7 +14,7 @@ ENV VITE_APP_TITLE=${VITE_APP_TITLE}
 WORKDIR /app
 
 # 启用 corepack 以使用 pnpm（版本由 package.json 中 packageManager 字段指定）
-RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
+RUN corepack enable
 
 # 复制依赖清单文件
 COPY pnpm-lock.yaml ./

@@ -1,7 +1,7 @@
 ---
 kind: pipeline
 type: docker
-name: CI/CD 测试
+name: ci-cd
 
 trigger:
   branch:
@@ -9,22 +9,132 @@ trigger:
   event:
     - push
     - pull_request
+    - tag
+
+environment:
+  NPM_REGISTRY: "https://registry.npmmirror.com"
 
 steps:
-  - name: 安装依赖
+  # ======================== CI ========================
+  - name: ci-check-and-build
     image: node:22-alpine
     commands:
       - corepack enable
+      - pnpm config set registry ${NPM_REGISTRY}
       - pnpm install --frozen-lockfile
-
-  - name: 代码检查
-    image: node:22-alpine
-    commands:
-      - corepack enable
-      - pnpm lint && pnpm format:check
-
-  - name: 构建项目
-    image: node:22-alpine
-    commands:
-      - corepack enable
+      - pnpm lint
+      - pnpm format:check
       - pnpm build
+
+  # ======================== CD ========================
+  - name: build-and-push-docker
+    image: plugins/docker
+    when:
+      event:
+        - tag
+      ref:
+        - refs/tags/release-v*
+    environment:
+      VITE_APP_BASE_URL:
+        from_secret: VITE_APP_BASE_URL
+      VITE_APP_TITLE:
+        from_secret: VITE_APP_TITLE
+    settings:
+      repo:
+        from_secret: DOCKER_REPO
+      username:
+        from_secret: DOCKER_HUB_USERNAME
+      password:
+        from_secret: DOCKER_HUB_TOKEN
+      dockerfile: Dockerfile
+      tags:
+        - ${DRONE_TAG}
+        - production
+      build_args_from_env:
+        - VITE_APP_BASE_URL
+        - VITE_APP_TITLE
+
+  - name: deploy-to-production
+    image: appleboy/drone-ssh
+    when:
+      event:
+        - tag
+      ref:
+        - refs/tags/release-v*
+    environment:
+      DOCKER_REPO:
+        from_secret: DOCKER_REPO
+    settings:
+      host:
+        from_secret: SERVER_HOST
+      username:
+        from_secret: SERVER_USER
+      key:
+        from_secret: SERVER_SSH_KEY
+      port: 22
+      script:
+        - set -e
+        - IMAGE="${DOCKER_REPO}:${DRONE_TAG}"
+        - COMPOSE_FILE="/opt/hy-platform-web/docker-compose.yml"
+        - CONTAINER="hy-platform-web"
+        - echo "=========================================="
+        - echo "  部署镜像: ${IMAGE}"
+        - echo "=========================================="
+        - echo "[1/4] 拉取镜像..."
+        - docker pull "${IMAGE}"
+        - echo "[2/4] 准备 compose 文件..."
+        - mkdir -p /opt/hy-platform-web
+        - |
+          cat > "${COMPOSE_FILE}" << 'COMPOSE_EOF'
+          version: '3.8'
+          services:
+            frontend:
+              image: IMAGE_PLACEHOLDER
+              container_name: hy-platform-web
+              ports:
+                - "80:80"
+              restart: unless-stopped
+              healthcheck:
+                test: ["CMD", "wget", "-qO-", "http://localhost/health"]
+                interval: 30s
+                timeout: 5s
+                retries: 3
+                start_period: 10s
+              logging:
+                driver: "json-file"
+                options:
+                  max-size: "10m"
+                  max-file: "3"
+              deploy:
+                resources:
+                  limits:
+                    cpus: "0.50"
+                    memory: 256M
+                  reservations:
+                    cpus: "0.25"
+                    memory: 128M
+          COMPOSE_EOF
+        - sed -i "s|IMAGE_PLACEHOLDER|${IMAGE}|g" "${COMPOSE_FILE}"
+        - echo "[3/4] 更新容器..."
+        - docker compose -f "${COMPOSE_FILE}" up -d --remove-orphans
+        - echo "[4/4] 等待健康检查..."
+        - |
+          HEALTHY=0
+          for i in $(seq 1 30); do
+            STATUS=$(docker inspect --format='{{.State.Health.Status}}' "${CONTAINER}" 2>/dev/null || echo "not_found")
+            if [ "${STATUS}" = "healthy" ]; then
+              echo "健康检查通过"
+              HEALTHY=1
+              break
+            fi
+            echo "  [${i}/30] 状态: ${STATUS}，等待中..."
+            sleep 3
+          done
+          if [ "${HEALTHY}" != "1" ]; then
+            echo "健康检查失败，最近日志:"
+            docker compose -f "${COMPOSE_FILE}" logs --tail=50
+            exit 1
+          fi
+        - echo "=========================================="
+        - echo "  部署成功: ${IMAGE}"
+        - echo "=========================================="

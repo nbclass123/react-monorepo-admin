@@ -4,7 +4,7 @@
 >
 > **场景**：只有公网 IP、没有域名、HTTP 协议。
 
----
+***
 
 ## 目录
 
@@ -16,7 +16,7 @@
 - [六、与 GitHub Actions 并存](#六与-github-actions-并存)
 - [七、常见问题](#七常见问题)
 
----
+***
 
 ## 操作位置速览
 
@@ -31,26 +31,26 @@
 └─────────────────────────────────────────────────────────┘
 ```
 
----
+***
 
 ## 前置条件
 
-| 资源 | 要求 |
-|---|---|
-| 服务器 | 一台有公网 IP 的 Linux 服务器（Ubuntu 22.04 / CentOS 7+） |
-| 公网 IP | `124.221.127.123`，开放 **80 和 8080** 两个端口的入站访问 |
-| Docker | 服务器已安装 Docker + Docker Compose |
-| GitHub 账号 | 有目标仓库的管理权限 |
+| 资源        | 要求                                             |
+| --------- | ---------------------------------------------- |
+| 服务器       | 一台有公网 IP 的 Linux 服务器（Ubuntu 22.04 / CentOS 7+） |
+| 公网 IP     | `124.221.127.123`，开放 **80 和 8080** 两个端口的入站访问   |
+| Docker    | 服务器已安装 Docker + Docker Compose                 |
+| GitHub 账号 | 有目标仓库的管理权限                                     |
 
 **端口分配：**
 
-| 端口 | 用途 | 服务 |
-|---|---|---|
-| **8080** | Drone Web UI + Webhook | `drone-server` 容器 |
-| **80** | 部署的前端应用（用户访问） | `hy-platform-web` 容器 |
-| 3000 | Drone Runner 内部端口 | `drone-runner` 容器（仅内部用） |
+| 端口       | 用途                     | 服务                      |
+| -------- | ---------------------- | ----------------------- |
+| **8080** | Drone Web UI + Webhook | `drone-server` 容器       |
+| **80**   | 部署的前端应用（用户访问）          | `hy-platform-web` 容器    |
+| 3000     | Drone Runner 内部端口      | `drone-runner` 容器（仅内部用） |
 
----
+***
 
 ## 一、GitHub 侧配置
 
@@ -63,10 +63,10 @@
 
 ### 1.2 填写表单
 
-| 字段 | 值 |
-|---|---|
-| Application name | `Drone CI` |
-| Homepage URL | `http://124.221.127.123:8080` |
+| 字段                         | 值                                   |
+| -------------------------- | ----------------------------------- |
+| Application name           | `Drone CI`                          |
+| Homepage URL               | `http://124.221.127.123:8080`       |
 | Authorization callback URL | `http://124.221.127.123:8080/login` |
 
 > 把 `124.221.127.123` 换成你的实际公网 IP。
@@ -82,7 +82,7 @@
 
 > 这两个值稍后要填入服务器的 `docker-compose.yml`。
 
----
+***
 
 ## 二、服务器侧部署
 
@@ -171,7 +171,7 @@ docker logs drone-runner | grep "successfully connected"
 
 > 访问不了：检查防火墙 `ufw allow 8080`，或云服务商安全组放行 TCP 8080。
 
----
+***
 
 ## 三、Drone Web 后台配置
 
@@ -200,7 +200,7 @@ docker logs drone-runner | grep "successfully connected"
 
 进入：仓库页面 → **Settings** → **Secrets** → 点击 **"+ New Secret"**，依次添加以下 7 个 Secret。
 
----
+***
 
 #### Secret 1：`docker_hub_username` — Docker Hub 用户名
 
@@ -211,7 +211,7 @@ Name:  docker_hub_username
 Value: <你的 Docker Hub 用户名，如 huhanwen>
 ```
 
----
+***
 
 #### Secret 2：`docker_hub_token` — Docker Hub 访问令牌
 
@@ -229,7 +229,7 @@ Value: dckr_pat_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 > 不能用 Docker Hub 登录密码，必须用 Access Token。
 
----
+***
 
 #### Secret 3：`vite_app_base_url` — 后端 API 地址
 
@@ -240,7 +240,7 @@ Name:  vite_app_base_url
 Value: http://124.221.127.123/api
 ```
 
----
+***
 
 #### Secret 4：`vite_app_title` — 网页标题
 
@@ -251,7 +251,7 @@ Name:  vite_app_title
 Value: 番茄
 ```
 
----
+***
 
 #### Secret 5：`server_host` — 服务器 IP
 
@@ -260,7 +260,7 @@ Name:  server_host
 Value: 124.221.127.123
 ```
 
----
+***
 
 #### Secret 6：`server_user` — SSH 用户名
 
@@ -277,7 +277,7 @@ Name:  server_user
 Value: deploy
 ```
 
----
+***
 
 #### Secret 7：`server_ssh_key` — SSH 私钥
 
@@ -311,7 +311,7 @@ b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAA...
 
 > Drone 的 Secret Value 输入框支持多行文本，直接粘贴即可。
 
----
+***
 
 ### 全部配置完成后
 
@@ -345,7 +345,7 @@ server_ssh_key      → "-----BEGIN.." from_secret: server_ssh_key
 
 `.drone.yml` 里永远只出现 Secret 的**名字**，不出现真实值，可以安全提交 Git。
 
----
+***
 
 ## 四、项目配置
 
@@ -355,26 +355,26 @@ server_ssh_key      → "-----BEGIN.." from_secret: server_ssh_key
 
 项目根目录的 [.drone.yml](../.drone.yml) 包含两条流水线：
 
-| 流水线 | 触发条件 | 作用 |
-|---|---|---|
+| 流水线        | 触发条件               | 作用                                 |
+| ---------- | ------------------ | ---------------------------------- |
 | `CI/CD 测试` | push / PR → master | 安装依赖 → lint → format:check → build |
-| `部署到生产环境` | tag `drone-v*` | Docker 构建 → 推送镜像 → SSH 部署 → 健康检查 |
+| `部署到生产环境`  | tag `drone-v*`     | Docker 构建 → 推送镜像 → SSH 部署 → 健康检查   |
 
 ### 4.2 GitHub Actions → Drone 对照
 
-| 场景 | GitHub Actions | Drone |
-|---|---|---|
-| 检出代码 | `actions/checkout@v4` | **自动克隆**，无需声明 |
-| Node 环境 | `actions/setup-node@v4` | `image: node:20-alpine` 自带 |
-| pnpm | `pnpm/action-setup@v4` | `corepack enable && corepack prepare` |
-| 密钥引用 | `${{ secrets.X }}` | `from_secret: x` |
-| 部署 Tag 触发 | `release-v*` | `drone-v*` |
-| 版本号 | `${GITHUB_REF#refs/tags/}` | `${DRONE_TAG}` 直接可用 |
-| Docker 构建 | `docker/build-push-action@v5` | `plugins/docker` |
-| SSH 部署 | `appleboy/ssh-action@v1` | `appleboy/drone-ssh` |
-| 步骤间共享文件 | 同一 Runner（天然持久） | 需配置 `volumes` 临时卷 |
+| 场景        | GitHub Actions                | Drone                                 |
+| --------- | ----------------------------- | ------------------------------------- |
+| 检出代码      | `actions/checkout@v4`         | **自动克隆**，无需声明                         |
+| Node 环境   | `actions/setup-node@v4`       | `image: node:20-alpine` 自带            |
+| pnpm      | `pnpm/action-setup@v4`        | `corepack enable && corepack prepare` |
+| 密钥引用      | `${{ secrets.X }}`            | `from_secret: x`                      |
+| 部署 Tag 触发 | `release-v*`                  | `drone-v*`                            |
+| 版本号       | `${GITHUB_REF#refs/tags/}`    | `${DRONE_TAG}` 直接可用                   |
+| Docker 构建 | `docker/build-push-action@v5` | `plugins/docker`                      |
+| SSH 部署    | `appleboy/ssh-action@v1`      | `appleboy/drone-ssh`                  |
+| 步骤间共享文件   | 同一 Runner（天然持久）               | 需配置 `volumes` 临时卷                     |
 
----
+***
 
 ## 五、发布命令
 
@@ -411,10 +411,10 @@ git push origin master
 
 ### 查看流水线
 
-| 平台 | 地址 |
-|---|---|
+| 平台             | 地址                                          |
+| -------------- | ------------------------------------------- |
 | GitHub Actions | `https://github.com/<owner>/<repo>/actions` |
-| Drone | `http://<你的公网IP>:8080` → 点击仓库名 |
+| Drone          | `http://<你的公网IP>:8080` → 点击仓库名              |
 
 ### 验证部署
 
@@ -446,7 +446,7 @@ sed -i "s|image:.*|image: ${IMAGE}|g" docker-compose.yml
 docker compose up -d --pull never
 ```
 
----
+***
 
 ## 六、与 GitHub Actions 并存
 
@@ -463,19 +463,19 @@ docker compose up -d --pull never
 └── ...
 ```
 
-| 对比 | GitHub Actions | Drone |
-|---|---|---|
+| 对比        | GitHub Actions                        | Drone                             |
+| --------- | ------------------------------------- | --------------------------------- |
 | Secret 存放 | GitHub → Settings → Secrets → Actions | Drone Web UI → Settings → Secrets |
-| CI 触发 | push/PR → master | push/PR → master |
-| 部署 tag | `release-v*` | `drone-v*` |
-| 配置文件 | `.github/workflows/*.yml` | `.drone.yml` |
-| 运行环境 | GitHub 托管 Runner | 你自己的服务器 Runner |
+| CI 触发     | push/PR → master                      | push/PR → master                  |
+| 部署 tag    | `release-v*`                          | `drone-v*`                        |
+| 配置文件      | `.github/workflows/*.yml`             | `.drone.yml`                      |
+| 运行环境      | GitHub 托管 Runner                      | 你自己的服务器 Runner                    |
 
 - Git push 事件**同时**发送给 Drone Webhook 和 GitHub Actions
 - 各用各的 Secret，互不影响
 - 一个挂了另一个照常跑
 
----
+***
 
 ## 七、常见问题
 
@@ -527,14 +527,15 @@ clone:
 
 **不需要。** Secret 存储在 Drone Server 的 `/opt/drone/drone-data/` 目录中。只要 Drone Server 没重建，Secret 都在。只需更新 IP 变了的 Secret（如 `server_host`）。
 
----
+***
 
 ## 涉及文件汇总
 
-| 文件 | 路径 | 说明 |
-|---|---|---|
-| `docker-compose.yml` | `/opt/drone/` | Drone Server + Runner 服务定义 |
-| `drone-data/` | `/opt/drone/` | Drone 数据目录（自动生成，含 Secret） |
-| `.drone.yml` | 项目根目录 | Drone 流水线配置（提交到 Git） |
-| OAuth App | GitHub Developer Settings | Drone 登录授权 |
-| Secrets × 7 | Drone Web UI → Settings → Secrets | 敏感信息存放 |
+| 文件                   | 路径                                | 说明                         |
+| -------------------- | --------------------------------- | -------------------------- |
+| `docker-compose.yml` | `/opt/drone/`                     | Drone Server + Runner 服务定义 |
+| `drone-data/`        | `/opt/drone/`                     | Drone 数据目录（自动生成，含 Secret）  |
+| `.drone.yml`         | 项目根目录                             | Drone 流水线配置（提交到 Git）       |
+| OAuth App            | GitHub Developer Settings         | Drone 登录授权                 |
+| Secrets × 7          | Drone Web UI → Settings → Secrets | 敏感信息存放                     |
+
