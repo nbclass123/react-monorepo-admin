@@ -53,6 +53,11 @@ steps:
       build_args_from_env:
         - VITE_APP_BASE_URL
         - VITE_APP_TITLE
+      daemon_mirror:
+        - https://docker.m.daocloud.io
+        - https://mirror.ccs.tencentyun.com
+        - https://docker.1panel.live
+      debug: true
 
   - name: 部署到生产服务器
     image: appleboy/drone-ssh
