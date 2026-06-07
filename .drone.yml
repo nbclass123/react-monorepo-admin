@@ -19,19 +19,6 @@ environment:
   NPM_REGISTRY: "https://registry.npmmirror.com"
 
 steps:
-  - name: 克隆代码
-    image: alpine/git
-    commands:
-      - git clone --depth 20 ${DRONE_REMOTE_URL} .
-      - git checkout ${DRONE_COMMIT_SHA}    
-      - |
-        if [ -n "${DRONE_TAG}" ]; then
-          git clone --branch ${DRONE_TAG} --depth 1 ${DRONE_REMOTE_URL} .
-        else
-          git clone --depth 20 ${DRONE_REMOTE_URL} .
-          git checkout ${DRONE_COMMIT_SHA}
-        fi
-
   - name: 安装依赖并校验
     image: node:22-alpine
     pull: if-not-exists
