@@ -29,7 +29,7 @@ steps:
       - pnpm build
 
   - name: 构建并推送Docker镜像
-    image: docker.1ms.run/plugins/docker
+    image: plugins/docker:20.18.3
     pull: if-not-exists
     when:
       event: [tag]
