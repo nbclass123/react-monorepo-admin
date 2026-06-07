@@ -1,8 +1,4 @@
 ---
-# ============================================================
-# Pipeline 1: CI（push + PR → master）
-# 对应 .github/workflows/ci.yml
-# ============================================================
 kind: pipeline
 type: docker
 name: CI/CD 测试
@@ -23,50 +19,46 @@ volumes:
 
 steps:
   - name: install
-    image: node:20-alpine
+    image: "node:20-alpine"
     volumes:
       - name: workspace
         path: /drone/src
     commands:
       - corepack enable
-      - corepack prepare pnpm@9.15.0 --activate
+      - "corepack prepare pnpm@9.15.0 --activate"
       - pnpm install --frozen-lockfile
 
   - name: lint
-    image: node:20-alpine
+    image: "node:20-alpine"
     volumes:
       - name: workspace
         path: /drone/src
     commands:
       - corepack enable
-      - corepack prepare pnpm@9.15.0 --activate
+      - "corepack prepare pnpm@9.15.0 --activate"
       - pnpm lint
 
   - name: format-check
-    image: node:20-alpine
+    image: "node:20-alpine"
     volumes:
       - name: workspace
         path: /drone/src
     commands:
       - corepack enable
-      - corepack prepare pnpm@9.15.0 --activate
+      - "corepack prepare pnpm@9.15.0 --activate"
       - "pnpm format:check"
 
   - name: build
-    image: node:20-alpine
+    image: "node:20-alpine"
     volumes:
       - name: workspace
         path: /drone/src
     commands:
       - corepack enable
-      - corepack prepare pnpm@9.15.0 --activate
+      - "corepack prepare pnpm@9.15.0 --activate"
       - pnpm build
 
 ---
-# ============================================================
-# Pipeline 2: 部署（v* Tag 触发）
-# 对应 .github/workflows/deploy-production.yml
-# ============================================================
 kind: pipeline
 type: docker
 name: 部署到生产环境
@@ -88,7 +80,7 @@ steps:
       VITE_APP_TITLE:
         from_secret: vite_app_title
     settings:
-      repo: docker.io/${DOCKER_HUB_USERNAME}/hy-admin
+      repo: "docker.io/${DOCKER_HUB_USERNAME}/hy-admin"
       username:
         from_secret: docker_hub_username
       password:
