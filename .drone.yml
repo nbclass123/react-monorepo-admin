@@ -23,10 +23,18 @@ steps:
     image: alpine/git
     commands:
       - git clone --depth 20 ${DRONE_REMOTE_URL} .
-      - git checkout ${DRONE_COMMIT_SHA}
+      - git checkout ${DRONE_COMMIT_SHA}    
+      - |
+        if [ -n "${DRONE_TAG}" ]; then
+          git clone --branch ${DRONE_TAG} --depth 1 ${DRONE_REMOTE_URL} .
+        else
+          git clone --depth 20 ${DRONE_REMOTE_URL} .
+          git checkout ${DRONE_COMMIT_SHA}
+        fi
 
   - name: 安装依赖并校验
     image: node:22-alpine
+    pull: if-not-exists
     commands:
       - corepack enable
       - pnpm config set registry ${NPM_REGISTRY}
@@ -37,11 +45,10 @@ steps:
 
   - name: 构建并推送Docker镜像
     image: docker.1ms.run/plugins/docker
+    pull: if-not-exists
     when:
-      event:
-        - tag
-      ref:
-        - refs/tags/release-v*
+      event: [tag]
+      ref: [refs/tags/release-v*]
     environment:
       VITE_APP_BASE_URL:
         from_secret: VITE_APP_BASE_URL
