@@ -4,9 +4,10 @@ type: docker
 name: ci-cd
 
 trigger:
-  branch:
-    - master
-    - release-v*
+  ref:
+    - refs/heads/master
+    - refs/heads/release-v*
+    - refs/tags/release-v*
   event:
     - push
     - pull_request
