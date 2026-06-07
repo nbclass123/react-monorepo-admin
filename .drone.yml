@@ -6,6 +6,7 @@ name: ci-cd
 trigger:
   branch:
     - master
+    - release-v*
   event:
     - push
     - pull_request
