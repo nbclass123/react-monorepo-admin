@@ -29,12 +29,8 @@ steps:
       - pnpm build
 
   - name: 构建并推送Docker镜像
-    image: docker.1ms.run/plugins/docker
+    image: plugins/kaniko
     pull: if-not-exists
-
-    volumes:
-      - name: dockersock
-        path: /var/run/docker.sock
     when:
       event: [tag]
       ref: [refs/tags/release-v*]
@@ -54,10 +50,9 @@ steps:
       tags:
         - ${DRONE_TAG}
         - production
-      build_args_from_env:
-        - VITE_APP_BASE_URL
-        - VITE_APP_TITLE
-      debug: true
+      build_args:
+        - VITE_APP_BASE_URL=${VITE_APP_BASE_URL}
+        - VITE_APP_TITLE=${VITE_APP_TITLE}
 
   - name: 部署到生产服务器
     image: appleboy/drone-ssh
@@ -152,7 +147,3 @@ steps:
         echo "=========================================="
         echo "  部署成功: ${IMAGE}"
         echo "=========================================="
-volumes:
-  - name: dockersock
-    host:
-      path: /var/run/docker.sock
