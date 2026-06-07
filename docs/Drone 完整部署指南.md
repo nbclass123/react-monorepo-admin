@@ -198,40 +198,57 @@ docker logs drone-runner | grep "successfully connected"
 
 > **重要**：Drone 的 Secret 和 GitHub Actions 的 Secret **完全独立**，需要重新配置。
 
-进入：仓库页面 → **Settings** → **Secrets** → 点击 **"+ New Secret"**，依次添加以下 7 个 Secret。
+进入：仓库页面 → **Settings** → **Secrets** → 点击 **"+ New Secret"**，依次添加以下 8 个 Secret。
 
 ***
 
-#### Secret 1：`docker_hub_username` — Docker Hub 用户名
+#### Secret 1：`harbor_registry` — Harbor 镜像仓库地址
 
-**在哪里获取：** 打开 [hub.docker.com](https://hub.docker.com) → 登录 → 右上角头像旁边的用户名。
+Harbor 仓库的访问地址。
 
 ```
-Name:  docker_hub_username
-Value: <你的 Docker Hub 用户名，如 huhanwen>
+Name:  harbor_registry
+Value: hbu.docker
 ```
 
 ***
 
-#### Secret 2：`docker_hub_token` — Docker Hub 访问令牌
+#### Secret 2：`harbor_username` — Harbor 用户名
 
-**在哪里获取：**
-
-1. 打开 [hub.docker.com](https://hub.docker.com) → 登录
-2. 右上角头像 → **Account Settings** → 左侧 **Personal access tokens**
-3. 点击 **Generate new token**，描述填 `drone-ci`，权限选 **Read & Write**
-4. 点击 **Generate**，**立刻复制** token（`dckr_pat_xxxx...`，关闭后无法再看）
+Harbor 登录用户名或机器人账户名。
 
 ```
-Name:  docker_hub_token
-Value: dckr_pat_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+Name:  harbor_username
+Value: <你的 Harbor 用户名，如 admin>
 ```
-
-> 不能用 Docker Hub 登录密码，必须用 Access Token。
 
 ***
 
-#### Secret 3：`vite_app_base_url` — 后端 API 地址
+#### Secret 3：`harbor_password` — Harbor 密码或 Token
+
+Harbor 登录密码，推荐使用机器人账户的 Token。
+
+```
+Name:  harbor_password
+Value: <Harbor 密码或机器人 Token>
+```
+
+> 机器人 Token 在 Harbor 管理后台创建，权限范围可控，比直接使用密码更安全。
+
+***
+
+#### Secret 4：`docker_repo` — Docker 镜像完整路径
+
+镜像在 Harbor 中的完整路径，格式为 `<registry>/<project>/<image>`。
+
+```
+Name:  docker_repo
+Value: hbu.docker/hy-platform/hy-admin
+```
+
+***
+
+#### Secret 5：`vite_app_base_url` — 后端 API 地址
 
 **需求：** 前端请求后端 API 的基础地址，Docker 构建时编译进 JS 文件。
 
@@ -242,7 +259,7 @@ Value: http://124.221.127.123/api
 
 ***
 
-#### Secret 4：`vite_app_title` — 网页标题
+#### Secret 6：`vite_app_title` — 网页标题
 
 **需求：** 浏览器标签页显示的标题。
 
@@ -253,7 +270,7 @@ Value: 番茄
 
 ***
 
-#### Secret 5：`server_host` — 服务器 IP
+#### Secret 7：`server_host` — 服务器 IP
 
 ```
 Name:  server_host
@@ -262,7 +279,7 @@ Value: 124.221.127.123
 
 ***
 
-#### Secret 6：`server_user` — SSH 用户名
+#### Secret 8：`server_user` — SSH 用户名
 
 建议创建专门的 `deploy` 用户：
 
@@ -279,7 +296,7 @@ Value: deploy
 
 ***
 
-#### Secret 7：`server_ssh_key` — SSH 私钥
+#### Secret 9：`server_ssh_key` — SSH 私钥
 
 **准备 SSH Key（如果没有）：**
 
@@ -315,11 +332,13 @@ b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAA...
 
 ### 全部配置完成后
 
-Settings → Secrets 页面应看到 7 条记录：
+Settings → Secrets 页面应看到 9 条记录：
 
 ```
-docker_hub_username    ******
-docker_hub_token       ******
+harbor_registry        ******
+harbor_username        ******
+harbor_password        ******
+docker_repo            ******
 vite_app_base_url      ******
 vite_app_title         ******
 server_host            ******
@@ -334,13 +353,15 @@ Secret 保存在 Drone 服务端，`.drone.yml` 通过名字引用：
 ```
 Drone 服务端 Secrets                  .drone.yml 中的引用
 ────────────────────────             ────────────────────
-docker_hub_username → "huhanwen"     from_secret: docker_hub_username
-docker_hub_token    → "dckr_pat_.."  from_secret: docker_hub_token
-vite_app_base_url   → "http://..."   from_secret: vite_app_base_url
-vite_app_title      → "番茄"          from_secret: vite_app_title
-server_host         → "124.221..."   from_secret: server_host
-server_user         → "deploy"       from_secret: server_user
-server_ssh_key      → "-----BEGIN.." from_secret: server_ssh_key
+harbor_registry     → "hbu.docker"   from_secret: HARBOR_REGISTRY
+harbor_username     → "admin"        from_secret: HARBOR_USERNAME
+harbor_password     → "Harbor..."    from_secret: HARBOR_PASSWORD
+docker_repo         → "hbu.doc.."    from_secret: DOCKER_REPO
+vite_app_base_url   → "http://..."   from_secret: VITE_APP_BASE_URL
+vite_app_title      → "番茄"          from_secret: VITE_APP_TITLE
+server_host         → "124.221..."   from_secret: SERVER_HOST
+server_user         → "deploy"       from_secret: SERVER_USER
+server_ssh_key      → "-----BEGIN.." from_secret: SERVER_SSH_KEY
 ```
 
 `.drone.yml` 里永远只出现 Secret 的**名字**，不出现真实值，可以安全提交 Git。
@@ -357,8 +378,8 @@ server_ssh_key      → "-----BEGIN.." from_secret: server_ssh_key
 
 | 流水线        | 触发条件               | 作用                                 |
 | ---------- | ------------------ | ---------------------------------- |
-| `CI/CD 测试` | push / PR → master | 安装依赖 → lint → format:check → build |
-| `部署到生产环境`  | tag `drone-v*`     | Docker 构建 → 推送镜像 → SSH 部署 → 健康检查   |
+| `CI/CD 测试` | push / PR → master, release-v* | 安装依赖 → lint → format:check → build |
+| `部署到生产环境`  | tag `release-v*`     | Kaniko 构建 → 推送镜像到 Harbor → SSH 部署 → 健康检查   |
 
 ### 4.2 GitHub Actions → Drone 对照
 
@@ -370,7 +391,7 @@ server_ssh_key      → "-----BEGIN.." from_secret: server_ssh_key
 | 密钥引用      | `${{ secrets.X }}`            | `from_secret: x`                      |
 | 部署 Tag 触发 | `release-v*`                  | `drone-v*`                            |
 | 版本号       | `${GITHUB_REF#refs/tags/}`    | `${DRONE_TAG}` 直接可用                   |
-| Docker 构建 | `docker/build-push-action@v5` | `plugins/docker`                      |
+| Docker 构建 | `docker/build-push-action@v5` | `plugins/kaniko`（用户空间构建，无需特权）|
 | SSH 部署    | `appleboy/ssh-action@v1`      | `appleboy/drone-ssh`                  |
 | 步骤间共享文件   | 同一 Runner（天然持久）               | 需配置 `volumes` 临时卷                     |
 
@@ -467,8 +488,8 @@ docker compose up -d --pull never
 | --------- | ------------------------------------- | --------------------------------- |
 | Secret 存放 | GitHub → Settings → Secrets → Actions | Drone Web UI → Settings → Secrets |
 | CI 触发     | push/PR → master                      | push/PR → master                  |
-| 部署 tag    | `release-v*`                          | `drone-v*`                        |
-| 配置文件      | `.github/workflows/*.yml`             | `.drone.yml`                      |
+| 部署 tag    | `release-v*`                         | `release-v*`                               |
+| 配置文件      | `.github/workflows/*.yml`             | `.drone.yml`                              |
 | 运行环境      | GitHub 托管 Runner                      | 你自己的服务器 Runner                    |
 
 - Git push 事件**同时**发送给 Drone Webhook 和 GitHub Actions
@@ -514,10 +535,11 @@ clone:
 - 确认公钥已追加到服务器 `~/.ssh/authorized_keys`
 - 确认 Secret 值粘贴完整（包含 BEGIN/END 行）
 
-### Q6: Docker Hub 登录失败？
+### Q6: Harbor 登录失败？
 
-- 必须用 Access Token（`dckr_pat_xxx`），不能用登录密码
-- Token 权限需要 **Read & Write**
+- 确认使用 Harbor 机器人账户 Token 而非普通密码
+- 确认 Harbor 项目中该用户有推送和拉取权限
+- 确认 Harbor 仓库地址可网络访问
 
 ### Q7: Drone Secret 和 GitHub Actions Secret 是同一个吗？
 
@@ -537,5 +559,5 @@ clone:
 | `drone-data/`        | `/opt/drone/`                     | Drone 数据目录（自动生成，含 Secret）  |
 | `.drone.yml`         | 项目根目录                             | Drone 流水线配置（提交到 Git）       |
 | OAuth App            | GitHub Developer Settings         | Drone 登录授权                 |
-| Secrets × 7          | Drone Web UI → Settings → Secrets | 敏感信息存放                     |
+| Secrets × 9          | Drone Web UI → Settings → Secrets | 敏感信息存放                     |
 

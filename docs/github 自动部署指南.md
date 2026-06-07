@@ -25,8 +25,9 @@ cat ~/.ssh/github-actions
 
 | Secret | 说明 |
 |--------|------|
-| `DOCKER_HUB_USERNAME` | Docker Hub 用户名 |
-| `DOCKER_HUB_TOKEN` | Docker Hub Access Token（不是密码） |
+| `HARBOR_REGISTRY` | Harbor 镜像仓库地址（如 `hbu.docker`） |
+| `HARBOR_USERNAME` | Harbor 用户名 |
+| `HARBOR_PASSWORD` | Harbor 密码或机器人 Token |
 | `VITE_APP_BASE_URL` | 浏览器访问 API 的基础地址 |
 | `VITE_APP_TITLE` | 网页标题 |
 | `SERVER_HOST` | 生产服务器 IP |
@@ -46,7 +47,7 @@ git tag -a release-v1.0.1 -m "发布 v1.0.1 版本"
 git push origin release-v1.0.1
 ```
 
-### Drone CI 发布（tag 前缀：`drone-v*`）
+### Drone CI 发布（tag 前缀：`release-v*`）
 
 ```bash
 # 创建版本标签
@@ -63,7 +64,7 @@ git push origin drone-v1.0.1
 | 平台 | 事件 | 触发工作流 | 说明 |
 |------|------|-----------|------|
 | GitHub Actions | `git push origin release-v*` | `deploy-production.yml` | 打版本标签 → 构建镜像 → 部署到生产 |
-| Drone | `git push origin drone-v*` | `drone-v*` pipeline | 打版本标签 → 构建镜像 → 部署到生产 |
+| Drone | `git push origin release-v*` | `.drone.yml` pipeline | 打版本标签 → 构建镜像 → 部署到生产 |
 | GitHub Actions | `push: master` | `ci.yml` | 代码推送 → lint + format + build 校验 |
 | Drone | `push: master` | `CI/CD 测试` pipeline | 代码推送 → lint + format + build 校验 |
 | GitHub Actions | `pull_request: master` | `ci.yml` | PR → lint + format + build 校验 |
@@ -84,7 +85,7 @@ git push origin release-v1.0.1  ──→  [1] 检出代码
                                   │   │   --build-arg VITE_APP_TITLE
                                   │   └── 产物: Nginx + 静态资源
                                   │
-                                  [3] 推送镜像到 Docker Hub
+                                  [3] 推送镜像到 Harbor
                                   │   ├── hy-admin:v1.0.1（不可变版本）
                                   │   └── hy-admin:production（滚动覆盖）
                                   │
@@ -128,7 +129,7 @@ ssh root@<server-ip>
 cd /opt/hy-platform-web
 
 # 拉取上一个版本镜像
-IMAGE="<username>/hy-admin:v1.0.0"
+IMAGE="hbu.docker/hy-platform/hy-admin:v1.0.0"
 docker pull "${IMAGE}"
 
 # 替换 compose 文件中的镜像标签
@@ -158,9 +159,9 @@ sed -i '/^LogLevel DEBUG/d' /etc/ssh/sshd_config && systemctl reload sshd
 
 ### 镜像拉取失败
 
-- Docker Hub Token 过期 → 重新创建 Access Token
-- 网络不通 → 检查服务器能否访问 `docker.io`
-- 国内网络慢 → 配置镜像加速器
+- Harbor 登录凭据过期 → 检查 Harbor 机器人 Token 有效期
+- 网络不通 → 检查服务器能否访问 Harbor 仓库
+- 权限不足 → 确认 Harbor 项目中当前用户有拉取权限
 
 ### 容器健康检查失败
 

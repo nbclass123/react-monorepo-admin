@@ -3,11 +3,11 @@ version: '3.8'
 # ============================================================
 # Production Docker Compose - hy-platform 前端部署
 #
-# 使用场景：生产服务器上运行，拉取 Docker Hub 预构建镜像
-# 镜像由 GitHub Actions CI/CD 构建并推送
+# 使用场景：生产服务器上运行，拉取 Harbor 预构建镜像
+# 镜像由 CI/CD (Drone/GitHub Actions) 通过 Kaniko 构建并推送
 #
 # 使用方式：
-#   部署：IMAGE_TAG=v1.0.0 DOCKER_HUB_USERNAME=xxx docker compose -f docker-compose.prod.yml up -d
+#   部署：IMAGE_TAG=v1.0.0 HARBOR_REGISTRY=hbu.docker docker compose -f docker-compose.prod.yml up -d
 #   停止：docker compose -f docker-compose.prod.yml down
 #   重启：docker compose -f docker-compose.prod.yml restart
 #
@@ -17,7 +17,7 @@ version: '3.8'
 
 services:
   frontend:
-    image: ${DOCKER_HUB_USERNAME:-253600}/hy-admin:${IMAGE_TAG:-latest}
+    image: ${HARBOR_REGISTRY:-hbu.docker}/hy-platform/hy-admin:${IMAGE_TAG:-latest}
     container_name: hy-platform-web
     ports:
       - "80:80"

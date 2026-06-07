@@ -39,15 +39,17 @@ steps:
         from_secret: VITE_APP_BASE_URL
       VITE_APP_TITLE:
         from_secret: VITE_APP_TITLE
-      DOCKER_HUB_USERNAME:
-        from_secret: DOCKER_HUB_USERNAME
-      DOCKER_HUB_TOKEN:
-        from_secret: DOCKER_HUB_TOKEN
+      HARBOR_REGISTRY:
+        from_secret: HARBOR_REGISTRY
+      HARBOR_USERNAME:
+        from_secret: HARBOR_USERNAME
+      HARBOR_PASSWORD:
+        from_secret: HARBOR_PASSWORD
       DOCKER_REPO:
         from_secret: DOCKER_REPO
     commands:
       - mkdir -p /kaniko/.docker
-      - echo "{\"auths\":{\"https://index.docker.io/v1/\":{\"auth\":\"$(echo -n $DOCKER_HUB_USERNAME:$DOCKER_HUB_TOKEN | base64)\"}}}" > /kaniko/.docker/config.json
+      - echo "{\"auths\":{\"${HARBOR_REGISTRY}\":{\"auth\":\"$(echo -n $HARBOR_USERNAME:$HARBOR_PASSWORD | base64)\"}}}" > /kaniko/.docker/config.json
       - /kaniko/executor
           --context .
           --dockerfile Dockerfile
@@ -65,6 +67,12 @@ steps:
       ref:
         - refs/tags/release-v*
     environment:
+      HARBOR_REGISTRY:
+        from_secret: HARBOR_REGISTRY
+      HARBOR_USERNAME:
+        from_secret: HARBOR_USERNAME
+      HARBOR_PASSWORD:
+        from_secret: HARBOR_PASSWORD
       DOCKER_REPO:
         from_secret: DOCKER_REPO
     settings:
@@ -86,10 +94,13 @@ steps:
         echo "  部署镜像: ${IMAGE}"
         echo "=========================================="
 
-        echo "[1/4] 拉取镜像..."
+        echo "[1/4] 登录 Harbor..."
+        echo "${HARBOR_PASSWORD}" | docker login "${HARBOR_REGISTRY}" -u "${HARBOR_USERNAME}" --password-stdin
+
+        echo "[2/4] 拉取镜像..."
         docker pull "${IMAGE}"
 
-        echo "[2/4] 准备 compose 文件..."
+        echo "[3/4] 准备 compose 文件..."
         mkdir -p /opt/hy-platform-web
 
         cat > "${COMPOSE_FILE}" << 'COMPOSE_EOF'
@@ -124,10 +135,10 @@ steps:
 
         sed -i "s|IMAGE_PLACEHOLDER|${IMAGE}|g" "${COMPOSE_FILE}"
 
-        echo "[3/4] 更新容器..."
+        echo "[4/4] 更新容器..."
         docker compose -f "${COMPOSE_FILE}" up -d --remove-orphans
 
-        echo "[4/4] 等待健康检查..."
+        echo "[5/5] 等待健康检查..."
 
         HEALTHY=0
         for i in $(seq 1 30); do

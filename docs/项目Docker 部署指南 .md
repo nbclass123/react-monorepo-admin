@@ -44,7 +44,7 @@ GitHub Secrets (VITE_APP_BASE_URL, VITE_APP_TITLE)
 - `hu-platform-net` 网络已存在（否则部署脚本会自动创建）
 - 后端网关容器 `gateway` 在该网络中运行并监听 8080 端口
 - 80 端口未被占用
-- 服务器可访问 Docker Hub 拉取镜像
+- 服务器可访问 Harbor 镜像仓库拉取镜像
 - SSH 免密登录已配置（或使用密钥）
 
 ## GitHub Secrets 配置
@@ -53,8 +53,9 @@ GitHub Secrets (VITE_APP_BASE_URL, VITE_APP_TITLE)
 
 | Secret                | 说明                      | 示例                                         |
 | --------------------- | ----------------------- | ------------------------------------------ |
-| `DOCKER_HUB_USERNAME` | Docker Hub 用户名          | `mycompany`                                |
-| `DOCKER_HUB_TOKEN`    | Docker Hub Access Token | `dckr_pat_xxx...`                          |
+| `HARBOR_REGISTRY`     | Harbor 镜像仓库地址            | `hbu.docker`                               |
+| `HARBOR_USERNAME`     | Harbor 用户名               | `admin`                                    |
+| `HARBOR_PASSWORD`     | Harbor 密码或机器人 Token      | `Harbor12345`                              |
 | `VITE_APP_BASE_URL`   | 浏览器访问 API 的地址           | `http://124.221.127.123:8080/api`          |
 | `VITE_APP_TITLE`      | 网页标题                    | `呼呼呼管理系统`                                  |
 | `SERVER_HOST`         | 生产服务器 IP 或域名            | `124.221.127.123`                          |
@@ -64,7 +65,7 @@ GitHub Secrets (VITE_APP_BASE_URL, VITE_APP_TITLE)
 
 **注意**：
 
-- `DOCKER_HUB_TOKEN` 不是密码，需要在 Docker Hub `Account Settings → Security → New Access Token` 创建
+- `HARBOR_PASSWORD` 推荐使用 Harbor 机器人账户的 Token，在 Harbor 管理后台创建
 - `SERVER_SSH_KEY` 是多行值，GitHub Secrets 会保留换行符
 
 ## CI/CD 流程
@@ -77,9 +78,10 @@ git tag v1.0.0 && git push origin v1.0.0
   │     ├── [1] 检出代码
   │     ├── [2] 安装 pnpm + 构建验证（ci.yml 并行运行）
   │     ├── [3] Docker Buildx 构建镜像
-  │     ├── [4] 推送镜像到 Docker Hub（v1.0.0 + production 双标签）
+  │     ├── [4] 推送镜像到 Harbor（v1.0.0 + production 双标签）
   │     └── [5] SSH 到生产服务器
   │           │
+  │           ├── docker login harbor
   │           ├── docker pull 新镜像
   │           ├── 写入 docker-compose.prod.yml
   │           ├── 确保 hu-platform-net 网络存在
@@ -99,15 +101,15 @@ git tag v1.0.0 && git push origin v1.0.0
 docker build \
   --build-arg VITE_APP_BASE_URL=http://124.221.127.123:8080/api \
   --build-arg VITE_APP_TITLE=呼呼呼 \
-  -t <username>/hy-admin:manual .
-docker push <username>/hy-admin:manual
+  -t hbu.docker/hy-platform/hy-admin:manual .
+docker push hbu.docker/hy-platform/hy-admin:manual
 
 # 2. SSH 到服务器
 ssh root@124.221.127.123
 
 # 3. 在服务器上部署
 cd /opt/hy-platform-web
-IMAGE_TAG=manual DOCKER_HUB_USERNAME=<username> docker compose -f docker-compose.prod.yml up -d
+IMAGE_TAG=manual docker compose -f docker-compose.prod.yml up -d
 ```
 
 ## 回滚步骤
@@ -118,13 +120,13 @@ ssh root@<server-ip>
 
 # 方案 A：回滚到指定版本
 cd /opt/hy-platform-web
-IMAGE="<username>/hy-admin:v1.0.1"
+IMAGE="hbu.docker/hy-platform/hy-admin:v1.0.1"
 docker pull "${IMAGE}"
 sed -i "s|image:.*|image: ${IMAGE}|g" docker-compose.prod.yml
 docker compose -f docker-compose.prod.yml up -d --pull never
 
 # 方案 B：回滚到上一次 production（如果还没被覆盖）
-IMAGE="<username>/hy-admin:production"
+IMAGE="hbu.docker/hy-platform/hy-admin:production"
 docker pull "${IMAGE}"
 sed -i "s|image:.*|image: ${IMAGE}|g" docker-compose.prod.yml
 docker compose -f docker-compose.prod.yml up -d --pull never
@@ -158,9 +160,9 @@ docker logs hy-platform-web
 
 ### 4. 镜像拉取失败
 
-- 确认 Docker Hub Token 未过期
-- 确认网络能访问 `docker.io`
-- 配置镜像加速器（如阿里云、腾讯云等）
+- 确认 Harbor 登录凭据未过期
+- 确认网络能访问 Harbor 仓库
+- 检查 Harbor 项目 `hy-platform` 是否存在且当前用户有拉取权限
 
 ### 5. 健康检查失败
 
@@ -192,7 +194,7 @@ docker compose down
 
 | 项目   | 本地 `docker-compose.yml`      | 生产 `docker-compose.prod.yml` |
 | ---- | ---------------------------- | ---------------------------- |
-| 镜像来源 | 本地构建 `build:`                | 远程拉取 `image:`                |
+| 镜像来源 | 本地构建 `build:`                | Harbor 远程拉取 `image:`          |
 | 端口   | 8088:80                      | 80:80                        |
 | 网络   | `hu-platform-net` (external) | `hu-platform-net` (external) |
 | 资源限制 | 无                            | CPU 0.5 / 内存 256M            |
