@@ -13,7 +13,7 @@ version: '3.8'
 # 架构说明：
 #   - 前端（8088）-> gateway（8080）-> 各业务服务
 # ============================================================
-
+name: hu-platform
 services:
   # 前端服务
   frontend:
@@ -25,7 +25,7 @@ services:
         # 例如：/api/auth/user/login -> Nginx -> gateway:8080/api/auth/user/login
         - VITE_APP_BASE_URL=http://localhost:8080/api
         - VITE_APP_TITLE=呼呼呼
-    container_name: hy-platform-web
+    container_name: hu-platform-web-admin
     ports:
       - "8088:80"
     networks:

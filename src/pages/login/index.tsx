@@ -55,7 +55,7 @@ const LoginPage: React.FC = () => {
         <div className="login-brand">
           <SvgIcon name="fanqie" className="login-brand-icon" />
         </div>
-        <h1 className="login-title">欢迎回来</h1>
+        <h1 className="login-title">欢迎回来🍅</h1>
         <p className="login-subtitle">登录您的账户以继续</p>
         <Form onFinish={onFinish} autoComplete="off" disabled={loading}>
           <Form.Item<FieldType>
