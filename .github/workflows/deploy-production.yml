@@ -36,9 +36,6 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_HUB_USERNAME }}/hy-admin:${{ steps.extract_tag.outputs.tag }}
             ${{ secrets.DOCKER_HUB_USERNAME }}/hy-admin:production
-          build-args: |
-            VITE_APP_BASE_URL=${{ secrets.VITE_APP_BASE_URL }}
-            VITE_APP_TITLE=${{ secrets.VITE_APP_TITLE }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

@@ -2,14 +2,6 @@
 # 第一阶段：构建项目
 FROM node:22-alpine AS builder
 
-# 构建参数 - 用于在构建阶段传递 Vite 环境变量
-ARG VITE_APP_BASE_URL
-ARG VITE_APP_TITLE
-
-# 设置环境变量
-ENV VITE_APP_BASE_URL=${VITE_APP_BASE_URL}
-ENV VITE_APP_TITLE=${VITE_APP_TITLE}
-
 # 设置工作目录
 WORKDIR /app
 

@@ -35,10 +35,6 @@ steps:
       event: [tag]
       ref: [refs/tags/release-v*]
     environment:
-      VITE_APP_BASE_URL:
-        from_secret: VITE_APP_BASE_URL
-      VITE_APP_TITLE:
-        from_secret: VITE_APP_TITLE
       HARBOR_REGISTRY:
         from_secret: HARBOR_REGISTRY
       HARBOR_USERNAME:
@@ -55,8 +51,6 @@ steps:
           --dockerfile Dockerfile
           --destination "${DOCKER_REPO}:${DRONE_TAG}"
           --destination "${DOCKER_REPO}:production"
-          --build-arg VITE_APP_BASE_URL="${VITE_APP_BASE_URL}"
-          --build-arg VITE_APP_TITLE="${VITE_APP_TITLE}"
           --cache=true
 
   - name: 部署到生产服务器
